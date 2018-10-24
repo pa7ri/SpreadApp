@@ -9,7 +9,7 @@
     161444291-AddInputOutputResponse 
     ```  
 - Commit new changes and specify the purpose:
-  - Format := purposeID/``commitDescription``
+  - Format := purposeID\ ``commitDescription``
     - purposeID : 
       - **feat** for new feature 
       - **chore** for minor changes
