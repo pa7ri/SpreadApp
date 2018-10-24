@@ -1,4 +1,4 @@
-# TFG-Spread
+# TFG
 
 ## Contributing : 
 - Create new branch for the task:
