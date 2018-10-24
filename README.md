@@ -14,7 +14,6 @@
       - **feat** for new feature 
       - **chore** for minor changes
       - **bug** for fixing bugs
-  - Content := commit template
   - Example : 
     ```
     feat\addInputOutputInterface 
