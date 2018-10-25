@@ -3,7 +3,7 @@
 ## Contributing : 
 - Create new branch for the task:
   - Format := ID-'taskDescription'
-    - ID from pivotalTracker : [projectSpread](https://www.pivotaltracker.com/n/projects/2208687)
+    - ID from [pivotalTracker](https://www.pivotaltracker.com/n/projects/2208687)
   - Example : 
     ```
     161444291-AddInputOutputResponse 
