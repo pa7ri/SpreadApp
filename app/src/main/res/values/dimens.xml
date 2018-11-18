@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Margin Dimensions -->
+    <dimen name="smallMargin">8dp</dimen>
+    <dimen name="mediumMargin">16dp</dimen>
+
+    <!-- Image Dimensions -->
+    <dimen name="iconSide">32dp</dimen>
+    <dimen name="markerSide">48dp</dimen>
+
+    <!-- Text Dimensions -->
+    <dimen name="smallText">10sp</dimen>
+
+    <!-- Madrid Coordinates -->
+    <dimen name="madLat">40.41650</dimen>
+    <dimen name="madLong">-3.70256</dimen>
+
+</resources>
