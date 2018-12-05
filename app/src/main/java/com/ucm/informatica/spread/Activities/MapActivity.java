@@ -1,9 +1,7 @@
-package com.ucm.informatica.spread;
+package com.ucm.informatica.spread.Activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationManager;
@@ -22,11 +20,13 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-
+import com.ucm.informatica.spread.R;
 import java.util.List;
 
-import static com.ucm.informatica.spread.MapActivity.LocationMode.Auto;
-import static com.ucm.informatica.spread.MapActivity.LocationMode.Manual;
+
+import static com.ucm.informatica.spread.Activities.MapActivity.LocationMode.Auto;
+import static com.ucm.informatica.spread.Activities.MapActivity.LocationMode.Manual;
+import static com.ucm.informatica.spread.Constants.Map.MAP_TOKEN;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -105,7 +105,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void instanceMap(Bundle savedInstanceState) {
-        Mapbox.getInstance(this, "pk.eyJ1IjoiaGltb2NoaSIsImEiOiJjam9pYTh6encwNmV5M3BwZnRqdjZmZXQzIn0.6nLIwyqEDZ9o5KFquUHaeA");
+        Mapbox.getInstance(this, MAP_TOKEN);
         setContentView(R.layout.activity_map);
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -126,9 +126,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void setUpListeners() {
         saveAutoLocationButton.setOnClickListener(v -> {
-            String titleText = infoTitleEditText.getText()==null?
+            String titleText = infoTitleEditText.getText().toString().equals("")?
                     getResources().getString(R.string.no_text):infoTitleEditText.getText().toString();
-            String descriptionText = infoDescriptionEditText.getText()==null?
+            String descriptionText = infoDescriptionEditText.getText().toString().equals("")?
                     getResources().getString(R.string.no_text):infoDescriptionEditText.getText().toString();
 
             if (currMode== Auto) {

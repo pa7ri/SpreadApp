@@ -8,10 +8,15 @@
     <string name="location_no_available">Localización no disponible. Paso a modo manual.</string>
     <string name="no_text">None</string>
 
-    <string name="button_send">Enviar</string>
     <string name="map_style_url">mapbox://styles/himochi/cjois77wl020w2sk7muy2htur</string>
 
 
     <string name="title_hint">Titulo</string>
     <string name="description_hint">Descripción</string>
+
+    <!-- ACTIONS -->
+    <string name="button_send">Enviar</string>
+    <string name="button_save">Guardar</string>
+    <string name="button_read">Mostrar</string>
+
 </resources>

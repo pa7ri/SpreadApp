@@ -12,6 +12,11 @@ public final class Constants {
     public static final class Contract {
         public static final BigInteger GAS_PRICE = BigInteger.valueOf(1);
         public static final BigInteger GAS_LIMIT = BigInteger.valueOf(100000);
+        public static final String CONTRACT_ADDRESS = "0xd95091325d005d64c843352f54c5a275acdee5a5";
+    }
+
+    public static final class Map {
+        public static final String MAP_TOKEN ="pk.eyJ1IjoiaGltb2NoaSIsImEiOiJjam9pYTh6encwNmV5M3BwZnRqdjZmZXQzIn0.6nLIwyqEDZ9o5KFquUHaeA";
     }
 
     public static final class Wallet {

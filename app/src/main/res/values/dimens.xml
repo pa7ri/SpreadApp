@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Margin Dimensions -->
+    <dimen name="xsmallMargin">4dp</dimen>
     <dimen name="smallMargin">8dp</dimen>
     <dimen name="mediumMargin">16dp</dimen>
+
 
     <!-- Image Dimensions -->
     <dimen name="iconSide">32dp</dimen>
@@ -14,5 +16,9 @@
     <!-- Madrid Coordinates -->
     <dimen name="madLat">40.41650</dimen>
     <dimen name="madLong">-3.70256</dimen>
+
+
+    <!-- Others -->
+    <dimen name="cornerShape">10dp</dimen>
 
 </resources>

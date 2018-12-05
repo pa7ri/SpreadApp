@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundColorDark"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
 
 
     <android.support.v7.widget.AppCompatEditText
@@ -47,20 +47,39 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/showButton"
-        android:layout_width="@dimen/iconSide"
-        android:layout_height="@dimen/iconSide"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/ic_save"
-        app:layout_constraintEnd_toStartOf="@+id/sendButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:background="@drawable/round_button_shape"
+        android:text="@string/button_save"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineCenterVertical"
+        app:layout_constraintTop_toTopOf="@+id/guidelineCenterHorizontal" />
+
+    <Button
+        android:id="@+id/loadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:background="@drawable/round_button_shape"
+        android:text="@string/button_read"
+        app:layout_constraintStart_toStartOf="@+id/guidelineCenterVertical"
+        app:layout_constraintTop_toTopOf="@+id/guidelineCenterHorizontal" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelineCenterHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineCenterVertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
 
