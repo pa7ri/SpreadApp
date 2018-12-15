@@ -17,6 +17,10 @@
     <!-- ACTIONS -->
     <string name="button_send">Enviar</string>
     <string name="button_save">Guardar</string>
+    <string name="button_publish">Publicar</string>
     <string name="button_read">Mostrar</string>
+    <string name="button_add_pin">Añade un nuevo pin</string>
+    <string name="button_read_wallet">Mostrar Wallet</string>
+    <string name="button_cancel">Cancelar</string>
 
 </resources>

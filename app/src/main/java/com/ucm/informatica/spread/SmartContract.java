@@ -4,6 +4,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
+import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -17,6 +18,7 @@ public class SmartContract {
     }
 
     public NameContract loadSmartContract(String addressContract) {
+
         return NameContract.load(
                 addressContract,
                 web3j,

@@ -4,6 +4,7 @@
     <dimen name="xsmallMargin">4dp</dimen>
     <dimen name="smallMargin">8dp</dimen>
     <dimen name="mediumMargin">16dp</dimen>
+    <dimen name="largeMargin">32dp</dimen>
 
 
     <!-- Image Dimensions -->
@@ -20,5 +21,6 @@
 
     <!-- Others -->
     <dimen name="cornerShape">10dp</dimen>
+    <dimen name="mediumText">24dp</dimen>
 
 </resources>

@@ -51,7 +51,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/smallMargin"
-        android:layout_marginTop="@dimen/smallMargin"
         android:background="@drawable/round_button_shape"
         android:text="@string/button_save"
         app:layout_constraintEnd_toStartOf="@+id/guidelineCenterVertical"
@@ -62,11 +61,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/smallMargin"
-        android:layout_marginTop="@dimen/smallMargin"
         android:background="@drawable/round_button_shape"
         android:text="@string/button_read"
         app:layout_constraintStart_toStartOf="@+id/guidelineCenterVertical"
         app:layout_constraintTop_toTopOf="@+id/guidelineCenterHorizontal" />
+
+    <Button
+        android:id="@+id/loadWalletDataButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:background="@drawable/round_button_shape"
+        android:paddingHorizontal="@dimen/largeMargin"
+        android:text="@string/button_read_wallet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/saveButton" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelineCenterHorizontal"

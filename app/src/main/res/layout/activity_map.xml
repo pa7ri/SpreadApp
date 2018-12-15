@@ -14,32 +14,6 @@
         mapbox:mapbox_styleUrl="@string/map_style_url"
         mapbox:mapbox_cameraZoom="11" />
 
-    <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/infoTitleEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/smallMargin"
-        android:background="@color/backgroundColorDark"
-        android:hint="@string/title_hint"
-        android:textColorHint="@color/secondaryTextColor"
-        android:textColor="@color/primaryTextColor"
-        mapbox:layout_constraintBottom_toTopOf="@+id/infoDescriptionEditText"
-        mapbox:layout_constraintEnd_toStartOf="@+id/saveLocationButton"
-        mapbox:layout_constraintStart_toStartOf="parent" />
-
-    <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/infoDescriptionEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/smallMargin"
-        android:background="@color/backgroundColorDark"
-        android:hint="@string/description_hint"
-        android:textColorHint="@color/secondaryTextColor"
-        android:textColor="@color/primaryTextColor"
-        mapbox:layout_constraintBottom_toBottomOf="parent"
-        mapbox:layout_constraintEnd_toStartOf="@+id/saveLocationButton"
-        mapbox:layout_constraintStart_toStartOf="parent" />
-
     <ImageView
         android:id="@+id/markerImage"
         android:layout_width="@dimen/markerSide"
@@ -61,15 +35,25 @@
         mapbox:layout_constraintTop_toTopOf="parent"
         android:visibility="gone" />
 
+
     <Button
         android:id="@+id/saveLocationButton"
-        android:enabled="false"
-        android:layout_width="@dimen/iconSide"
-        android:layout_height="@dimen/iconSide"
-        android:layout_margin="@dimen/smallMargin"
-        android:background="@drawable/ic_send"
-        android:textColor="@color/primaryTextColor"
-        mapbox:layout_constraintBottom_toBottomOf="@+id/infoDescriptionEditText"
-        mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintTop_toTopOf="@+id/infoTitleEditText" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:text="@string/button_publish"
+        android:textColor="@color/secondaryTextColor"
+        mapbox:layout_constraintBottom_toBottomOf="parent" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/mediumMargin"
+        android:src="@drawable/ic_add"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent" />
 </android.support.constraint.ConstraintLayout>

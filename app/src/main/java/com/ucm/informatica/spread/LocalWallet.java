@@ -1,5 +1,7 @@
 package com.ucm.informatica.spread;
 
+import com.ucm.informatica.spread.Activities.MainActivity;
+
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
@@ -22,7 +24,19 @@ import timber.log.Timber;
 public class LocalWallet {
     private Web3j web3j;
     private String filenameWallet;
+    private String passwordWallet;
     private Credentials walletCredentials;
+    private MainActivity view;
+
+    public LocalWallet(MainActivity mainActivity){
+        view = mainActivity;
+        passwordWallet = "password";
+    }
+
+    public LocalWallet(MainActivity mainActivity, String password){
+        view = mainActivity;
+        passwordWallet = password;
+    }
 
     public Web3j initWeb3j(String filepath) {
         if(web3j == null) {
@@ -35,13 +49,12 @@ public class LocalWallet {
                     @Override
                     public void onCompleted() {
                         Timber.e("Conexión completada");
-                        if(!existWallet(filepath)){
-                            createWallet("password", filepath);
+                        if(!existWallet()){
+                            createWallet(passwordWallet, filepath);
                         }
                         if(filenameWallet!= null && !filenameWallet.isEmpty()) {
-                            walletCredentials = loadWallet("password", filepath);
+                            walletCredentials = loadWallet(passwordWallet, filepath);
                         }
-
                     }
 
                     @Override
@@ -62,8 +75,7 @@ public class LocalWallet {
         filenameWallet="";
         try {
             filenameWallet = WalletUtils.generateLightNewWalletFile(password, new File(filePath));
-            //TODO : Store path wallet file as sharedpreferences local storage
-
+            view.updateWalletStored(filenameWallet);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException | IOException | CipherException e) {
             Timber.e(e);
         }
@@ -79,9 +91,9 @@ public class LocalWallet {
         return credentials;
     }
 
-    private boolean existWallet(String filePath){
-        File walletFile = new File(filePath+filenameWallet);
-        return walletFile.exists();
+    private boolean existWallet(){
+        filenameWallet = view.readWalletStored();
+        return !filenameWallet.isEmpty();
     }
 
     public Credentials getCredentials() {
