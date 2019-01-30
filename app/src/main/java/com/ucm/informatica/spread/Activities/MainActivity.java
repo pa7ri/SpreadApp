@@ -1,8 +1,5 @@
 package com.ucm.informatica.spread.Activities;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 import timber.log.Timber;
 
 import static com.ucm.informatica.spread.Constants.Contract.CONTRACT_ADDRESS;
-import static com.ucm.informatica.spread.Constants.Wallet.WALLET_FILE;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -69,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Ya estás en la pantalla principal", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
         sendButton.setOnClickListener(view -> {
-            Intent intent = new Intent(getBaseContext(),MapActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(getBaseContext(),MapActivity.class);
+            //startActivity(intent);
         });
         saveButton.setOnClickListener(view -> {
             try {
@@ -131,18 +127,6 @@ public class MainActivity extends AppCompatActivity {
             loadContract();
         }
         return smartContract.readNameFromSmartContract(nameContract);
-    }
-
-    public void updateWalletStored(String walletFilename){
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(WALLET_FILE, walletFilename);
-        editor.apply();
-    }
-
-    public String readWalletStored(){
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        return sharedPref.getString(WALLET_FILE, "");
     }
 
 }

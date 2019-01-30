@@ -1,4 +1,4 @@
-package com.ucm.informatica.spread.Activities;
+package com.ucm.informatica.spread.Fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -6,14 +6,15 @@ import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,17 +27,13 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.ucm.informatica.spread.R;
 
-import java.util.List;
-
-
-import static com.ucm.informatica.spread.Activities.MapActivity.LocationMode.Auto;
-import static com.ucm.informatica.spread.Activities.MapActivity.LocationMode.Manual;
+import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Constants.Map.MAP_TOKEN;
+import static com.ucm.informatica.spread.Fragments.MapFragment.LocationMode.Auto;
+import static com.ucm.informatica.spread.Fragments.MapFragment.LocationMode.Manual;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    //TODO : MVP design pattern
-    //TODO : store data into BC
     private MapView mapView;
     private MapboxMap mapboxMap;
 
@@ -55,23 +52,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private String titleText;
     private String descriptionText;
 
+    public MapFragment() { }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initLocationManager();
-        initView(savedInstanceState);
-        setUpListeners();
     }
 
-    private void initLocationManager() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        LocationListener locationListener = new CustomLocationListener();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        Mapbox.getInstance(getContext(), MAP_TOKEN);
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
+
+        initLocationManager();
+        initView(view, savedInstanceState);
+        setUpListeners();
+
+        return view;
     }
 
     @Override
@@ -105,37 +104,41 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onMapReady(MapboxMap mMap) {
-        mapboxMap = mMap;
-        //TODO : add previous stored markers
+    public void onMapReady(MapboxMap mp) {
+        mapboxMap = mp;
+    }
+    private void initLocationManager() {
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+        LocationListener locationListener = new CustomLocationListener();
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions( getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
     }
 
-    private void instanceMap(Bundle savedInstanceState) {
-        Mapbox.getInstance(this, MAP_TOKEN);
-        setContentView(R.layout.activity_map);
-        mapView = findViewById(R.id.mapView);
+    private void initView(View v ,Bundle savedInstanceState) {
+        mapView = v.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-    }
 
-    private void initView(Bundle savedInstanceState) {
-        instanceMap(savedInstanceState);
-        exitManualModeButton = findViewById(R.id.exitManualModeButton);
-        addPinButton = findViewById(R.id.addLocationButton);
-        addLocationButton = findViewById(R.id.saveLocationButton);
-        markerImage = findViewById(R.id.markerImage);
+        exitManualModeButton = v.findViewById(R.id.exitManualModeButton);
+        addPinButton = v.findViewById(R.id.addLocationButton);
+        addLocationButton = v.findViewById(R.id.saveLocationButton);
+        markerImage = v.findViewById(R.id.markerImage);
     }
 
     private void setUpListeners() {
@@ -184,7 +187,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void popUpDialog(View v){
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(this).create();
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(getContext()).create();
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_location, null);
 
@@ -218,7 +221,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         dialogBuilder.show();
     }
 
-    private class CustomLocationListener implements LocationListener{
+    private class CustomLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {

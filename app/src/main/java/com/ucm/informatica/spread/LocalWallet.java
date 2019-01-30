@@ -1,6 +1,10 @@
 package com.ucm.informatica.spread;
 
-import com.ucm.informatica.spread.Activities.MainActivity;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.ucm.informatica.spread.Activities.MainTabActivity;
 
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -21,19 +25,21 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.ucm.informatica.spread.Constants.Wallet.WALLET_FILE;
+
 public class LocalWallet {
     private Web3j web3j;
     private String filenameWallet;
     private String passwordWallet;
     private Credentials walletCredentials;
-    private MainActivity view;
+    private Activity view;
 
-    public LocalWallet(MainActivity mainActivity){
+    public LocalWallet(Activity mainActivity){
         view = mainActivity;
         passwordWallet = "password";
     }
 
-    public LocalWallet(MainActivity mainActivity, String password){
+    public LocalWallet(Activity mainActivity, String password){
         view = mainActivity;
         passwordWallet = password;
     }
@@ -75,7 +81,7 @@ public class LocalWallet {
         filenameWallet="";
         try {
             filenameWallet = WalletUtils.generateLightNewWalletFile(password, new File(filePath));
-            view.updateWalletStored(filenameWallet);
+            updateWalletStored(filenameWallet);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException | IOException | CipherException e) {
             Timber.e(e);
         }
@@ -92,12 +98,25 @@ public class LocalWallet {
     }
 
     private boolean existWallet(){
-        filenameWallet = view.readWalletStored();
+        filenameWallet = readWalletStored();
         return !filenameWallet.isEmpty();
     }
 
     public Credentials getCredentials() {
         return walletCredentials;
+    }
+
+    //manage local storage
+    private void updateWalletStored(String walletFilename){
+        SharedPreferences sharedPref = view.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(WALLET_FILE, walletFilename);
+        editor.apply();
+    }
+
+    private String readWalletStored(){
+        SharedPreferences sharedPref = view.getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getString(WALLET_FILE, "");
     }
 
 }
