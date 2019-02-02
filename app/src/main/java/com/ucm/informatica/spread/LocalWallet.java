@@ -16,6 +16,7 @@ import org.web3j.protocol.http.HttpService;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -25,13 +26,17 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.ucm.informatica.spread.Constants.Contract.CONTRACT_ADDRESS;
 import static com.ucm.informatica.spread.Constants.Wallet.WALLET_FILE;
 
 public class LocalWallet {
-    private Web3j web3j;
     private String filenameWallet;
     private String passwordWallet;
     private Credentials walletCredentials;
+
+    private SmartContract smartContract;
+    private NameContract nameContract;
+
     private Activity view;
 
     public LocalWallet(Activity mainActivity){
@@ -44,40 +49,7 @@ public class LocalWallet {
         passwordWallet = password;
     }
 
-    public Web3j initWeb3j(String filepath) {
-        if(web3j == null) {
-            web3j = Web3jFactory.build(new HttpService(Constants.INFURA_PATH + Constants.INFURA_PUBLIC_PROYECT_ADDRESS));
-        }
-        web3j.web3ClientVersion().observable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Web3ClientVersion>() {
-                    @Override
-                    public void onCompleted() {
-                        Timber.e("Conexión completada");
-                        if(!existWallet()){
-                            createWallet(passwordWallet, filepath);
-                        }
-                        if(filenameWallet!= null && !filenameWallet.isEmpty()) {
-                            walletCredentials = loadWallet(passwordWallet, filepath);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e("Ha habido un error");
-                    }
-
-                    @Override
-                    public void onNext(Web3ClientVersion web3ClientVersion) {
-                        Timber.e("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
-                    }
-                });
-
-        return web3j;
-    }
-
-    private void createWallet(String password, String filePath) {
+    public void createWallet(String password, String filePath) {
         filenameWallet="";
         try {
             filenameWallet = WalletUtils.generateLightNewWalletFile(password, new File(filePath));
@@ -87,7 +59,7 @@ public class LocalWallet {
         }
     }
 
-    private Credentials loadWallet(String password, String filePath) {
+    public Credentials loadWallet(String password, String filePath) {
         Credentials credentials = null;
         try {
             credentials = WalletUtils.loadCredentials(password, filePath + "/" + filenameWallet);
@@ -97,9 +69,27 @@ public class LocalWallet {
         return credentials;
     }
 
-    private boolean existWallet(){
+    public void loadContract(Web3j web3j){
+        smartContract = new SmartContract(web3j, walletCredentials);
+        nameContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
+    }
+
+    public boolean existWallet(){
         filenameWallet = readWalletStored();
         return !filenameWallet.isEmpty();
+    }
+
+    public String getPasswordWallet() {
+        return "password"; //TODO : read local storage
+    }
+
+    public String getFilenameWallet() {
+        return filenameWallet;
+    }
+
+
+    public void setCredentials(Credentials credentials) {
+        walletCredentials = credentials;
     }
 
     public Credentials getCredentials() {

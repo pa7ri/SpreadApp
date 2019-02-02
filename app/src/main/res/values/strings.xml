@@ -14,6 +14,19 @@
     <string name="title_hint">Titulo</string>
     <string name="description_hint">Descripción</string>
 
+    <!-- TABS TITLE -->
+    <string name="tab_text_home">Home</string>
+    <string name="tab_text_profile">Perfil</string>
+    <string name="tab_text_historial">Avisos</string>
+    <string name="tab_text_map">Mapa</string>
+    <string name="tab_text_settings">Ajustes</string>
+
+
+    <!-- SETTINGS -->
+    <string name="settings_wallet_title">Configuración de la Wallet</string>
+    <string name="settings_wallet_account">Dirección cuenta :</string>
+    <string name="settings_wallet_password">Contraseña :</string>
+
     <!-- ACTIONS -->
     <string name="button_send">Enviar</string>
     <string name="button_save">Guardar</string>
@@ -25,16 +38,6 @@
 
 
     <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-
-
-    <string name="tab_text_home">Home</string>
-    <string name="tab_text_profile">Profile</string>
-    <string name="tab_text_historial">Historial</string>
-    <string name="tab_text_map">Map</string>
-    <string name="tab_text_settings">Settings</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settings_wallet_balance">Saldo disponible :</string>
 
 </resources>

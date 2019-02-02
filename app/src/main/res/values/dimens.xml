@@ -13,6 +13,8 @@
 
     <!-- Text Dimensions -->
     <dimen name="smallText">10sp</dimen>
+    <dimen name="msmallText">18sp</dimen>
+    <dimen name="mediumText">24sp</dimen>
 
     <!-- Madrid Coordinates -->
     <dimen name="madLat">40.41650</dimen>
@@ -21,7 +23,7 @@
 
     <!-- Others -->
     <dimen name="cornerShape">10dp</dimen>
-    <dimen name="mediumText">24dp</dimen>
+    <dimen name="heightTab">65dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>

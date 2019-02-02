@@ -9,5 +9,8 @@
     <color name="primaryTextColor">#A60C4A</color>
     <color name="secondaryTextColor">#6E0C33</color>
 
+
+    <color name="white">#FFFFFF</color>
+
     <color name="dividerColor">#bdbdbd</color>
 </resources>

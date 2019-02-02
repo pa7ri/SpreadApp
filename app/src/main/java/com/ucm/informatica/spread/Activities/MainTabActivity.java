@@ -1,120 +1,106 @@
 package com.ucm.informatica.spread.Activities;
 
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import com.ucm.informatica.spread.Fragments.HistorialFragment;
-import com.ucm.informatica.spread.Fragments.HomeFragment;
-import com.ucm.informatica.spread.Fragments.MapFragment;
-import com.ucm.informatica.spread.Fragments.ProfileFragment;
-import com.ucm.informatica.spread.Fragments.SettingsFragment;
-import com.ucm.informatica.spread.LocalWallet;
+import com.tuyenmonkey.mkloader.MKLoader;
+import com.ucm.informatica.spread.NameContract;
+import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.SmartContract;
+import com.ucm.informatica.spread.View.MainTabView;
+import com.ucm.informatica.spread.ViewPagerAdapter;
+import com.ucm.informatica.spread.ViewPagerTab;
 
-import org.web3j.protocol.Web3j;
+import static com.ucm.informatica.spread.Constants.NUMBER_TABS;
 
-public class MainTabActivity extends AppCompatActivity {
+public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
-    private LocalWallet localWallet;
-    private Web3j web3j;
+
+    private MainTabPresenter presenter;
+
+    private RelativeLayout relativeLayout;
+
+    private int[] tabIcons = {
+            R.drawable.ic_home,
+            R.drawable.ic_profile,
+            R.drawable.ic_historial,
+            R.drawable.ic_map,
+            R.drawable.ic_settings
+    };
+    private int[] tabNames = {
+            R.string.tab_text_home,
+            R.string.tab_text_profile,
+            R.string.tab_text_historial,
+            R.string.tab_text_map,
+            R.string.tab_text_settings
+    };
+
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        initEthConnection();
-
         setContentView(R.layout.activity_main_tab);
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        presenter = new MainTabPresenter(this, this);
+        presenter.start(getFilesDir().getAbsolutePath());
+    }
 
-        ViewPager mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+    @Override
+    public void initViewContent(){
+        ViewPagerTab mViewPager =  findViewById(R.id.container);
+        mViewPager.setMotionEventSplittingEnabled(false);
+        setupViewPager(mViewPager);
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
-
+        tabLayout = findViewById(R.id.tabs);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        tabLayout.setupWithViewPager(mViewPager);
+
+        setupTabContent();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main_tab, menu);
-        return true;
+    public void showLoading() {
+       relativeLayout=findViewById(R.id.loadingAnimationLayout);
+       relativeLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+    public void hideLoading() {
+       relativeLayout.setVisibility(View.GONE);
+
     }
+    public SmartContract getSmartContract(){ return presenter.getSmartContract();}
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
+    public NameContract getNameContract() { return presenter.getNameContract(); }
 
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_main_tab, container, false);
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        for(int i=0; i< NUMBER_TABS; i++){
+            adapter.addFragment(presenter.getFragment(i), getResources().getString(tabNames[i]));
+        }
+        viewPager.setAdapter(adapter);
+    }
+    private void setupTabContent(){
+        TextView tabCurrent;
+        for(int i=0; i < NUMBER_TABS; i++) {
+            tabCurrent = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+            tabCurrent.setTextColor(getResources().getColor(R.color.mainTextColor));
+            tabCurrent.setGravity(Gravity.CENTER);
+            tabCurrent.setText(getResources().getString(tabNames[i]));
+            tabCurrent.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[i], 0, 0);
+            tabLayout.getTabAt(i).setCustomView(tabCurrent);
         }
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            Fragment fragment;
-            switch (position){
-                case 0:
-                    fragment = new HomeFragment();
-                    break;
-                case 1:
-                    fragment = new ProfileFragment();
-                    break;
-                case 2:
-                    fragment = new HistorialFragment();
-                    break;
-                case 3:
-                    fragment = new MapFragment();
-                    break;
-                default:
-                    fragment = new SettingsFragment(); // create new instance (localWallet, web3j)
-                    break;
-            }
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            return 5;
-        }
-
-    }
-
-
-    private void initEthConnection() {
-        localWallet = new LocalWallet(this);
-        web3j = localWallet.initWeb3j(getFilesDir().getAbsolutePath());
-    }
 }

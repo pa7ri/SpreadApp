@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initEthConnection() {
         localWallet = new LocalWallet(this);
-        web3j = localWallet.initWeb3j(getFilesDir().getAbsolutePath());
+        //web3j = localWallet.initWeb3j(getFilesDir().getAbsolutePath());
     }
 
     private void loadContract(){

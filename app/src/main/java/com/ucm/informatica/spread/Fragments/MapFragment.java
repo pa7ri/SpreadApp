@@ -68,7 +68,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         initLocationManager();
         initView(view, savedInstanceState);
-        setUpListeners();
+        setupListeners();
 
         return view;
     }
@@ -141,8 +141,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         markerImage = v.findViewById(R.id.markerImage);
     }
 
-    private void setUpListeners() {
-
+    private void setupListeners() {
         addPinButton.setOnClickListener(this::popUpDialog);
 
         addLocationButton.setOnClickListener(v -> {

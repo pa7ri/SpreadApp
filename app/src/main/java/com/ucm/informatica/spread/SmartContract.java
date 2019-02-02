@@ -2,13 +2,13 @@ package com.ucm.informatica.spread;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
-import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.io.Serializable;
 
-public class SmartContract {
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+public class SmartContract implements Serializable {
     private Web3j web3j;
     private Credentials credentials;
 
@@ -27,16 +27,34 @@ public class SmartContract {
                 Constants.Contract.GAS_LIMIT);
     }
 
-    public String writeNameToSmartContract(NameContract nameContract, String data)
-            throws ExecutionException, InterruptedException {
-        Future<TransactionReceipt> tReceipt = nameContract.setName(data).sendAsync();
-        return "BlockNum : " + tReceipt.get().getBlockNumber()
-                + " , GasUsed : "+ tReceipt.get().getBlockNumber();
+    public String writeNameToSmartContract(NameContract nameContract, String data) {
+        nameContract.setName(data).observable()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                    (result) -> {
+                        String s = result.getBlockNumber().toString();
+                        String s1 = result.getGasUsed().toString();
+                    } ,
+                    (error) -> {
+                        int a =4*2;
+                    }
+            );
+        return "Guardado";
     }
 
-    public String readNameFromSmartContract(NameContract nameContract)
-            throws ExecutionException, InterruptedException {
-        Future<String> gettingName = nameContract.getName().sendAsync();
-        return gettingName.get();
+    public String readNameFromSmartContract(NameContract nameContract) {
+         nameContract.getName().observable()
+             .subscribeOn(Schedulers.newThread())
+             .observeOn(AndroidSchedulers.mainThread())
+             .subscribe(
+                 (result) -> {
+                    String s = result;
+                 } ,
+                 (error) -> {
+                    int a =4*2;
+                 }
+             );
+        return "Algo ha leido";
     }
 }
