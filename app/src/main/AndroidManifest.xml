@@ -15,11 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Activities.MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme">
-        </activity>
-        <activity
             android:name=".Activities.MainTabActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
