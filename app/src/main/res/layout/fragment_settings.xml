@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.SettingsFragment"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/walletTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:textSize="@dimen/msmallText"
+        android:text="@string/settings_wallet_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/walletAccountTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:text="@string/settings_wallet_account"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/walletTitle" />
+
+    <TextView
+        android:id="@+id/walletAccountDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/mediumMargin"
+        android:text="@string/tab_text_settings"
+        android:textIsSelectable="true"
+        android:maxLength="25"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="@+id/walletAccountTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/walletAccountTitle"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/walletPasswordTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:text="@string/settings_wallet_password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/walletAccountTitle" />
+
+    <TextView
+        android:id="@+id/walletPasswordDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/mediumMargin"
+        android:text="@string/tab_text_settings"
+        android:textIsSelectable="true"
+        android:maxLength="25"
+        app:layout_constraintBottom_toBottomOf="@+id/walletPasswordTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/walletPasswordTitle" />
+
+    <TextView
+        android:id="@+id/walletBalanceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:text="@string/settings_wallet_balance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/walletPasswordTitle" />
+
+    <TextView
+        android:id="@+id/walletBalanceDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/mediumMargin"
+        android:text="@string/tab_text_settings"
+        android:textIsSelectable="true"
+        android:maxLength="25"
+        app:layout_constraintBottom_toBottomOf="@+id/walletBalanceTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/walletBalanceTitle" />
+
+</android.support.constraint.ConstraintLayout>

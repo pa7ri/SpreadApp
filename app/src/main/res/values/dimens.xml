@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Margin Dimensions -->
+    <dimen name="xsmallMargin">4dp</dimen>
     <dimen name="smallMargin">8dp</dimen>
     <dimen name="mediumMargin">16dp</dimen>
+    <dimen name="largeMargin">32dp</dimen>
+
 
     <!-- Image Dimensions -->
     <dimen name="iconSide">32dp</dimen>
@@ -10,9 +13,22 @@
 
     <!-- Text Dimensions -->
     <dimen name="smallText">10sp</dimen>
+    <dimen name="msmallText">18sp</dimen>
+    <dimen name="mediumText">24sp</dimen>
 
     <!-- Madrid Coordinates -->
     <dimen name="madLat">40.41650</dimen>
     <dimen name="madLong">-3.70256</dimen>
+
+
+    <!-- Others -->
+    <dimen name="cornerShape">10dp</dimen>
+    <dimen name="heightTab">65dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 
 </resources>

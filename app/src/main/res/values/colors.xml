@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="backgroundColor">#961d4e</color>
-    <color name="backgroundColorDark">#332b6b</color>
-    <color name="accentColor">#ff9a60</color>
+    <color name="backgroundColor">#A60C4A</color>
+    <color name="backgroundColorDark">#6E0C33</color>
+    <color name="accentColor">#A60C4A</color>
 
     <color name="mainTextColor">#f2f2f2</color>
-    <color name="primaryTextColor">#a3a3ed</color>
-    <color name="secondaryTextColor">#5d5d87</color>
+    <color name="primaryTextColor">#A60C4A</color>
+    <color name="secondaryTextColor">#6E0C33</color>
+
+
+    <color name="white">#FFFFFF</color>
 
     <color name="dividerColor">#bdbdbd</color>
 </resources>

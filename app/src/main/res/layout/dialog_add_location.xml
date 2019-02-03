@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:text="@string/button_add_pin"
+        android:textColor="@color/backgroundColorDark"
+        android:textSize="@dimen/mediumText"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/infoTitleEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/smallMargin"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:hint="@string/title_hint"
+        android:padding="@dimen/smallMargin"
+        android:textColor="@color/secondaryTextColor"
+        android:textColorHint="@color/primaryTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/infoDescriptionEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/smallMargin"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:hint="@string/description_hint"
+        android:padding="@dimen/smallMargin"
+        android:textColor="@color/secondaryTextColor"
+        android:textColorHint="@color/primaryTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/infoTitleEditText" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/infoDescriptionEditText">
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:layout_weight="1"
+            android:background="@color/backgroundColorDark"
+            android:text="@string/button_cancel"
+            android:textColor="@color/mainTextColor" />
+
+        <Button
+            android:id="@+id/storeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:layout_weight="1"
+            android:background="@color/secondaryTextColor"
+            android:text="@string/button_publish"
+            android:textColor="@color/mainTextColor" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
