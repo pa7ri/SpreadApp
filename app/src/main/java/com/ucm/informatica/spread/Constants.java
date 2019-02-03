@@ -11,8 +11,13 @@ public final class Constants {
 
     public static final class Contract {
         public static final BigInteger GAS_PRICE = BigInteger.valueOf(1500000000); //1,5 GWEI
-        public static final BigInteger GAS_LIMIT = BigInteger.valueOf(26600);
-        public static final String CONTRACT_ADDRESS = "0xd95091325d005d64c843352f54c5a275acdee5a5";
+        public static final BigInteger GAS_LIMIT = BigInteger.valueOf(46600);
+        public static final String CONTRACT_ADDRESS = "0xd3fa5cfddee1a22968b998adc4441ea685428f09"; //TODO : change
+        /*
+            nContract -> 0x23d3a5a22c4c916baf40eda98beae34630e628d5
+            nameContract -> 0xd3fa5cfddee1a22968b998adc4441ea685428f09
+            CoordContract -> 0xaa0fdda8c7aa2ee7ff2a13f4e5902360182ca4dc
+         */
     }
 
     public static final class Map {

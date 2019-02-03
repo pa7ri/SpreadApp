@@ -1,6 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,18 +12,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.NameContract;
+import com.ucm.informatica.spread.Contracts.NContract;
+import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.SmartContract;
+import com.ucm.informatica.spread.View.HomeFragmentView;
 
 import java.io.IOException;
+import java.util.Objects;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class HomeFragment extends Fragment {
-    private NameContract nameContract;
-    private SmartContract smartContract;
+public class HomeFragment extends Fragment implements HomeFragmentView{
+
+    private HomeFragmentPresenter homeFragmentPresenter;
 
 
     private TextView nameText;
@@ -42,6 +48,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         initView(view);
+        homeFragmentPresenter = new HomeFragmentPresenter(this, this);
         setupListeners();
         return view;
     }
@@ -53,39 +60,17 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupListeners(){
-        saveButton.setOnClickListener(view -> {
-            try {
-                saveData(nameEditText.getText().toString());
-            }catch (IOException e) {
-                Timber.e(e);
-            }
-        });
-        loadButton.setOnClickListener(view -> {
-            try {
-                String data = loadData();
-                nameText.setText(data);
-            } catch (IOException e) {
-                Timber.e(e);
-            }
-        });
+        saveButton.setOnClickListener(view -> homeFragmentPresenter.saveData(nameEditText.getText().toString()));
+        loadButton.setOnClickListener(view -> homeFragmentPresenter.loadData());
     }
 
-    private void saveData(String data) throws IOException {
-        if(nameContract == null) {
-//|| !nameContract.isValid()) { TODO : isValid se ejecuta sincronamente tonses cuidado si lo lanzas dos veces sin haber acabado, va a saltar NetworkorMainException
-            smartContract = ((MainTabActivity)getActivity()).getSmartContract();
-            nameContract = ((MainTabActivity)getActivity()).getNameContract();
-        }
-        String result = smartContract.writeNameToSmartContract(nameContract, data);
-        Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+    @Override
+    public void showSuccessfulTransition(String result) {
+        nameText.setText(result);
     }
 
-    private String loadData() throws IOException {
-        if(nameContract == null) {//|| !nameContract.isValid()) {
-            smartContract = ((MainTabActivity)getActivity()).getSmartContract();
-            nameContract = ((MainTabActivity)getActivity()).getNameContract();
-        }
-        return smartContract.readNameFromSmartContract(nameContract);
+    @Override
+    public void showErrorTransition() {
+        Snackbar.make(Objects.requireNonNull(this.getView()), "Ha habido un error en la transicción", Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
-
 }

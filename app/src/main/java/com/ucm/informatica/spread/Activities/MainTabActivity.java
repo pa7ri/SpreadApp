@@ -11,8 +11,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.tuyenmonkey.mkloader.MKLoader;
-import com.ucm.informatica.spread.NameContract;
+import com.ucm.informatica.spread.Contracts.NameContract;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.SmartContract;

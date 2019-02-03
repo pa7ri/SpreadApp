@@ -6,24 +6,6 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/loadingAnimationLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/accentColor"
-        android:visibility="gone">
-
-        <com.tuyenmonkey.mkloader.MKLoader
-            android:id="@+id/loadingAnimation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:mk_type="TwinFishesSpinner"
-            app:mk_color="@android:color/white"
-            android:layout_centerInParent="true"
-            />
-
-    </RelativeLayout>
-
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
@@ -54,4 +36,24 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </android.support.design.widget.CoordinatorLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/loadingAnimationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/accentColor"
+        android:visibility="gone">
+
+        <com.tuyenmonkey.mkloader.MKLoader
+            android:id="@+id/loadingAnimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:mk_type="TwinFishesSpinner"
+            app:mk_color="@android:color/white"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
+
 </RelativeLayout>

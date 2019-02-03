@@ -5,13 +5,13 @@ import android.support.v4.app.Fragment;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Constants;
+import com.ucm.informatica.spread.Contracts.NameContract;
 import com.ucm.informatica.spread.Fragments.HistorialFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
 import com.ucm.informatica.spread.LocalWallet;
-import com.ucm.informatica.spread.NameContract;
 import com.ucm.informatica.spread.SmartContract;
 import com.ucm.informatica.spread.View.MainTabView;
 
