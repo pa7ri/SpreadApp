@@ -13,14 +13,13 @@
         android:layout_height="match_parent"
         mapbox:mapbox_cameraTargetLat="@dimen/madLat"
         mapbox:mapbox_cameraTargetLng="@dimen/madLong"
-        mapbox:mapbox_styleUrl="@string/map_style_url"
         mapbox:mapbox_cameraZoom="11" />
 
     <ImageView
         android:id="@+id/markerImage"
         android:layout_width="@dimen/markerSide"
         android:layout_height="@dimen/markerSide"
-        android:background="@drawable/ic_location"
+        android:background="@drawable/ic_point"
         android:visibility="gone"
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent"
@@ -58,5 +57,16 @@
         android:src="@drawable/ic_add"
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/switchLayerButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/mediumMargin"
+        android:src="@drawable/ic_swap"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

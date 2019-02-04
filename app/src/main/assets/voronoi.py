@@ -1,5 +1,3 @@
-
-#from scipy.spatial import Voronoi, voronoi_plot_2d
 import numpy as np
 import scipy.spatial as spatial
 import matplotlib.pyplot as plt
@@ -20,6 +18,8 @@ for line in fileInput :
 fileInput.close
 
 vor = spatial.Voronoi(points)
+voronoi_plot_2d(vor)
+plt.show()
 
 # get polygon coordinates
 lines = [

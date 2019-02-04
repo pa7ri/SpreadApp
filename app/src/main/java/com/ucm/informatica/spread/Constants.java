@@ -22,6 +22,8 @@ public final class Constants {
 
     public static final class Map {
         public static final String MAP_TOKEN ="pk.eyJ1IjoiaGltb2NoaSIsImEiOiJjam9pYTh6encwNmV5M3BwZnRqdjZmZXQzIn0.6nLIwyqEDZ9o5KFquUHaeA";
+        public static final String POLYGON_LAYER ="polygonLayer";
+        public static final String POINT_LAYER ="pointLayer";
     }
 
     public static final class Wallet {

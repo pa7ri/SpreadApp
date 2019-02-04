@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.NameContract;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
@@ -18,6 +19,14 @@ import com.ucm.informatica.spread.SmartContract;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.ViewPagerAdapter;
 import com.ucm.informatica.spread.ViewPagerTab;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import timber.log.Timber;
 
 import static com.ucm.informatica.spread.Constants.NUMBER_TABS;
 
@@ -27,6 +36,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     private MainTabPresenter presenter;
 
     private RelativeLayout relativeLayout;
+
+    private List<List<Point>> polygonPointList = new ArrayList<>();
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -49,6 +60,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
+        readPolygonCoordinates();
         presenter = new MainTabPresenter(this, this);
         presenter.start(getFilesDir().getAbsolutePath());
     }
@@ -82,6 +94,10 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     public NameContract getNameContract() { return presenter.getNameContract(); }
 
+    public List<List<Point>> getPolygonPointList() {
+        return polygonPointList;
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         for(int i=0; i< NUMBER_TABS; i++){
@@ -101,5 +117,35 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         }
     }
 
+    //read coordinates from CoordinatesPolygon.txt
+    private void readPolygonCoordinates() {
+        // polygonList = new ArrayList<>();
+        List<Point> polyCoordList;
+        BufferedReader reader = null;
+        String[] coords;
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getAssets().open("CoordinatesPolygon.txt"), "UTF-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                coords = line.split("\\s+");
+                polyCoordList = new ArrayList<>();
+                for(int i=0; i < coords.length-1; i=i+2) {
+                    polyCoordList.add(Point.fromLngLat(Double.parseDouble(coords[i+1]),Double.parseDouble(coords[i])));
+                }
+                polygonPointList.add(polyCoordList);
+            }
+        } catch (IOException e) {
+            Timber.e(e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Timber.e(e);
+                }
+            }
+        }
+    }
 
 }

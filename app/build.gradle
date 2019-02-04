@@ -46,5 +46,5 @@ dependencies {
     implementation 'com.tuyenmonkey:mkloader:1.4.0'
     implementation 'org.web3j:core:3.3.1-android'
     implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.7.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.0.0'
 }
