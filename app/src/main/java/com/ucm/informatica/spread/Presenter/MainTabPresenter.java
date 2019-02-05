@@ -1,11 +1,17 @@
 package com.ucm.informatica.spread.Presenter;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Constants;
-import com.ucm.informatica.spread.Contracts.NameContract;
+import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.HistorialFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
@@ -29,6 +35,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Constants.Contract.CONTRACT_ADDRESS;
 import static com.ucm.informatica.spread.Constants.Wallet.LOCAL_NAME_CONTRACT;
 import static com.ucm.informatica.spread.Constants.Wallet.LOCAL_SMART_CONTRACT;
@@ -42,9 +49,10 @@ public class MainTabPresenter {
     private LocalWallet localWallet;
     private Web3j web3j;
 
-    private NameContract nameContract;
+    private CoordContract coordContract;
     private SmartContract smartContract;
 
+    private Location latestLocation;
 
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
@@ -54,6 +62,7 @@ public class MainTabPresenter {
     public void start(String path){
         walletPath = path;
         mainTabView.showLoading();
+        initLocationManager();
         initEthConnection();
     }
 
@@ -63,7 +72,7 @@ public class MainTabPresenter {
             case 0:
                 fragment = new HomeFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(LOCAL_NAME_CONTRACT, nameContract);
+                bundle.putSerializable(LOCAL_NAME_CONTRACT, coordContract);
                 bundle.putSerializable(LOCAL_SMART_CONTRACT, smartContract);
                 fragment.setArguments(bundle);
                 break;
@@ -101,6 +110,17 @@ public class MainTabPresenter {
         }
         return ethGetBalance != null ? ethGetBalance.getBalance().toString() + " ETH" : "No disponible";
 
+    }
+
+    private void initLocationManager() {
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        LocationListener locationListener = new CustomLocationListener();
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions( context,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
     }
 
     private void initEthConnection() {
@@ -145,9 +165,37 @@ public class MainTabPresenter {
         return smartContract;
     }
 
-    public NameContract getNameContract(){
-        nameContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
-        return nameContract;
+    public CoordContract getCoordContract(){
+        coordContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
+        return coordContract;
+    }
+
+    public Location getLatestLocation() {
+        return latestLocation;
+    }
+
+
+    private class CustomLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            latestLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
     }
 
 

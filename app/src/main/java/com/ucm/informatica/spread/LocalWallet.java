@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Contracts.NameContract;
 
 import org.web3j.crypto.CipherException;
@@ -28,7 +29,7 @@ public class LocalWallet {
     private Credentials walletCredentials;
 
     private SmartContract smartContract;
-    private NameContract nameContract;
+    private CoordContract nameContract;
 
     private Activity view;
 

@@ -39,5 +39,10 @@
 
     <string name="action_settings">Settings</string>
     <string name="settings_wallet_balance">Saldo disponible :</string>
+    <string name="location_auto">Auto</string>
+    <string name="location_manual">Manual</string>
+    <string name="location_title">Localización</string>
+    <string name="button_help">SOS</string>
+    <string name="button_help_description">Petición de ayuda</string>
 
 </resources>

@@ -17,8 +17,8 @@
 
     <ImageView
         android:id="@+id/markerImage"
-        android:layout_width="@dimen/markerSide"
-        android:layout_height="@dimen/markerSide"
+        android:layout_width="@dimen/iconSide"
+        android:layout_height="@dimen/iconSide"
         android:background="@drawable/ic_point"
         android:visibility="gone"
         mapbox:layout_constraintBottom_toBottomOf="parent"
@@ -41,10 +41,10 @@
         android:id="@+id/saveLocationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@color/backgroundColor"
         android:visibility="gone"
         android:text="@string/button_publish"
-        android:textColor="@color/secondaryTextColor"
+        android:textColor="@color/white"
         mapbox:layout_constraintBottom_toBottomOf="parent" />
 
 

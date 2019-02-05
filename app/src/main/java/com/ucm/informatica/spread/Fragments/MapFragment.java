@@ -1,27 +1,21 @@
 package com.ucm.informatica.spread.Fragments;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
@@ -31,29 +25,21 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.style.layers.CircleLayer;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.mapboxsdk.style.sources.VectorSource;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Presenter.MapFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.View.MapFragmentView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
-
-import timber.log.Timber;
-
-import static android.content.Context.LOCATION_SERVICE;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
+import static com.ucm.informatica.spread.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Constants.Map.MAP_TOKEN;
-import static com.ucm.informatica.spread.Constants.Map.POINT_LAYER;
 import static com.ucm.informatica.spread.Constants.Map.POLYGON_LAYER;
 import static com.ucm.informatica.spread.Fragments.MapFragment.LocationMode.Auto;
 import static com.ucm.informatica.spread.Fragments.MapFragment.LocationMode.Manual;
@@ -63,7 +49,9 @@ import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements MapFragmentView {
+
+    private MapFragmentPresenter mapFragmentPresenter;
 
     private MapView mapView;
     private MapboxMap mapboxMap;
@@ -74,16 +62,21 @@ public class MapFragment extends Fragment {
     private FloatingActionButton switchLayerButton;
     private FloatingActionButton addPinButton;
 
+    @Override
+    public void loadCoordinateFromContract(String title, String description, String latitude, String longitude) {
+        addMarkerToMap(Double.valueOf(latitude),Double.valueOf(longitude),title,description);
+    }
+
+    @Override
+    public void showErrorTransition() {
+        Snackbar.make(Objects.requireNonNull(this.getView()), "Ha habido un error en la transicción", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+    }
+
     enum LocationMode {Auto, Manual}
 
     private LocationMode currMode = Auto; //default := Auto
 
-   // private List<List<Pair<Double,Double>>> polygonList;
     private List<List<Point>> polygonPointList = new ArrayList<>();
-    private List<Point> alertPointList = new ArrayList<>();
-    private List<GeoJsonSource> sourcesList;
-
-    private Location latestLocation;
 
     private String titleText;
     private String descriptionText;
@@ -96,15 +89,16 @@ public class MapFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Mapbox.getInstance(getContext(), MAP_TOKEN);
+        Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        mapFragmentPresenter = new MapFragmentPresenter(this,this);
 
-        initLocationManager();
         initView(view, savedInstanceState);
         setupListeners();
+        mapFragmentPresenter.loadData();
 
         return view;
     }
@@ -112,15 +106,12 @@ public class MapFragment extends Fragment {
     private void initMapView() {
         mapView.getMapAsync(mp -> {
             mapboxMap = mp;
-            mapboxMap.setStyle(Style.LIGHT, style -> {
-                addPolygonLayer(style);
-                //addPointLayer(style);
-            });
+            mapboxMap.setStyle(MAP_STYLE, this::addPolygonLayer);
         });
     }
 
     private void addPolygonLayer(@NonNull Style style){
-        polygonPointList = ((MainTabActivity) getActivity()).getPolygonPointList();
+        polygonPointList = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonPointList();
         List<List<Point>> sample;
         for (int i=0; i<polygonPointList.size(); i++) {
             sample = new ArrayList<>();
@@ -132,22 +123,8 @@ public class MapFragment extends Fragment {
                     PropertyFactory.fillColor(getColorPolygon()),
                     PropertyFactory.fillOpacity(.4f),
                     visibility(NONE));
-            //polygonMadridLayer.setFilter(eq(literal("$type"), literal("Polygon")));
             style.addLayer(polygonMadridLayer);
         }
-
-
-    }
-
-    private void addPointLayer(@NonNull Style style){
-        //style.addSource(new GeoJsonSource(POINT_LAYER, alertPointList)); //
-        CircleLayer alertPointsLayer = new CircleLayer(POINT_LAYER, POINT_LAYER);
-        alertPointsLayer.setProperties(
-                PropertyFactory.circleColor(Color.MAGENTA),
-                PropertyFactory.circleRadius(3f));
-        alertPointsLayer.setFilter(eq(literal("$type"), literal("Point")));
-        style.addLayer(alertPointsLayer);
-
 
 
     }
@@ -198,35 +175,23 @@ public class MapFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
 
     private void togglePolygonLayer() {
-        Layer polygonLayer = mapboxMap.getStyle().getLayer(POLYGON_LAYER+0);
-        //Layer pointsLayer = mapboxMap.getStyle().getLayer(POINT_LAYER);
+        Layer polygonLayer = Objects.requireNonNull(mapboxMap.getStyle()).getLayer(POLYGON_LAYER+0);
         if (polygonLayer != null) { //&& pointsLayer != null) {
             String visibility = VISIBLE.equals(polygonLayer.getVisibility().getValue()) ? NONE : VISIBLE;
             for (int i=0; i<polygonPointList.size(); i++) {
                 polygonLayer = mapboxMap.getStyle().getLayer(POLYGON_LAYER+i);
+                assert polygonLayer != null;
                 polygonLayer.setProperties(visibility(visibility));
-                //pointsLayer.setProperties(visibility(VISIBLE));
             }
         }
     }
 
-
-    private void initLocationManager() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
-        LocationListener locationListener = new CustomLocationListener();
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-    }
 
     private void initView(View v ,Bundle savedInstanceState) {
         mapView = v.findViewById(R.id.mapView);
@@ -251,6 +216,9 @@ public class MapFragment extends Fragment {
 
             addMarkerToMap( selectedLocation.getLatitude(),selectedLocation.getLongitude(),
                     titleText, descriptionText);
+
+            mapFragmentPresenter.saveData(titleText,descriptionText, Double.toString(selectedLocation.getLongitude()), Double.toString(selectedLocation.getLatitude()));
+
             showFeedback(v, getResources().getString(R.string.location_saved));
             switchLocationMode();
         });
@@ -265,6 +233,7 @@ public class MapFragment extends Fragment {
             markerImage.setVisibility(View.VISIBLE);
             addLocationButton.setVisibility(View.VISIBLE);
             addPinButton.setVisibility(View.GONE);
+            switchLayerButton.setVisibility(View.GONE);
         }
         else {
             currMode=Auto;
@@ -272,6 +241,7 @@ public class MapFragment extends Fragment {
             markerImage.setVisibility(View.GONE);
             addLocationButton.setVisibility(View.GONE);
             addPinButton.setVisibility(View.VISIBLE);
+            switchLayerButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -280,6 +250,7 @@ public class MapFragment extends Fragment {
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)
                 .snippet(markerDescription));
+        //TODO : Custom icon for marker
     }
 
     private void showFeedback(View v, String text){
@@ -287,7 +258,7 @@ public class MapFragment extends Fragment {
     }
 
     private void popUpDialog(View v){
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(getContext()).create();
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext())).create();
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_location, null);
 
@@ -295,6 +266,15 @@ public class MapFragment extends Fragment {
         EditText infoDescriptionEditText = dialogView.findViewById(R.id.infoDescriptionEditText);
         Button buttonCancel = dialogView.findViewById(R.id.cancelButton);
         Button buttonSubmit = dialogView.findViewById(R.id.storeButton);
+        ToggleButton toggleButton = dialogView.findViewById(R.id.toggleButton);
+
+        toggleButton.setOnClickListener(view -> {
+            if(((ToggleButton) view).isChecked()) {
+                currMode = Auto;
+            } else{
+                currMode = Manual;
+            }
+        });
 
         buttonSubmit.setOnClickListener(view -> {
             titleText = infoTitleEditText.getText().toString().equals("")?
@@ -304,14 +284,21 @@ public class MapFragment extends Fragment {
 
             //try automatic geolocation
             if (currMode == Auto) {
+                Location latestLocation = ((MainTabActivity) getActivity()).getLocation();
                 if (latestLocation != null) {
                     addMarkerToMap(latestLocation.getLatitude(),
                             latestLocation.getLongitude(), titleText, descriptionText);
+
+                    mapFragmentPresenter.saveData(titleText,descriptionText, Double.toString(latestLocation.getLongitude()), Double.toString(latestLocation.getLatitude()));
+
                     showFeedback(v, getResources().getString(R.string.location_saved));
                 } else {
                     showFeedback(v, getResources().getString(R.string.location_no_available));
                     switchLocationMode();
                 }
+            } else {
+                currMode = Auto;
+                switchLocationMode();
             }
             dialogBuilder.dismiss();
         });
@@ -321,26 +308,6 @@ public class MapFragment extends Fragment {
         dialogBuilder.show();
     }
 
-    private class CustomLocationListener implements LocationListener {
 
-        @Override
-        public void onLocationChanged(Location location) {
-            latestLocation = location;
-        }
 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    }
 }

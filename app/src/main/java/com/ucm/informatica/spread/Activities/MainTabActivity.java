@@ -1,5 +1,6 @@
 package com.ucm.informatica.spread.Activities;
 
+import android.location.Location;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mapbox.geojson.Point;
+import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Contracts.NameContract;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
@@ -92,10 +94,14 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
     public SmartContract getSmartContract(){ return presenter.getSmartContract();}
 
-    public NameContract getNameContract() { return presenter.getNameContract(); }
+    public CoordContract getNameContract() { return presenter.getCoordContract(); }
 
     public List<List<Point>> getPolygonPointList() {
         return polygonPointList;
+    }
+
+    public Location getLocation() {
+        return presenter.getLatestLocation();
     }
 
     private void setupViewPager(ViewPager viewPager) {

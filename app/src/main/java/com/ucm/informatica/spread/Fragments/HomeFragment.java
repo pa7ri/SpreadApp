@@ -9,22 +9,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Contracts.NContract;
 import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.SmartContract;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
-import java.io.IOException;
 import java.util.Objects;
-
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
-
 
 public class HomeFragment extends Fragment implements HomeFragmentView{
 
@@ -32,9 +23,7 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
 
 
     private TextView nameText;
-    private EditText nameEditText;
-    private Button saveButton;
-    private Button loadButton;
+    private Button helpButton;
 
     public HomeFragment() { }
 
@@ -54,19 +43,28 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     }
     private void initView(View v) {
         nameText = v.findViewById(R.id.nameText);
-        nameEditText = v.findViewById(R.id.nameEditText);
-        saveButton = v.findViewById(R.id.saveNameButton);
-        loadButton = v.findViewById(R.id.loadNameButton);
+        helpButton = v.findViewById(R.id.helpButton);
     }
 
     private void setupListeners(){
-        saveButton.setOnClickListener(view -> homeFragmentPresenter.saveData(nameEditText.getText().toString()));
-        loadButton.setOnClickListener(view -> homeFragmentPresenter.loadData());
+        helpButton.setOnClickListener(view ->
+                homeFragmentPresenter.saveData(getResources().getString(R.string.button_help),
+                                                getResources().getString(R.string.button_help_description),
+                                                Double.toString(((MainTabActivity) getActivity()).getLocation().getLongitude()),
+                                                Double.toString(((MainTabActivity) getActivity()).getLocation().getLatitude())));
     }
 
     @Override
-    public void showSuccessfulTransition(String result) {
+    public void showSuccessfulStoredTransition(String result) {
         nameText.setText(result);
+    }
+
+    @Override
+    public void showSuccessfulLoadedTransition(String title, String description, String latitude, String longitude) {
+        nameText.setText(" Título : " +title + "\n" +
+                " Descripción : " +description + "\n" +
+                " Latitud : " + latitude + "\n" +
+                " Longitud : " + longitude);
     }
 
     @Override
