@@ -1,4 +1,4 @@
-package com.ucm.informatica.spread;
+package com.ucm.informatica.spread.Utils;
 
 import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Contracts.NameContract;

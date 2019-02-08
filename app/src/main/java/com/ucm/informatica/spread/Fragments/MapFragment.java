@@ -1,6 +1,5 @@
 package com.ucm.informatica.spread.Fragments;
 
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ToggleButton;
 
+import com.andrognito.flashbar.Flashbar;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -37,10 +38,13 @@ import com.ucm.informatica.spread.View.MapFragmentView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
-import static com.ucm.informatica.spread.Constants.Map.MAP_STYLE;
-import static com.ucm.informatica.spread.Constants.Map.MAP_TOKEN;
-import static com.ucm.informatica.spread.Constants.Map.POLYGON_LAYER;
+
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+
+import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
+import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
+import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
 import static com.ucm.informatica.spread.Fragments.MapFragment.LocationMode.Auto;
 import static com.ucm.informatica.spread.Fragments.MapFragment.LocationMode.Manual;
 
@@ -53,6 +57,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private MapFragmentPresenter mapFragmentPresenter;
 
+    private View view;
     private MapView mapView;
     private MapboxMap mapboxMap;
 
@@ -60,17 +65,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
     private Button exitManualModeButton;
     private Button addLocationButton;
     private FloatingActionButton switchLayerButton;
-    private FloatingActionButton addPinButton;
-
-    @Override
-    public void loadCoordinateFromContract(String title, String description, String latitude, String longitude) {
-        addMarkerToMap(Double.valueOf(latitude),Double.valueOf(longitude),title,description);
-    }
-
-    @Override
-    public void showErrorTransition() {
-        Snackbar.make(Objects.requireNonNull(this.getView()), "Ha habido un error en la transicción", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-    }
+    private FabSpeedDial addPinDial;
 
     enum LocationMode {Auto, Manual}
 
@@ -93,49 +88,13 @@ public class MapFragment extends Fragment implements MapFragmentView {
                              Bundle savedInstanceState) {
 
         Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        view = inflater.inflate(R.layout.fragment_map, container, false);
         mapFragmentPresenter = new MapFragmentPresenter(this,this);
 
-        initView(view, savedInstanceState);
+        initView(savedInstanceState);
         setupListeners();
-        mapFragmentPresenter.loadData();
 
         return view;
-    }
-
-    private void initMapView() {
-        mapView.getMapAsync(mp -> {
-            mapboxMap = mp;
-            mapboxMap.setStyle(MAP_STYLE, this::addPolygonLayer);
-        });
-    }
-
-    private void addPolygonLayer(@NonNull Style style){
-        polygonPointList = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonPointList();
-        List<List<Point>> sample;
-        for (int i=0; i<polygonPointList.size(); i++) {
-            sample = new ArrayList<>();
-            sample.add(polygonPointList.get(i));
-            GeoJsonSource source = new GeoJsonSource(POLYGON_LAYER+i, Polygon.fromLngLats(sample));
-            style.addSource(source);
-            FillLayer polygonMadridLayer = new FillLayer(POLYGON_LAYER+i, POLYGON_LAYER+i);
-            polygonMadridLayer.setProperties(
-                    PropertyFactory.fillColor(getColorPolygon()),
-                    PropertyFactory.fillOpacity(.4f),
-                    visibility(NONE));
-            style.addLayer(polygonMadridLayer);
-        }
-
-
-    }
-
-    private int getColorPolygon(){
-        Random rand = new Random();
-        switch (rand.nextInt(3)) {
-            case 0 : return Color.GREEN;
-            case 1 : return Color.YELLOW;
-            default: return Color.RED;
-        }
     }
 
     @Override
@@ -169,8 +128,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         mapView.onDestroy();
     }
 
@@ -182,7 +141,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private void togglePolygonLayer() {
         Layer polygonLayer = Objects.requireNonNull(mapboxMap.getStyle()).getLayer(POLYGON_LAYER+0);
-        if (polygonLayer != null) { //&& pointsLayer != null) {
+        if (polygonLayer != null) {
             String visibility = VISIBLE.equals(polygonLayer.getVisibility().getValue()) ? NONE : VISIBLE;
             for (int i=0; i<polygonPointList.size(); i++) {
                 polygonLayer = mapboxMap.getStyle().getLayer(POLYGON_LAYER+i);
@@ -192,21 +151,43 @@ public class MapFragment extends Fragment implements MapFragmentView {
         }
     }
 
+    @Override
+    public void loadCoordinateFromContract(String title, String description, Double latitude, Double longitude) {
+        addMarkerToMap(latitude,longitude,title,description);
+    }
 
-    private void initView(View v ,Bundle savedInstanceState) {
-        mapView = v.findViewById(R.id.mapView);
+    @Override
+    public void showFeedback(){
+        ((MainTabActivity) getActivity()).getConfirmationSnackBar().show();
+    }
+
+    @Override
+    public void showError(int text) {
+        ((MainTabActivity) getActivity()).getErrorSnackBar(text).show();
+    }
+
+
+
+    private void initView(Bundle savedInstanceState) {
+        mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         initMapView();
 
-        exitManualModeButton = v.findViewById(R.id.exitManualModeButton);
-        addPinButton = v.findViewById(R.id.addLocationButton);
-        addLocationButton = v.findViewById(R.id.saveLocationButton);
-        markerImage = v.findViewById(R.id.markerImage);
-        switchLayerButton = v.findViewById(R.id.switchLayerButton);
+        exitManualModeButton = view.findViewById(R.id.exitManualModeButton);
+        addPinDial = view.findViewById(R.id.floatingDial);
+        addLocationButton = view.findViewById(R.id.saveLocationButton);
+        markerImage = view.findViewById(R.id.markerImage);
+        switchLayerButton = view.findViewById(R.id.switchLayerButton);
     }
 
     private void setupListeners() {
-        addPinButton.setOnClickListener(this::popUpDialog);
+        addPinDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                popUpDialog();
+                return false;
+            }
+        });
 
         switchLayerButton.setOnClickListener(v -> togglePolygonLayer());
 
@@ -219,11 +200,35 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
             mapFragmentPresenter.saveData(titleText,descriptionText, Double.toString(selectedLocation.getLongitude()), Double.toString(selectedLocation.getLatitude()));
 
-            showFeedback(v, getResources().getString(R.string.location_saved));
             switchLocationMode();
         });
 
         exitManualModeButton.setOnClickListener(v -> switchLocationMode());
+    }
+
+    private void initMapView() {
+        mapView.getMapAsync(mp -> {
+            mapboxMap = mp;
+            mapboxMap.setStyle(MAP_STYLE, this::addPolygonLayer);
+            mapFragmentPresenter.start();
+        });
+    }
+
+    private void addPolygonLayer(@NonNull Style style){
+        polygonPointList = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonPointList();
+        List<List<Point>> sample;
+        for (int i=0; i<polygonPointList.size(); i++) {
+            sample = new ArrayList<>();
+            sample.add(polygonPointList.get(i));
+            GeoJsonSource source = new GeoJsonSource(POLYGON_LAYER+i, Polygon.fromLngLats(sample));
+            style.addSource(source);
+            FillLayer polygonMadridLayer = new FillLayer(POLYGON_LAYER+i, POLYGON_LAYER+i);
+            polygonMadridLayer.setProperties(
+                    PropertyFactory.fillColor(mapFragmentPresenter.getColorPolygon()),
+                    PropertyFactory.fillOpacity(.4f),
+                    visibility(NONE));
+            style.addLayer(polygonMadridLayer);
+        }
     }
 
     private void switchLocationMode(){
@@ -232,7 +237,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
             exitManualModeButton.setVisibility(View.VISIBLE);
             markerImage.setVisibility(View.VISIBLE);
             addLocationButton.setVisibility(View.VISIBLE);
-            addPinButton.setVisibility(View.GONE);
+            addPinDial.setVisibility(View.GONE);
             switchLayerButton.setVisibility(View.GONE);
         }
         else {
@@ -240,7 +245,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
             exitManualModeButton.setVisibility(View.GONE);
             markerImage.setVisibility(View.GONE);
             addLocationButton.setVisibility(View.GONE);
-            addPinButton.setVisibility(View.VISIBLE);
+            addPinDial.setVisibility(View.VISIBLE);
             switchLayerButton.setVisibility(View.VISIBLE);
         }
     }
@@ -253,11 +258,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
         //TODO : Custom icon for marker
     }
 
-    private void showFeedback(View v, String text){
-        Snackbar.make(v, text, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-    }
-
-    private void popUpDialog(View v){
+    private void popUpDialog(){
         final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext())).create();
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_location, null);
@@ -282,7 +283,6 @@ public class MapFragment extends Fragment implements MapFragmentView {
             descriptionText = infoDescriptionEditText.getText().toString().equals("")?
                     getResources().getString(R.string.no_text):infoDescriptionEditText.getText().toString();
 
-            //try automatic geolocation
             if (currMode == Auto) {
                 Location latestLocation = ((MainTabActivity) getActivity()).getLocation();
                 if (latestLocation != null) {
@@ -290,10 +290,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
                             latestLocation.getLongitude(), titleText, descriptionText);
 
                     mapFragmentPresenter.saveData(titleText,descriptionText, Double.toString(latestLocation.getLongitude()), Double.toString(latestLocation.getLatitude()));
-
-                    showFeedback(v, getResources().getString(R.string.location_saved));
                 } else {
-                    showFeedback(v, getResources().getString(R.string.location_no_available));
+                    showError(R.string.location_no_available);
                     switchLocationMode();
                 }
             } else {

@@ -44,5 +44,20 @@
     <string name="location_title">Localización</string>
     <string name="button_help">SOS</string>
     <string name="button_help_description">Petición de ayuda</string>
+    <string name="radius_title">Radio de alcance :</string>
+    <string name="radius_min">100 m</string>
+    <string name="radius_max">5 km</string>
+    <string name="button_active">ACTIVAR</string>
+
+    <string name="snackbar_alert_gps">Para pedir ayuda activa el GPS</string>
+    <string name="snackbar_alert_transaction">"Ha habido un error en la transacción"</string>
+    <string name="snackbar_confirmation_transaction">Guardado correctamente</string>
+    <string name="profile_personal_data">Información personal</string>
+    <string name="profile_dresscode">Vestuario</string>
+    <string name="profile_name">Nombre</string>
+    <string name="profile_age">Edad</string>
+    <string name="profile_contact">Contactos</string>
+    <string name="menu_item_alert">Alerta</string>
+    <string name="menu_item_pic">Cartel</string>
 
 </resources>

@@ -3,10 +3,8 @@ package com.ucm.informatica.spread.Presenter;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
-import com.ucm.informatica.spread.SmartContract;
+import com.ucm.informatica.spread.Utils.SmartContract;
 import com.ucm.informatica.spread.View.HomeFragmentView;
-
-import java.math.BigInteger;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -31,7 +29,7 @@ public class HomeFragmentPresenter {
             coordContract = ((MainTabActivity) homeFragment.getActivity()).getNameContract();
         }
 
-        coordContract.addEvent(title,description,latitude,longitude).observable()
+        coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

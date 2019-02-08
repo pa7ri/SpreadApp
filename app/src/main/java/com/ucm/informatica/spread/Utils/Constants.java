@@ -1,4 +1,4 @@
-package com.ucm.informatica.spread;
+package com.ucm.informatica.spread.Utils;
 
 import java.math.BigInteger;
 
@@ -12,11 +12,11 @@ public final class Constants {
     public static final class Contract {
         public static final BigInteger GAS_PRICE = BigInteger.valueOf(1500000000); //1,5 GWEI
         public static final BigInteger GAS_LIMIT = BigInteger.valueOf(176600);
-        public static final String CONTRACT_ADDRESS = "0x3ab59cf58f84fb8e78dcb36c10fc5c0a982fcded";
+        public static final String CONTRACT_ADDRESS = "0xef5b4a7cf3ecec950c50a351edc339c823bf59cc";
         /*
             nContract -> 0x23d3a5a22c4c916baf40eda98beae34630e628d5
             nameContract -> 0xd3fa5cfddee1a22968b998adc4441ea685428f09
-            CoordContract -> 0x3ab59cf58f84fb8e78dcb36c10fc5c0a982fcded
+            CoordContract -> 0xef5b4a7cf3ecec950c50a351edc339c823bf59cc
          */
     }
 

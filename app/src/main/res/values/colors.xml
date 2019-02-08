@@ -10,6 +10,11 @@
     <color name="secondaryTextColor">#6E0C33</color>
 
 
+
+    <color name="snackbarInfoColor">#45C9DC</color>
+    <color name="snackbarAlertColor">#FF6868</color>
+    <color name="snackbarConfirmColor">#3DBF72</color>
+
     <color name="white">#FFFFFF</color>
 
     <color name="dividerColor">#bdbdbd</color>

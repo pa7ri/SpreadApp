@@ -2,8 +2,10 @@ package com.ucm.informatica.spread.View;
 
 public interface MapFragmentView {
 
-    void loadCoordinateFromContract(String title,String description,String latitude,String longitude);
+    void loadCoordinateFromContract(String title,String description,Double latitude,Double longitude);
 
-    void showErrorTransition();
+    void showFeedback();
+
+    void showError(int text);
 
 }

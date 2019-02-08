@@ -1,12 +1,18 @@
 package com.ucm.informatica.spread.Presenter;
 
+import android.graphics.Color;
+
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
-import com.ucm.informatica.spread.SmartContract;
+import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.SmartContract;
 import com.ucm.informatica.spread.View.MapFragmentView;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Random;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -14,8 +20,6 @@ import rx.schedulers.Schedulers;
 public class MapFragmentPresenter {
 
     private CoordContract coordContract;
-    private SmartContract smartContract;
-
 
     private MapFragmentView mapFragmentView;
     private MapFragment mapFragment;
@@ -25,51 +29,38 @@ public class MapFragmentPresenter {
         this.mapFragmentView = mapFragmentView;
     }
 
-    public void loadData() {
-        if(coordContract == null) { //|| !nameContract.isValid()) {
-            smartContract = ((MainTabActivity) mapFragment.getActivity()).getSmartContract();
-            coordContract = ((MainTabActivity) mapFragment.getActivity()).getNameContract();
+    public void start(){
+        List<Event> historicalList = ((MainTabActivity)mapFragment.getActivity()).getDataSmartContract();
+        for (Event event:historicalList) {
+            mapFragmentView.loadCoordinateFromContract(event.getTitle(),
+                    event.getDescription(),
+                    event.getLatitude(),
+                    event.getLongitude());
         }
-        coordContract.getEventsCount().observable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (countCoords) -> {
-                            for(int i =0; i<countCoords.intValue(); i++){
-                                coordContract.getEventByIndex(BigInteger.valueOf(i)).observable()
-                                        .subscribeOn(Schedulers.newThread())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(
-                                                (result) ->
-                                                    mapFragmentView.loadCoordinateFromContract(
-                                                            result.getValue1(),
-                                                            result.getValue2(),
-                                                            result.getValue3(),
-                                                            result.getValue4())
-                                                ,
-                                                (error) -> mapFragmentView.showErrorTransition()
-                                        );
-                            }
-                        },
-                        (error) -> mapFragmentView.showErrorTransition()
-                );
     }
 
     public void saveData(String title, String description, String longitude, String latitude) {
-        if(coordContract == null) { //|| !nameContract.isValid()) {
-            // TODO : isValid se ejecuta sincronamente tonses cuidado si lo lanzas dos veces sin haber acabado, va a saltar NetworkorMainException
-            smartContract = ((MainTabActivity) mapFragment.getActivity()).getSmartContract();
+        if(coordContract == null) {
             coordContract = ((MainTabActivity) mapFragment.getActivity()).getNameContract();
         }
 
-        coordContract.addEvent(title,description,latitude,longitude).observable()
+        coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (result) -> {}
+                        (result) -> mapFragmentView.showFeedback()
                         ,
-                        (error) -> mapFragmentView.showErrorTransition()
+                        (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
                 );
 
+    }
+
+    public int getColorPolygon(){
+        Random rand = new Random();
+        switch (rand.nextInt(3)) {
+            case 0 : return Color.GREEN;
+            case 1 : return Color.YELLOW;
+            default: return Color.RED;
+        }
     }
 }

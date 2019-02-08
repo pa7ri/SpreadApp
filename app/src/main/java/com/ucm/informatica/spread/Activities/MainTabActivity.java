@@ -1,6 +1,7 @@
 package com.ucm.informatica.spread.Activities;
 
 import android.location.Location;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,15 +13,17 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.andrognito.flashbar.Flashbar;
+import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.CoordContract;
-import com.ucm.informatica.spread.Contracts.NameContract;
+import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.SmartContract;
+import com.ucm.informatica.spread.Utils.SmartContract;
 import com.ucm.informatica.spread.View.MainTabView;
-import com.ucm.informatica.spread.ViewPagerAdapter;
-import com.ucm.informatica.spread.ViewPagerTab;
+import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
+import com.ucm.informatica.spread.Utils.ViewPagerTab;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,8 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import timber.log.Timber;
-
-import static com.ucm.informatica.spread.Constants.NUMBER_TABS;
+import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
@@ -40,6 +42,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     private RelativeLayout relativeLayout;
 
     private List<List<Point>> polygonPointList = new ArrayList<>();
+    private List<Event> dataSmartContractList = new ArrayList<>();
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -82,6 +85,16 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
 
     @Override
+    public void loadDataSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
+        dataSmartContractList.add(new Event(this, title,description, latitude, longitude, dataTime));
+    }
+
+    @Override
+    public void showErrorTransition() {
+        getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+    }
+
+    @Override
     public void showLoading() {
        relativeLayout=findViewById(R.id.loadingAnimationLayout);
        relativeLayout.setVisibility(View.VISIBLE);
@@ -98,6 +111,10 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     public List<List<Point>> getPolygonPointList() {
         return polygonPointList;
+    }
+
+    public List<Event> getDataSmartContract() {
+        return dataSmartContractList;
     }
 
     public Location getLocation() {
@@ -125,7 +142,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     //read coordinates from CoordinatesPolygon.txt
     private void readPolygonCoordinates() {
-        // polygonList = new ArrayList<>();
         List<Point> polyCoordList;
         BufferedReader reader = null;
         String[] coords;
@@ -152,6 +168,63 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 }
             }
         }
+    }
+
+    public Flashbar getAlertSnackBarGPS(){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .showIcon()
+                .backgroundColorRes(R.color.snackbarAlertColor)
+                .message(getString(R.string.snackbar_alert_gps))
+                .primaryActionText(getResources().getString(R.string.button_active))
+                .build();
+    }
+
+    public Flashbar getErrorSnackBar(int text){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarAlertColor)
+                .message(getString(text))
+                .build();
+    }
+
+
+    public Flashbar getConfirmationSnackBar(){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarConfirmColor)
+                .message(getString(R.string.snackbar_confirmation_transaction))
+                .build();
     }
 
 }

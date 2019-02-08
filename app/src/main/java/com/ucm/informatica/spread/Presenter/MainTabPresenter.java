@@ -10,15 +10,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Constants;
+import com.ucm.informatica.spread.Utils.Constants;
 import com.ucm.informatica.spread.Contracts.CoordContract;
-import com.ucm.informatica.spread.Fragments.HistorialFragment;
+import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
-import com.ucm.informatica.spread.LocalWallet;
-import com.ucm.informatica.spread.SmartContract;
+import com.ucm.informatica.spread.Utils.LocalWallet;
+import com.ucm.informatica.spread.Utils.SmartContract;
 import com.ucm.informatica.spread.View.MainTabView;
 
 import org.web3j.protocol.Web3j;
@@ -28,6 +28,7 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
+import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
 import rx.Observer;
@@ -36,9 +37,9 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static com.ucm.informatica.spread.Constants.Contract.CONTRACT_ADDRESS;
-import static com.ucm.informatica.spread.Constants.Wallet.LOCAL_NAME_CONTRACT;
-import static com.ucm.informatica.spread.Constants.Wallet.LOCAL_SMART_CONTRACT;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.LOCAL_NAME_CONTRACT;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.LOCAL_SMART_CONTRACT;
 
 public class MainTabPresenter {
 
@@ -80,7 +81,7 @@ public class MainTabPresenter {
                 fragment = new ProfileFragment();
                 break;
             case 2:
-                fragment = new HistorialFragment();
+                fragment = new HistoricalFragment();
                 break;
             case 3:
                 fragment = new MapFragment();
@@ -145,12 +146,14 @@ public class MainTabPresenter {
                                 localWallet.loadContract(web3j);
                                 mainTabView.initViewContent();
                                 mainTabView.hideLoading();
+
+                                loadData();
                             }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e("Ha habido un error");
+                        Timber.e(e);
                     }
 
                     @Override
@@ -174,6 +177,36 @@ public class MainTabPresenter {
         return latestLocation;
     }
 
+    public void loadData() {
+        if(coordContract == null) { //|| !nameContract.isValid()) {
+            smartContract = context.getSmartContract();
+            coordContract = context.getNameContract();
+        }
+        coordContract.getEventsCount().observable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (countCoords) -> {
+                            for(int i =0; i<countCoords.intValue(); i++){
+                                coordContract.getEventByIndex(BigInteger.valueOf(i)).observable()
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                                (result) ->
+                                                        mainTabView.loadDataSmartContract(
+                                                                result.getValue1(),
+                                                                result.getValue2(),
+                                                                result.getValue3(),
+                                                                result.getValue4(),
+                                                                result.getValue5())
+                                                ,
+                                                (error) -> mainTabView.showErrorTransition()
+                                        );
+                            }
+                        },
+                        (error) -> mainTabView.showErrorTransition()
+                );
+    }
 
     private class CustomLocationListener implements LocationListener {
 

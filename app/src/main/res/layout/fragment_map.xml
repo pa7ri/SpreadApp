@@ -32,9 +32,9 @@
         android:layout_height="@dimen/iconSide"
         android:layout_margin="@dimen/smallMargin"
         android:background="@drawable/ic_cancel"
+        android:visibility="gone"
         mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone" />
+        mapbox:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
@@ -47,16 +47,20 @@
         android:textColor="@color/white"
         mapbox:layout_constraintBottom_toBottomOf="parent" />
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addLocationButton"
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/floatingDial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="@dimen/mediumMargin"
-        android:src="@drawable/ic_add"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        mapbox:fabGravity="bottom_end"
+        mapbox:fabMenu="@menu/floating_menu"
         mapbox:layout_constraintBottom_toBottomOf="parent"
-        mapbox:layout_constraintEnd_toEndOf="parent" />
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:miniFabBackgroundTint="@android:color/white"
+        mapbox:miniFabDrawableTint="?attr/colorPrimaryDark"
+        mapbox:miniFabTitleTextColor="?attr/colorPrimaryDark" />
 
 
     <android.support.design.widget.FloatingActionButton

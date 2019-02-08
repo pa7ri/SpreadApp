@@ -4,6 +4,7 @@
     <dimen name="xsmallMargin">4dp</dimen>
     <dimen name="smallMargin">8dp</dimen>
     <dimen name="mediumMargin">16dp</dimen>
+    <dimen name="xmediumMargin">24dp</dimen>
     <dimen name="largeMargin">32dp</dimen>
 
 

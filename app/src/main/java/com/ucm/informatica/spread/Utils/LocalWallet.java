@@ -1,11 +1,10 @@
-package com.ucm.informatica.spread;
+package com.ucm.informatica.spread.Utils;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ucm.informatica.spread.Contracts.CoordContract;
-import com.ucm.informatica.spread.Contracts.NameContract;
 
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -20,8 +19,8 @@ import java.security.NoSuchProviderException;
 
 import timber.log.Timber;
 
-import static com.ucm.informatica.spread.Constants.Contract.CONTRACT_ADDRESS;
-import static com.ucm.informatica.spread.Constants.Wallet.WALLET_FILE;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILE;
 
 public class LocalWallet {
     private String filenameWallet;
