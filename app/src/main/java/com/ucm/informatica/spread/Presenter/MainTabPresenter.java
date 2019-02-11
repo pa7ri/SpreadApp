@@ -72,19 +72,15 @@ public class MainTabPresenter {
         switch (position) {
             case 0:
                 fragment = new HomeFragment();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(LOCAL_NAME_CONTRACT, coordContract);
-                bundle.putSerializable(LOCAL_SMART_CONTRACT, smartContract);
-                fragment.setArguments(bundle);
                 break;
             case 1:
                 fragment = new ProfileFragment();
                 break;
             case 2:
-                fragment = new HistoricalFragment();
+                fragment = new MapFragment();
                 break;
             case 3:
-                fragment = new MapFragment();
+                fragment = new HistoricalFragment();
                 break;
             default:
                 fragment = SettingsFragment.newInstance(getAddress(), "password", getBalance());

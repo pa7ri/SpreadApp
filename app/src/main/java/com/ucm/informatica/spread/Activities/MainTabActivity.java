@@ -47,15 +47,15 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     private int[] tabIcons = {
             R.drawable.ic_home,
             R.drawable.ic_profile,
-            R.drawable.ic_historial,
             R.drawable.ic_map,
+            R.drawable.ic_historial,
             R.drawable.ic_settings
     };
     private int[] tabNames = {
             R.string.tab_text_home,
             R.string.tab_text_profile,
-            R.string.tab_text_historial,
             R.string.tab_text_map,
+            R.string.tab_text_historial,
             R.string.tab_text_settings
     };
 

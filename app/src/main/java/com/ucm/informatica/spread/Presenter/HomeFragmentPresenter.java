@@ -33,9 +33,11 @@ public class HomeFragmentPresenter {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (result) -> homeFragmentView.showSuccessfulStoredTransition(
-                                "Bloque : " + result.getBlockNumber().toString()
-                                + " , Gas usado : " + result.getGasUsed().toString())
+                        (result) -> {
+                            homeFragmentView.showSuccessfulStoredTransition(
+                                    "Bloque : " + result.getBlockNumber().toString()
+                                            + " , Gas usado : " + result.getGasUsed().toString());
+                        }
                         ,
                         (error) -> homeFragmentView.showErrorTransition()
                 );

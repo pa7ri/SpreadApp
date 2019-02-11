@@ -37,6 +37,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView"/>
 
+
+        <Button
+            android:id="@+id/editProfileButton"
+            android:layout_width="@dimen/iconSide"
+            android:layout_height="@dimen/iconSide"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/ic_edit"
+            app:layout_constraintBottom_toBottomOf="@+id/personalDataTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/personalDataTitle" />
+
         <TextView
             android:id="@+id/personalDataTitle"
             android:layout_width="wrap_content"
@@ -152,8 +164,8 @@
             app:layout_constraintTop_toTopOf="@+id/view2" />
 
 
-        <ImageView
-            android:id="@+id/editImage"
+        <Button
+            android:id="@+id/editContactsButton"
             android:layout_width="@dimen/iconSide"
             android:layout_height="@dimen/iconSide"
             android:layout_marginEnd="8dp"
