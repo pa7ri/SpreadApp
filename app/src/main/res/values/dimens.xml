@@ -4,6 +4,7 @@
     <dimen name="xsmallMargin">4dp</dimen>
     <dimen name="smallMargin">8dp</dimen>
     <dimen name="mediumMargin">16dp</dimen>
+    <dimen name="xmediumMargin">24dp</dimen>
     <dimen name="largeMargin">32dp</dimen>
 
 
@@ -23,6 +24,7 @@
 
     <!-- Others -->
     <dimen name="cornerShape">10dp</dimen>
+    <dimen name="cornerOvalShape">60dp</dimen>
     <dimen name="heightTab">65dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
@@ -30,5 +32,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="largeText">70sp</dimen>
 
 </resources>

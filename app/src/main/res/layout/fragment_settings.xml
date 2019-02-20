@@ -23,7 +23,7 @@
         android:id="@+id/walletAccountTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginStart="@dimen/xmediumMargin"
         android:layout_marginTop="@dimen/mediumMargin"
         android:text="@string/settings_wallet_account"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +47,7 @@
         android:id="@+id/walletPasswordTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginStart="@dimen/xmediumMargin"
         android:layout_marginTop="@dimen/smallMargin"
         android:text="@string/settings_wallet_password"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +69,7 @@
         android:id="@+id/walletBalanceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginStart="@dimen/xmediumMargin"
         android:layout_marginTop="@dimen/smallMargin"
         android:text="@string/settings_wallet_balance"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,12 +79,59 @@
         android:id="@+id/walletBalanceDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/mediumMargin"
         android:text="@string/tab_text_settings"
         android:textIsSelectable="true"
         android:maxLength="25"
+        android:layout_marginEnd="@dimen/mediumMargin"
         app:layout_constraintBottom_toBottomOf="@+id/walletBalanceTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/walletBalanceTitle" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/mediumMargin"
+        android:background="@color/dividerColor"
+        app:layout_constraintTop_toBottomOf="@+id/walletBalanceTitle">
+
+    </View>
+
+    <TextView
+        android:id="@+id/radiusTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:textSize="@dimen/msmallText"
+        android:text="@string/radius_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <SeekBar
+        android:id="@+id/radiusSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:layout_marginHorizontal="@dimen/mediumMargin"
+        android:progress="3"
+        android:max="6"
+        app:layout_constraintTop_toBottomOf="@+id/radiusTitle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:text="@string/radius_min"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/mediumMargin"
+        android:text="@string/radius_max"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
 
 </android.support.constraint.ConstraintLayout>

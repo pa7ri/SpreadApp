@@ -4,10 +4,6 @@
     <string name="name">Nombre</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="location_saved">Guardado correctamente.</string>
-    <string name="location_no_available">Localización no disponible. Paso a modo manual.</string>
-    <string name="no_text">None</string>
-
     <string name="map_style_url">mapbox://styles/himochi/cjois77wl020w2sk7muy2htur</string>
 
 
@@ -22,10 +18,40 @@
     <string name="tab_text_settings">Ajustes</string>
 
 
+    <!-- HOME -->
+    <string name="button_help">SOS</string>
+    <string name="button_help_description">Petición de ayuda</string>
+
+    <!-- PROFILE -->
+    <string name="profile_personal_data">Información personal</string>
+    <string name="profile_dresscode">Vestuario</string>
+    <string name="profile_name">Nombre</string>
+    <string name="profile_age">Edad</string>
+    <string name="profile_contact">Contactos</string>
+
+    <!-- MAP -->
+    <string name="action_settings">Settings</string>
+    <string name="location_auto">Auto</string>
+    <string name="location_manual">Manual</string>
+    <string name="location_title">Localización</string>
+    <string name="location_saved">Guardado correctamente</string>
+    <string name="location_no_available">Localización no disponible -> Paso a modo manual</string>
+    <string name="no_text">None</string>
+
+    <string name="menu_item_alert">Alerta</string>
+    <string name="menu_item_pic">Cartel</string>
+
+    <!-- HISTORICAL -->
+    <string name="historical_title">Recientes</string>
+
     <!-- SETTINGS -->
     <string name="settings_wallet_title">Configuración de la Wallet</string>
     <string name="settings_wallet_account">Dirección cuenta :</string>
     <string name="settings_wallet_password">Contraseña :</string>
+    <string name="settings_wallet_balance">Saldo disponible :</string>
+    <string name="radius_title">Radio de alcance :</string>
+    <string name="radius_min">100 m</string>
+    <string name="radius_max">5 km</string>
 
     <!-- ACTIONS -->
     <string name="button_send">Enviar</string>
@@ -35,9 +61,12 @@
     <string name="button_add_pin">Añade un nuevo pin</string>
     <string name="button_read_wallet">Mostrar Wallet</string>
     <string name="button_cancel">Cancelar</string>
+    <string name="button_active">ACTIVAR</string>
 
 
-    <string name="action_settings">Settings</string>
-    <string name="settings_wallet_balance">Saldo disponible :</string>
+    <!-- SNACKBAR -->
+    <string name="snackbar_alert_gps">Para pedir ayuda activa el GPS</string>
+    <string name="snackbar_alert_transaction">"Ha habido un error en la transacción"</string>
+    <string name="snackbar_confirmation_transaction">Guardado correctamente</string>
 
 </resources>

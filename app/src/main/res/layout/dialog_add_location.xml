@@ -33,6 +33,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:text="@string/location_title"
+        android:textSize="@dimen/msmallText"
+        app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toggleButton" />
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:checked="true"
+        android:textOff="@string/location_manual"
+        android:textOn="@string/location_auto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/infoDescriptionEditText" />
+
     <android.support.v7.widget.AppCompatEditText
         android:id="@+id/infoDescriptionEditText"
         android:layout_width="match_parent"
@@ -51,9 +75,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/mediumMargin"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/infoDescriptionEditText">
+        app:layout_constraintTop_toBottomOf="@+id/toggleButton">
 
         <Button
             android:id="@+id/cancelButton"
@@ -71,8 +95,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/smallMargin"
             android:layout_weight="1"
-            android:background="@color/secondaryTextColor"
+            android:background="@color/backgroundColor"
             android:text="@string/button_publish"
             android:textColor="@color/mainTextColor" />
+
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

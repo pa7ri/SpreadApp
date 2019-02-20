@@ -1,5 +1,6 @@
-package com.ucm.informatica.spread;
+package com.ucm.informatica.spread.Utils;
 
+import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Contracts.NameContract;
 
 import org.web3j.crypto.Credentials;
@@ -19,8 +20,8 @@ public class SmartContract implements Serializable {
         this.credentials = credentials;
     }
 
-    public NameContract loadSmartContract(String addressContract) {
-        return NameContract.load(
+    public CoordContract loadSmartContract(String addressContract) {
+        return CoordContract.load(
                 addressContract,
                 web3j,
                 credentials,

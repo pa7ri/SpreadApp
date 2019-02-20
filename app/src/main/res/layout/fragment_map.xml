@@ -13,14 +13,13 @@
         android:layout_height="match_parent"
         mapbox:mapbox_cameraTargetLat="@dimen/madLat"
         mapbox:mapbox_cameraTargetLng="@dimen/madLong"
-        mapbox:mapbox_styleUrl="@string/map_style_url"
         mapbox:mapbox_cameraZoom="11" />
 
     <ImageView
         android:id="@+id/markerImage"
-        android:layout_width="@dimen/markerSide"
-        android:layout_height="@dimen/markerSide"
-        android:background="@drawable/ic_location"
+        android:layout_width="@dimen/iconSide"
+        android:layout_height="@dimen/iconSide"
+        android:background="@drawable/ic_point"
         android:visibility="gone"
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent"
@@ -33,30 +32,45 @@
         android:layout_height="@dimen/iconSide"
         android:layout_margin="@dimen/smallMargin"
         android:background="@drawable/ic_cancel"
+        android:visibility="gone"
         mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone" />
+        mapbox:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
         android:id="@+id/saveLocationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@color/backgroundColor"
         android:visibility="gone"
         android:text="@string/button_publish"
-        android:textColor="@color/secondaryTextColor"
+        android:textColor="@color/white"
         mapbox:layout_constraintBottom_toBottomOf="parent" />
+
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/floatingDial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        mapbox:fabGravity="bottom_end"
+        mapbox:fabMenu="@menu/floating_menu"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:miniFabBackgroundTint="@android:color/white"
+        mapbox:miniFabDrawableTint="?attr/colorPrimaryDark"
+        mapbox:miniFabTitleTextColor="?attr/colorPrimaryDark" />
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addLocationButton"
+        android:id="@+id/switchLayerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/mediumMargin"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_swap"
         mapbox:layout_constraintBottom_toBottomOf="parent"
-        mapbox:layout_constraintEnd_toEndOf="parent" />
+        mapbox:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
