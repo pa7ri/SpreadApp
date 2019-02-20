@@ -76,8 +76,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapFragmentPresenter = new MapFragmentPresenter(this,this);
 
         regionMap = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonData();
-        //TODO : get min distance point-polygon
-
+        
         initView(savedInstanceState);
         setupListeners();
 
