@@ -1,7 +1,6 @@
 package com.ucm.informatica.spread.Activities;
 
 import android.location.Location;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -18,6 +17,7 @@ import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.SmartContract;
@@ -29,7 +29,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import timber.log.Timber;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
@@ -41,7 +43,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private RelativeLayout relativeLayout;
 
-    private List<List<Point>> polygonPointList = new ArrayList<>();
+    private Map<Point, Region> regionMap = new HashMap<>();
+
     private List<Event> dataSmartContractList = new ArrayList<>();
 
     private int[] tabIcons = {
@@ -109,8 +112,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     public CoordContract getNameContract() { return presenter.getCoordContract(); }
 
-    public List<List<Point>> getPolygonPointList() {
-        return polygonPointList;
+    public Map getPolygonData() {
+        return regionMap;
     }
 
     public List<Event> getDataSmartContract() {
@@ -142,6 +145,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     //read coordinates from CoordinatesPolygon.txt
     private void readPolygonCoordinates() {
+        Point centroid;
         List<Point> polyCoordList;
         BufferedReader reader = null;
         String[] coords;
@@ -151,11 +155,14 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             String line;
             while ((line = reader.readLine()) != null) {
                 coords = line.split("\\s+");
+                //first pair is the centroid of the polygon
+                centroid = Point.fromLngLat(Double.parseDouble(coords[1]),Double.parseDouble(coords[0]));
                 polyCoordList = new ArrayList<>();
-                for(int i=0; i < coords.length-1; i=i+2) {
+                //the rest of pairs are the polygon coordinates
+                for(int i=2; i < coords.length-1; i=i+2) {
                     polyCoordList.add(Point.fromLngLat(Double.parseDouble(coords[i+1]),Double.parseDouble(coords[i])));
                 }
-                polygonPointList.add(polyCoordList);
+                regionMap.put(centroid, new Region(polyCoordList));
             }
         } catch (IOException e) {
             Timber.e(e);

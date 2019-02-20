@@ -1,8 +1,12 @@
 package com.ucm.informatica.spread.View;
 
+import com.ucm.informatica.spread.Model.LocationMode;
+
 public interface MapFragmentView {
 
-    void loadCoordinateFromContract(String title,String description,Double latitude,Double longitude);
+    void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription);
+
+    void renderLocationView(LocationMode state);
 
     void showFeedback();
 
