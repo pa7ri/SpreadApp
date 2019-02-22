@@ -1,10 +1,11 @@
 package com.ucm.informatica.spread.Activities;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,37 +16,45 @@ import android.widget.TextView;
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.maps.MapFragment;
 import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.Utils.SmartContract;
+import com.ucm.informatica.spread.Utils.Constants;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import timber.log.Timber;
+
+import static com.ucm.informatica.spread.Utils.Constants.Map.IMAGE_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
 
-    private MainTabPresenter presenter;
+    private MainTabPresenter mainPresenter;
 
     private RelativeLayout relativeLayout;
+    private ViewPagerTab fragmentViewPager;
+    private ViewPagerAdapter fragmentAdapter;
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
     private List<Event> dataSmartContractList = new ArrayList<>();
+
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -69,20 +78,40 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
         readPolygonCoordinates();
-        presenter = new MainTabPresenter(this, this);
-        presenter.start(getFilesDir().getAbsolutePath());
+        mainPresenter = new MainTabPresenter(this, this);
+        mainPresenter.start(getFilesDir().getAbsolutePath());
     }
 
     @Override
-    public void initViewContent(){
-        ViewPagerTab mViewPager =  findViewById(R.id.container);
-        mViewPager.setMotionEventSplittingEnabled(false);
-        setupViewPager(mViewPager);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_IMAGE_POSTER && resultCode == RESULT_OK){
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            Bundle args = new Bundle();
+            args.putBoolean(UPDATE_MAP, true);
+            args.putByteArray(IMAGE_POSTER, bitmapToByteArray(imageBitmap));
+            fragmentAdapter.getItem(2).setArguments(args);
+            fragmentViewPager.setCurrentItem(2);
+        }
+    }
+
+    private byte[] bitmapToByteArray(Bitmap bitmap){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+
+    @Override
+    public void initView(){
+        fragmentViewPager =  findViewById(R.id.container);
+        fragmentViewPager.setMotionEventSplittingEnabled(false);
+        setupViewPager();
 
         tabLayout = findViewById(R.id.tabs);
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-        tabLayout.setupWithViewPager(mViewPager);
+        fragmentViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(fragmentViewPager));
+        tabLayout.setupWithViewPager(fragmentViewPager);
 
         setupTabContent();
     }
@@ -108,9 +137,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
        relativeLayout.setVisibility(View.GONE);
 
     }
-    public SmartContract getSmartContract(){ return presenter.getSmartContract();}
 
-    public CoordContract getNameContract() { return presenter.getCoordContract(); }
+    public CoordContract getCoordContract() { return mainPresenter.getCoordContract(); }
 
     public Map getPolygonData() {
         return regionMap;
@@ -121,15 +149,15 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
 
     public Location getLocation() {
-        return presenter.getLatestLocation();
+        return mainPresenter.getLatestLocation();
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+    private void setupViewPager() {
+        fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         for(int i=0; i< NUMBER_TABS; i++){
-            adapter.addFragment(presenter.getFragment(i), getResources().getString(tabNames[i]));
+            fragmentAdapter.addFragment(mainPresenter.getFragment(i), getResources().getString(tabNames[i]));
         }
-        viewPager.setAdapter(adapter);
+        fragmentViewPager.setAdapter(fragmentAdapter);
     }
     private void setupTabContent(){
         TextView tabCurrent;
@@ -176,6 +204,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             }
         }
     }
+
 
     public Flashbar getAlertSnackBarGPS(){
         return new Flashbar.Builder(this)

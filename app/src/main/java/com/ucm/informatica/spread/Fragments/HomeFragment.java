@@ -1,7 +1,9 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,11 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.andrognito.flashbar.Flashbar;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.HomeFragmentView;
+
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
+
+
 public class HomeFragment extends Fragment implements HomeFragmentView{
 
     private View view;
@@ -35,38 +40,33 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
-        initView();
-        homeFragmentPresenter = new HomeFragmentPresenter(this, this);
-        setupListeners();
+
+        homeFragmentPresenter = new HomeFragmentPresenter(this,
+                    ((MainTabActivity) getActivity()).getCoordContract());
+        homeFragmentPresenter.start();
         return view;
     }
-    private void initView() {
+
+    @Override
+    public void initView() {
         nameText = view.findViewById(R.id.nameText);
         helpButton = view.findViewById(R.id.helpButton);
-        cameraButton = view.findViewById(R.id.addAdvertisingButton);
+        cameraButton = view.findViewById(R.id.addPosterButton);
     }
 
-    private void setupListeners(){
+    @Override
+    public void setupListeners(){
         helpButton.setOnClickListener(view -> {
-                Location location = ((MainTabActivity) getActivity()).getLocation();
-                if(location != null) {
-                    homeFragmentPresenter.saveData(getResources().getString(R.string.button_help),
-                            getResources().getString(R.string.button_help_description),
-                            Double.toString(location.getLongitude()),
-                            Double.toString(location.getLatitude()));
-                } else {
-                    ((MainTabActivity) getActivity()).getAlertSnackBarGPS().show();
-                }
+            Location location = ((MainTabActivity) getActivity()).getLocation();
+            homeFragmentPresenter.onHelpButtonPressed(location,getResources());
         });
-        cameraButton.setOnClickListener(view -> { //TODO : implement camera call
-            new Flashbar.Builder(getActivity())
-                    .gravity(Flashbar.Gravity.BOTTOM)
-                    .duration(2500)
-                    .backgroundColorRes(R.color.warm_grey)
-                    .message("Saliendo de la app...se abre la cámara")
-                    .build()
-                    .show();
-        });
+        cameraButton.setOnClickListener(view -> {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                ((MainTabActivity) getActivity()).startActivityForResult(takePictureIntent, REQUEST_IMAGE_POSTER);
+            }
+        }
+        );
     }
 
     @Override
@@ -78,5 +78,10 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     @Override
     public void showErrorTransition() {
         ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+    }
+
+    @Override
+    public void showErrorGPS() {
+        ((MainTabActivity) getActivity()).getAlertSnackBarGPS().show();
     }
 }

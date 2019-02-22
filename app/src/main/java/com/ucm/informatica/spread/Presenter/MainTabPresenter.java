@@ -38,8 +38,6 @@ import timber.log.Timber;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
-import static com.ucm.informatica.spread.Utils.Constants.Wallet.LOCAL_NAME_CONTRACT;
-import static com.ucm.informatica.spread.Utils.Constants.Wallet.LOCAL_SMART_CONTRACT;
 
 public class MainTabPresenter {
 
@@ -140,7 +138,7 @@ public class MainTabPresenter {
                             if (filenameWallet != null && !filenameWallet.isEmpty()) {
                                 localWallet.setCredentials(localWallet.loadWallet(passwordWallet, walletPath));
                                 localWallet.loadContract(web3j);
-                                mainTabView.initViewContent();
+                                mainTabView.initView();
                                 mainTabView.hideLoading();
 
                                 loadData();
@@ -159,12 +157,8 @@ public class MainTabPresenter {
                 });
     }
 
-    public SmartContract getSmartContract(){
-        smartContract = new SmartContract(web3j, localWallet.getCredentials());
-        return smartContract;
-    }
-
     public CoordContract getCoordContract(){
+        smartContract = new SmartContract(web3j, localWallet.getCredentials());
         coordContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
         return coordContract;
     }
@@ -175,8 +169,7 @@ public class MainTabPresenter {
 
     public void loadData() {
         if(coordContract == null) { //|| !nameContract.isValid()) {
-            smartContract = context.getSmartContract();
-            coordContract = context.getNameContract();
+            coordContract = context.getCoordContract();
         }
         coordContract.getEventsCount().observable()
                 .subscribeOn(Schedulers.newThread())

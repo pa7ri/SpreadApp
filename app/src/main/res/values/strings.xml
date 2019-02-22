@@ -41,6 +41,9 @@
     <string name="menu_item_alert">Alerta</string>
     <string name="menu_item_pic">Cartel</string>
 
+    <string name="button_add_pin_alert">Añade un aviso</string>
+    <string name="button_add_pin_poster">Añade un cartel</string>
+
     <!-- HISTORICAL -->
     <string name="historical_title">Recientes</string>
 
@@ -67,6 +70,10 @@
     <!-- SNACKBAR -->
     <string name="snackbar_alert_gps">Para pedir ayuda activa el GPS</string>
     <string name="snackbar_alert_transaction">"Ha habido un error en la transacción"</string>
+    <string name="snackbar_alert_image">"No se ha guardado correctamente la imagen"</string>
     <string name="snackbar_confirmation_transaction">Guardado correctamente</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

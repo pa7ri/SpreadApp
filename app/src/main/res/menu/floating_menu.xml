@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_alert"
         android:title="@string/menu_item_alert" />
     <item
-        android:id="@+id/action_pic"
+        android:id="@+id/action_poster"
         android:icon="@drawable/ic_pic"
         android:title="@string/menu_item_pic"/>
 </menu>

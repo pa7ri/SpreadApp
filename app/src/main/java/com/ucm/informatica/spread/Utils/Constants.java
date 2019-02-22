@@ -5,6 +5,10 @@ import java.math.BigInteger;
 public final class Constants {
 
     public static final int NUMBER_TABS = 5;
+    public static final int REQUEST_IMAGE_POSTER = 0;
+    public static final int REQUEST_IMAGE_PROFILE = 1;
+
+
 
     public static final String INFURA_PATH = "https://rinkeby.infura.io/";
     public static final String INFURA_PUBLIC_PROYECT_ADDRESS = "2dde3de7006043b88fb4e35189745853";
@@ -25,6 +29,9 @@ public final class Constants {
         public static final String MAP_STYLE ="mapbox://styles/himochi/cjois77wl020w2sk7muy2htur";
         public static final String POLYGON_LAYER ="polygonLayer";
         public static final String POINT_LAYER ="pointLayer";
+
+        public static final String UPDATE_MAP = "UPDATE_MAP";
+        public static final String IMAGE_POSTER = "IMAGE_POSTER";
     }
 
     public static final class Wallet {

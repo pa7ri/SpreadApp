@@ -1,13 +1,19 @@
 package com.ucm.informatica.spread.Presenter;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.mapbox.geojson.Point;
@@ -22,6 +28,7 @@ import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Model.LocationMode;
+import com.ucm.informatica.spread.Model.PinMode;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MapFragmentView;
@@ -39,6 +46,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
 import static com.ucm.informatica.spread.Model.LocationMode.Manual;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MapFragmentPresenter {
 
@@ -68,7 +76,7 @@ public class MapFragmentPresenter {
 
     public void saveData(String title, String description, String longitude, String latitude) {
         if(coordContract == null) {
-            coordContract = ((MainTabActivity) mapFragment.getActivity()).getNameContract();
+            coordContract = ((MainTabActivity) mapFragment.getActivity()).getCoordContract();
         }
 
         coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
@@ -118,9 +126,12 @@ public class MapFragmentPresenter {
         }
     }
 
-    public LocationMode getCurrentMode() {
-        return currentMode;
+    public void onSwitchLocationMode() {
+        if(currentMode==Auto) currentMode = Manual;
+        else currentMode = Auto;
+        mapFragmentView.renderLocationView(currentMode);
     }
+
 
     private int getColorPolygon(int numContainedPoints){
         int color;
@@ -155,16 +166,37 @@ public class MapFragmentPresenter {
                     ((p2.longitude() - p1.longitude())*(p2.longitude() - p1.longitude())));
     }
 
-    public void popUpDialog(){
+    public void popUpDialog(PinMode pinMode, String title, Bitmap image) {
+        //Todo: make a class as dialog builder and organise it
         final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(mapFragment.getContext())).create();
         LayoutInflater inflater = mapFragment.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_location, null);
 
+
+        ImageView posterImageView = dialogView.findViewById(R.id.posterImage);
+        FloatingActionButton cameraFloatingButton = dialogView.findViewById(R.id.addPosterButton);
+        TextView titleTextView = dialogView.findViewById(R.id.titleTextView);
         EditText infoTitleEditText = dialogView.findViewById(R.id.infoTitleEditText);
         EditText infoDescriptionEditText = dialogView.findViewById(R.id.infoDescriptionEditText);
-        Button buttonCancel = dialogView.findViewById(R.id.cancelButton);
-        Button buttonSubmit = dialogView.findViewById(R.id.storeButton);
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button submitButton = dialogView.findViewById(R.id.storeButton);
         ToggleButton toggleButton = dialogView.findViewById(R.id.toggleButton);
+
+        titleTextView.setText(title);
+
+        switch (pinMode) {
+            case Alert:
+                posterImageView.setVisibility(View.GONE);
+                cameraFloatingButton.setVisibility(View.GONE);
+                break;
+            case Poster:
+                if(image!=null){
+                    posterImageView.setImageBitmap(image);
+                }
+                posterImageView.setVisibility(View.VISIBLE);
+                cameraFloatingButton.setVisibility(View.VISIBLE);
+                break;
+        }
 
         toggleButton.setOnClickListener(view -> {
             if(((ToggleButton) view).isChecked()) {
@@ -174,7 +206,7 @@ public class MapFragmentPresenter {
             }
         });
 
-        buttonSubmit.setOnClickListener(view -> {
+        submitButton.setOnClickListener(view -> {
             titleText = infoTitleEditText.getText().toString().equals("")?
                     mapFragment.getResources().getString(R.string.no_text):infoTitleEditText.getText().toString();
             descriptionText = infoDescriptionEditText.getText().toString().equals("")?
@@ -199,16 +231,15 @@ public class MapFragmentPresenter {
             }
             dialogBuilder.dismiss();
         });
-        buttonCancel.setOnClickListener(view -> dialogBuilder.dismiss());
+        cameraFloatingButton.setOnClickListener(view -> {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(mapFragment.getActivity().getPackageManager()) != null) {
+                ((MainTabActivity) mapFragment.getActivity()).startActivityForResult(takePictureIntent, REQUEST_IMAGE_POSTER);
+            }
+        });
+        cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());
 
         dialogBuilder.setView(dialogView);
         dialogBuilder.show();
     }
-
-    public void onSwitchLocationMode() {
-        if(currentMode==Auto) currentMode = Manual;
-        else currentMode = Auto;
-        mapFragmentView.renderLocationView(currentMode);
-    }
-
 }

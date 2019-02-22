@@ -1,5 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +23,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Model.LocationMode;
+import com.ucm.informatica.spread.Model.PinMode;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MapFragmentPresenter;
 import com.ucm.informatica.spread.R;
@@ -34,6 +37,7 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
+import static com.ucm.informatica.spread.Utils.Constants.Map.IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
@@ -42,6 +46,7 @@ import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
+import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
 
 public class MapFragment extends Fragment implements MapFragmentView {
 
@@ -59,12 +64,20 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
+    private Boolean isUpdated = false;
+    private Bitmap imageBitmap;
+
 
     public MapFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            isUpdated = getArguments().getBoolean(UPDATE_MAP);
+            byte[] imageByteArray = getArguments().getByteArray(IMAGE_POSTER);
+            imageBitmap = byteArrayToBitmap(imageByteArray);
+        }
     }
 
     @Override
@@ -135,13 +148,26 @@ public class MapFragment extends Fragment implements MapFragmentView {
         addLocationButton = view.findViewById(R.id.saveLocationButton);
         markerImage = view.findViewById(R.id.markerImage);
         switchLayerButton = view.findViewById(R.id.switchLayerButton);
+        if(isUpdated) {
+            isUpdated = false;
+            mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
+        }
     }
 
     private void setupListeners() {
         addPinDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                mapFragmentPresenter.popUpDialog();
+                String title;
+                PinMode pinMode;
+                if(menuItem.getTitle()==getString(R.string.menu_item_alert)){
+                    title = getString(R.string.button_add_pin_alert);
+                    pinMode = PinMode.Alert;
+                } else {
+                    title = getString(R.string.button_add_pin_poster);
+                    pinMode = PinMode.Poster;
+                }
+                mapFragmentPresenter.popUpDialog(pinMode, title, null);
                 return false;
             }
         });
@@ -214,5 +240,9 @@ public class MapFragment extends Fragment implements MapFragmentView {
             addPinDial.setVisibility(View.GONE);
             switchLayerButton.setVisibility(View.GONE);
         }
+    }
+
+    private Bitmap byteArrayToBitmap(byte[] byteArray){
+       return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 }
