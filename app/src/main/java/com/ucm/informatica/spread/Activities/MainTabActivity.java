@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import timber.log.Timber;
 
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
@@ -177,7 +176,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             cameraImage.setImageDrawable(getPackageManager().getApplicationIcon(cameraPackage));
             galleryImage.setImageDrawable(getPackageManager().getApplicationIcon(galleryPackage));
         } catch (PackageManager.NameNotFoundException e) {
-            Timber.e(e);
+            Log.e("TAG",e.getMessage());
         }
 
         galleryLayout.setOnClickListener(view -> {
@@ -250,13 +249,13 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 regionMap.put(centroid, new Region(polyCoordList));
             }
         } catch (IOException e) {
-            Timber.e(e);
+            Log.e("TAG",e.getMessage());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Timber.e(e);
+                    Log.e("TAG",e.getMessage());
                 }
             }
         }

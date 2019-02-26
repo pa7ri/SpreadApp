@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
@@ -41,7 +42,6 @@ import java.util.concurrent.ExecutionException;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
@@ -123,7 +123,7 @@ public class MainTabPresenter {
                         .sendAsync()
                         .get();
             } catch (InterruptedException | ExecutionException e) {
-                Timber.e(e);
+                Log.e("TAG",e.getMessage());
             }
         }
         return ethGetBalance != null ? ethGetBalance.getBalance().toString() + " ETH" : "No disponible";
@@ -152,7 +152,6 @@ public class MainTabPresenter {
                 .subscribe(new Observer<Web3ClientVersion>() {
                     @Override
                     public void onCompleted() {
-                            Timber.e("Conexión completada");
                             if (!localWallet.existWallet()) {
                                 localWallet.createWallet(localWallet.getPasswordWallet(), walletPath);
                             }
@@ -170,12 +169,12 @@ public class MainTabPresenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e);
+                        Log.e("TAG",e.getMessage());
                     }
 
                     @Override
                     public void onNext(Web3ClientVersion web3ClientVersion) {
-                        Timber.e("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
+                        Log.i("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
                     }
                 });
     }
@@ -267,7 +266,7 @@ public class MainTabPresenter {
                     try {
                         imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
                     } catch (IOException e) {
-                        Timber.e(e);
+                        Log.e("TAG", e.getMessage());
                     }
                     break;
                 //TODO : ask for profile

@@ -116,7 +116,7 @@ public class MapFragmentPresenter {
                                 latitude,
                                 longitude,
                                 String.valueOf(System.currentTimeMillis()),
-                                posterImage)
+                                posterImage) //TODO : posterImage will return : Error processing transaction request: oversized data
                         .observable()
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())

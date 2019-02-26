@@ -20,10 +20,6 @@ public final class Constants {
         public static final BigInteger GAS_LIMIT = BigInteger.valueOf(176600);
         public static final String CONTRACT_ADDRESS_ALERT = "0x715b16b2e6d68ac3c4f270621e11e3a2798346a4";
         public static final String CONTRACT_ADDRESS_POSTER = "0xf3aa1f5b39301173e637db0425eb4ee55ad51cc6";
-        /*
-            PosterContract -> 0xf3aa1f5b39301173e637db0425eb4ee55ad51cc6
-            AlertContract -> 0x715b16b2e6d68ac3c4f270621e11e3a2798346a4
-         */
     }
 
     public static final class Map {
@@ -39,7 +35,5 @@ public final class Constants {
     public static final class Wallet {
         public static final String WALLET_FILE = "personalWallet";
 
-        public static final String LOCAL_NAME_CONTRACT = "localNameContract";
-        public static final String LOCAL_SMART_CONTRACT = "localSmartContract";
     }
 }

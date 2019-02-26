@@ -3,6 +3,7 @@ package com.ucm.informatica.spread.Model;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Log;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -11,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import timber.log.Timber;
 
 public class Event {
     private String title;
@@ -67,7 +67,7 @@ public class Event {
         try {
             addresses = geocoder.getFromLocation(Double.valueOf(latitude), Double.valueOf(longitude), 1);
         } catch (IOException e) {
-            Timber.e(e);
+            Log.e("TAG", e.getMessage());
         }
         return addresses.get(0).getLocality();
     }

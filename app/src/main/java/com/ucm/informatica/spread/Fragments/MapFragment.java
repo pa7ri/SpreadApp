@@ -18,6 +18,7 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -216,10 +217,19 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     @Override
-    public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isEvent){
+    public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert){
+        IconFactory iconFactory = IconFactory.getInstance((MainTabActivity) getActivity());
+        Icon icon;
+        if(isAlert){
+            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_alert));
+        } else{
+            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_poster));
+        }
+
         mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)
+                .icon(icon)
                 .snippet(markerDescription));
         regionMap = mapFragmentPresenter.getUpdatedContainedPointsInRegionMap(Point.fromLngLat(longitude,latitude),regionMap);
     }
