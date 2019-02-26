@@ -1,7 +1,7 @@
 package com.ucm.informatica.spread.Utils;
 
 import com.ucm.informatica.spread.Contracts.CoordContract;
-import com.ucm.informatica.spread.Contracts.NameContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -20,7 +20,7 @@ public class SmartContract implements Serializable {
         this.credentials = credentials;
     }
 
-    public CoordContract loadSmartContract(String addressContract) {
+    public CoordContract loadCoordSmartContract(String addressContract) {
         return CoordContract.load(
                 addressContract,
                 web3j,
@@ -29,35 +29,12 @@ public class SmartContract implements Serializable {
                 Constants.Contract.GAS_LIMIT);
     }
 
-    //TODO : remove not used method
-    public String writeNameToSmartContract(NameContract nameContract, String data) {
-        nameContract.setName(data).observable()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                    (result) -> {
-                        String s = result.getBlockNumber().toString();
-                        String s1 = result.getGasUsed().toString();
-                    } ,
-                    (error) -> {
-                        int a =4*2;
-                    }
-            );
-        return "Guardado";
-    }
-
-    public String readNameFromSmartContract(NameContract nameContract) {
-         nameContract.getName().observable()
-             .subscribeOn(Schedulers.newThread())
-             .observeOn(AndroidSchedulers.mainThread())
-             .subscribe(
-                 (result) -> {
-                     String s = result;
-                 } ,
-                 (error) -> {
-                    int a =4*2;
-                 }
-             );
-        return "Algo ha leido";
+    public PosterContract loadPosterSmartContract(String addressContract) {
+        return PosterContract.load(
+                addressContract,
+                web3j,
+                credentials,
+                Constants.Contract.GAS_PRICE,
+                Constants.Contract.GAS_LIMIT);
     }
 }

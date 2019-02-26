@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/posterImage"
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
         android:layout_height="250dp"
         android:padding="@dimen/mediumMargin"
         android:layout_marginTop="@dimen/smallMargin"

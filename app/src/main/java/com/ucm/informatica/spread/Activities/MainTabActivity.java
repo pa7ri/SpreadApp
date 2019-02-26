@@ -1,8 +1,10 @@
 package com.ucm.informatica.spread.Activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.provider.MediaStore;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,37 +12,39 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.maps.MapFragment;
 import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.Utils.Constants;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import timber.log.Timber;
 
-import static com.ucm.informatica.spread.Utils.Constants.Map.IMAGE_POSTER;
-import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
@@ -54,7 +58,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     private Map<Point, Region> regionMap = new HashMap<>();
 
     private List<Event> dataSmartContractList = new ArrayList<>();
-
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -84,22 +87,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_IMAGE_POSTER && resultCode == RESULT_OK){
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-            Bundle args = new Bundle();
-            args.putBoolean(UPDATE_MAP, true);
-            args.putByteArray(IMAGE_POSTER, bitmapToByteArray(imageBitmap));
-            fragmentAdapter.getItem(2).setArguments(args);
-            fragmentViewPager.setCurrentItem(2);
-        }
-    }
-
-    private byte[] bitmapToByteArray(Bitmap bitmap){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
+        mainPresenter.manageOnActivityResult(requestCode, resultCode, data, getContentResolver());
+        fragmentViewPager.setCurrentItem(2);
     }
 
     @Override
@@ -110,6 +99,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
         tabLayout = findViewById(R.id.tabs);
         fragmentViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.removeAllTabs();
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(fragmentViewPager));
         tabLayout.setupWithViewPager(fragmentViewPager);
 
@@ -140,6 +130,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     public CoordContract getCoordContract() { return mainPresenter.getCoordContract(); }
 
+    public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
+
     public Map getPolygonData() {
         return regionMap;
     }
@@ -152,12 +144,66 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         return mainPresenter.getLatestLocation();
     }
 
+    public void createPictureIntentPicker(int mode){
+        BottomSheetDialog dialogBuilder = new BottomSheetDialog(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_pick_image, null);
+
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        LinearLayout galleryLayout = dialogView.findViewById(R.id.galleryLayout);
+        ImageView galleryImage = dialogView.findViewById(R.id.galleryIconImage);
+        LinearLayout cameraLayout = dialogView.findViewById(R.id.cameraLayout);
+        ImageView cameraImage = dialogView.findViewById(R.id.cameraIconImage);
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String cameraPackage = cameraIntent.resolveActivity(getPackageManager()).getPackageName();
+
+        Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/");
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+        String galleryPackage = galleryIntent.resolveActivity(getPackageManager()).getPackageName();
+
+        try {
+            cameraImage.setImageDrawable(getPackageManager().getApplicationIcon(cameraPackage));
+            galleryImage.setImageDrawable(getPackageManager().getApplicationIcon(galleryPackage));
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e);
+        }
+
+        galleryLayout.setOnClickListener(view -> {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                if(mode == REQUEST_IMAGE_POSTER) {
+                    startActivityForResult(Intent.createChooser(intent, ""), REQUEST_IMAGE_POSTER_GALLERY);
+                } ///TODO : profile opt
+            dialogBuilder.dismiss();
+            });
+
+        cameraLayout.setOnClickListener(view -> {
+                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                    if(mode == REQUEST_IMAGE_POSTER) {
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_POSTER_CAMERA);
+                    }///TODO : profile opt
+                }
+            dialogBuilder.dismiss();
+            });
+
+        cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());
+
+        dialogBuilder.setContentView(dialogView);
+        dialogBuilder.show();
+    }
+
     private void setupViewPager() {
+        if(getSupportFragmentManager().getFragments() != null) {
+            getSupportFragmentManager().getFragments().clear();
+        }
         fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         for(int i=0; i< NUMBER_TABS; i++){
-            fragmentAdapter.addFragment(mainPresenter.getFragment(i), getResources().getString(tabNames[i]));
+            fragmentAdapter.addFragment(mainPresenter.getFragment(i));
         }
         fragmentViewPager.setAdapter(fragmentAdapter);
+        fragmentAdapter.notifyDataSetChanged();
     }
     private void setupTabContent(){
         TextView tabCurrent;

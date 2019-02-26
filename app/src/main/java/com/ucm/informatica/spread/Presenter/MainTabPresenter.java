@@ -1,15 +1,20 @@
 package com.ucm.informatica.spread.Presenter;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Utils.Constants;
 import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
@@ -28,6 +33,8 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
@@ -36,8 +43,13 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
+import static com.ucm.informatica.spread.Utils.Constants.Map.IMAGE_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
 public class MainTabPresenter {
 
@@ -49,9 +61,13 @@ public class MainTabPresenter {
     private Web3j web3j;
 
     private CoordContract coordContract;
+    private PosterContract posterContract;
     private SmartContract smartContract;
 
     private Location latestLocation;
+    private Bitmap imageBitmap;
+
+    private String mode = "";
 
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
@@ -75,7 +91,14 @@ public class MainTabPresenter {
                 fragment = new ProfileFragment();
                 break;
             case 2:
-                fragment = new MapFragment();
+                if(mode.equals(UPDATE_MAP)){
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] imagePoster = stream.toByteArray();
+                    fragment = MapFragment.newInstance(true, imagePoster);
+                } else {
+                    fragment = new MapFragment();
+                }
                 break;
             case 3:
                 fragment = new HistoricalFragment();
@@ -159,8 +182,14 @@ public class MainTabPresenter {
 
     public CoordContract getCoordContract(){
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
-        coordContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
+        coordContract = smartContract.loadCoordSmartContract(CONTRACT_ADDRESS);
         return coordContract;
+    }
+
+    public PosterContract getPosterContract(){
+        smartContract = new SmartContract(web3j, localWallet.getCredentials());
+        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS);
+        return posterContract;
     }
 
     public Location getLatestLocation() {
@@ -195,6 +224,31 @@ public class MainTabPresenter {
                         },
                         (error) -> mainTabView.showErrorTransition()
                 );
+    }
+
+    public void manageOnActivityResult(int requestCode, int resultCode, Intent data, ContentResolver contentResolver) {
+        if(resultCode == RESULT_OK) {
+            mode = UPDATE_MAP;
+            switch (requestCode) {
+                case REQUEST_IMAGE_POSTER_CAMERA:
+                    Bundle extras = data.getExtras();
+                    imageBitmap = (Bitmap) extras.get("data");
+
+                    break;
+                case REQUEST_IMAGE_POSTER_GALLERY:
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
+                    } catch (IOException e) {
+                        Timber.e(e);
+                    }
+                    break;
+                //TODO : ask for profile
+            }
+            mainTabView.initView();
+        }
+        else {
+            mode = "";
+        }
     }
 
     private class CustomLocationListener implements LocationListener {

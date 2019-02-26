@@ -2,6 +2,7 @@ package com.ucm.informatica.spread.Presenter;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.provider.MediaStore;
@@ -25,6 +26,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Model.LocationMode;
@@ -51,12 +53,17 @@ import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 public class MapFragmentPresenter {
 
     private CoordContract coordContract;
+    private PosterContract posterContract;
 
     private LocationMode currentMode = Auto; //default := Auto
 
     private MapFragmentView mapFragmentView;
     private MapFragment mapFragment;
     private String titleText, descriptionText;
+
+    private PinMode pinMode;
+    private byte[] posterImage;
+    private Bitmap posterImageBitmap;
 
     public MapFragmentPresenter(MapFragmentView mapFragmentView, MapFragment mapFragment) {
         this.mapFragment = mapFragment;
@@ -75,19 +82,42 @@ public class MapFragmentPresenter {
     }
 
     public void saveData(String title, String description, String longitude, String latitude) {
-        if(coordContract == null) {
-            coordContract = ((MainTabActivity) mapFragment.getActivity()).getCoordContract();
+        switch (pinMode) {
+            case Alert: {
+                if(coordContract == null) {
+                    coordContract = ((MainTabActivity) mapFragment.getActivity()).getCoordContract();
+                }
+
+                coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                (result) -> mapFragmentView.showFeedback()
+                                ,
+                                (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
+                        );
+            }
+            case Poster: {
+                if(posterContract == null) {
+                    posterContract = ((MainTabActivity) mapFragment.getActivity()).getPosterContract();
+                }
+
+                posterContract.addPoster(title,
+                                description,
+                                latitude,
+                                longitude,
+                                String.valueOf(System.currentTimeMillis()),
+                                posterImage)
+                        .observable()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                (result) -> mapFragmentView.showFeedback()
+                                ,
+                                (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
+                        );
+            }
         }
-
-        coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (result) -> mapFragmentView.showFeedback()
-                        ,
-                        (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
-                );
-
     }
 
     public Map<Point, Region> getUpdatedContainedPointsInRegionMap(Point marker, Map<Point, Region> regionMap){
@@ -96,7 +126,7 @@ public class MapFragmentPresenter {
         return regionMap;
     }
 
-    public void onAddLocationButtonPresed(LatLng selectedLocation){
+    public void onAddLocationButtonPressed(LatLng selectedLocation){
         mapFragmentView.showNewMarkerIntoMap( selectedLocation.getLatitude(),selectedLocation.getLongitude(),
                 titleText, descriptionText);
 
@@ -105,7 +135,6 @@ public class MapFragmentPresenter {
                 Double.toString(selectedLocation.getLatitude()));
         onSwitchLocationMode();
     }
-
 
     public void getPolygonLayer(@NonNull Style style, Map<Point,Region> regionMap){
         List<List<Point>> singlePolygon;
@@ -166,7 +195,10 @@ public class MapFragmentPresenter {
                     ((p2.longitude() - p1.longitude())*(p2.longitude() - p1.longitude())));
     }
 
-    public void popUpDialog(PinMode pinMode, String title, Bitmap image) {
+    public void popUpDialog(PinMode pMode, String title, byte[] image) {
+        pinMode = pMode;
+        posterImage = image;
+
         //Todo: make a class as dialog builder and organise it
         final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(mapFragment.getContext())).create();
         LayoutInflater inflater = mapFragment.getLayoutInflater();
@@ -190,8 +222,12 @@ public class MapFragmentPresenter {
                 cameraFloatingButton.setVisibility(View.GONE);
                 break;
             case Poster:
-                if(image!=null){
-                    posterImageView.setImageBitmap(image);
+                if(posterImage!=null){
+                    if(posterImageBitmap!=null){
+                        posterImageBitmap.recycle();
+                    }
+                    posterImageBitmap  = BitmapFactory.decodeByteArray(posterImage, 0, posterImage.length);
+                    posterImageView.setImageBitmap(posterImageBitmap);
                 }
                 posterImageView.setVisibility(View.VISIBLE);
                 cameraFloatingButton.setVisibility(View.VISIBLE);
@@ -232,10 +268,8 @@ public class MapFragmentPresenter {
             dialogBuilder.dismiss();
         });
         cameraFloatingButton.setOnClickListener(view -> {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(mapFragment.getActivity().getPackageManager()) != null) {
-                ((MainTabActivity) mapFragment.getActivity()).startActivityForResult(takePictureIntent, REQUEST_IMAGE_POSTER);
-            }
+            ((MainTabActivity) mapFragment.getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+            dialogBuilder.dismiss();
         });
         cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());
 

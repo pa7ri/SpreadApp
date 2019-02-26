@@ -7,6 +7,8 @@ public final class Constants {
     public static final int NUMBER_TABS = 5;
     public static final int REQUEST_IMAGE_POSTER = 0;
     public static final int REQUEST_IMAGE_PROFILE = 1;
+    public static final int REQUEST_IMAGE_POSTER_CAMERA = 2;
+    public static final int REQUEST_IMAGE_POSTER_GALLERY = 3;
 
 
 

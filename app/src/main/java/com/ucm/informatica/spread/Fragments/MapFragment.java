@@ -65,25 +65,34 @@ public class MapFragment extends Fragment implements MapFragmentView {
     private Map<Point, Region> regionMap = new HashMap<>();
 
     private Boolean isUpdated = false;
-    private Bitmap imageBitmap;
+    private byte[] imageByteArray;
+    private Bitmap nuevoBitmap;
 
 
     public MapFragment() { }
 
+    public static MapFragment newInstance(Boolean param1, byte[] param2) {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(UPDATE_MAP, param1);
+        args.putByteArray(IMAGE_POSTER, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            isUpdated = getArguments().getBoolean(UPDATE_MAP);
-            byte[] imageByteArray = getArguments().getByteArray(IMAGE_POSTER);
-            imageBitmap = byteArrayToBitmap(imageByteArray);
-        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        if (getArguments() != null) {
+            isUpdated = getArguments().getBoolean(UPDATE_MAP);
+            imageByteArray = getArguments().getByteArray(IMAGE_POSTER);
+            nuevoBitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
+        }
         Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
         view = inflater.inflate(R.layout.fragment_map, container, false);
         mapFragmentPresenter = new MapFragmentPresenter(this,this);
@@ -150,7 +159,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
         switchLayerButton = view.findViewById(R.id.switchLayerButton);
         if(isUpdated) {
             isUpdated = false;
-            mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
+            mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageByteArray);
+            //imageByteArray.recycle();
         }
     }
 
@@ -178,7 +188,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
             LatLng selectedLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
                     (markerImage.getLeft() + (markerImage.getWidth()/2), markerImage.getBottom()));
 
-            mapFragmentPresenter.onAddLocationButtonPresed(selectedLocation);
+            mapFragmentPresenter.onAddLocationButtonPressed(selectedLocation);
         });
 
         exitManualModeButton.setOnClickListener(v -> mapFragmentPresenter.onSwitchLocationMode());
@@ -242,7 +252,4 @@ public class MapFragment extends Fragment implements MapFragmentView {
         }
     }
 
-    private Bitmap byteArrayToBitmap(byte[] byteArray){
-       return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-    }
 }

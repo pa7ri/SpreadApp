@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -28,7 +29,8 @@ public class LocalWallet {
     private Credentials walletCredentials;
 
     private SmartContract smartContract;
-    private CoordContract nameContract;
+    private CoordContract coordContract;
+    private PosterContract posterContract;
 
     private Activity view;
 
@@ -64,7 +66,8 @@ public class LocalWallet {
 
     public void loadContract(Web3j web3j){
         smartContract = new SmartContract(web3j, walletCredentials);
-        nameContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
+        coordContract = smartContract.loadCoordSmartContract(CONTRACT_ADDRESS);
+        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS);
     }
 
     public boolean existWallet(){

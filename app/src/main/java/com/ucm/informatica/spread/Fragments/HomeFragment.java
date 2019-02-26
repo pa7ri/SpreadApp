@@ -17,7 +17,10 @@ import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
+import pl.aprilapps.easyphotopicker.EasyImage;
+
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 
 
 public class HomeFragment extends Fragment implements HomeFragmentView{
@@ -61,12 +64,8 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
             homeFragmentPresenter.onHelpButtonPressed(location,getResources());
         });
         cameraButton.setOnClickListener(view -> {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                ((MainTabActivity) getActivity()).startActivityForResult(takePictureIntent, REQUEST_IMAGE_POSTER);
-            }
-        }
-        );
+            ((MainTabActivity) getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+        });
     }
 
     @Override
