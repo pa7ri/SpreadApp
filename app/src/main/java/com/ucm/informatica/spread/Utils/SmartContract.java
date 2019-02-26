@@ -1,6 +1,6 @@
 package com.ucm.informatica.spread.Utils;
 
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
 
 import org.web3j.crypto.Credentials;
@@ -8,8 +8,6 @@ import org.web3j.protocol.Web3j;
 
 import java.io.Serializable;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class SmartContract implements Serializable {
     private Web3j web3j;
@@ -20,8 +18,8 @@ public class SmartContract implements Serializable {
         this.credentials = credentials;
     }
 
-    public CoordContract loadCoordSmartContract(String addressContract) {
-        return CoordContract.load(
+    public AlertContract loadAlertSmartContract(String addressContract) {
+        return AlertContract.load(
                 addressContract,
                 web3j,
                 credentials,

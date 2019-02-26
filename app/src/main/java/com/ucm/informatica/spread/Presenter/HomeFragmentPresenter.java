@@ -3,7 +3,7 @@ package com.ucm.informatica.spread.Presenter;
 import android.content.res.Resources;
 import android.location.Location;
 
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
@@ -12,13 +12,13 @@ import rx.schedulers.Schedulers;
 
 public class HomeFragmentPresenter {
 
-    private CoordContract coordContract;
+    private AlertContract alertContract;
 
     private HomeFragmentView homeFragmentView;
 
-    public HomeFragmentPresenter(HomeFragmentView homeFragmentView, CoordContract coordContract){
+    public HomeFragmentPresenter(HomeFragmentView homeFragmentView, AlertContract alertContract){
         this.homeFragmentView = homeFragmentView;
-        this.coordContract = coordContract;
+        this.alertContract = alertContract;
     }
 
     public void onHelpButtonPressed(Location location, Resources resources) {
@@ -33,9 +33,9 @@ public class HomeFragmentPresenter {
     }
 
     private void saveData(String title, String description, String longitude, String latitude) {
-        if(coordContract != null) { //|| !nameContract.isValid()) {
+        if(alertContract != null) { //|| !nameContract.isValid()) {
             // TODO : isValid se ejecuta sincronamente tonses cuidado si lo lanzas dos veces sin haber acabado, va a saltar NetworkorMainException
-            coordContract.addEvent(title, description, latitude, longitude, String.valueOf(System.currentTimeMillis())).observable()
+            alertContract.addAlert(title, description, latitude, longitude, String.valueOf(System.currentTimeMillis())).observable()
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

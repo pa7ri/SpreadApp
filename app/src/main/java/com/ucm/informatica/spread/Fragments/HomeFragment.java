@@ -17,7 +17,6 @@ import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
-import pl.aprilapps.easyphotopicker.EasyImage;
 
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
@@ -45,7 +44,7 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
         homeFragmentPresenter = new HomeFragmentPresenter(this,
-                    ((MainTabActivity) getActivity()).getCoordContract());
+                    ((MainTabActivity) getActivity()).getAlertContract());
         homeFragmentPresenter.start();
         return view;
     }

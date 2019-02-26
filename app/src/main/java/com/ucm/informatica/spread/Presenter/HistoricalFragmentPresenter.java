@@ -20,7 +20,7 @@ public class HistoricalFragmentPresenter {
     }
 
     public void start(){
-        List<Event> historicalList = ((MainTabActivity)historicalFragment.getActivity()).getDataSmartContract();
+        List<Event> historicalList = ((MainTabActivity)historicalFragment.getActivity()).getDataEventSmartContract();
         CustomRecyclerAdapter customRecyclerAdapter = new CustomRecyclerAdapter(historicalFragment.getContext(), historicalList);
         historicalFragmentView.initView(customRecyclerAdapter);
     }

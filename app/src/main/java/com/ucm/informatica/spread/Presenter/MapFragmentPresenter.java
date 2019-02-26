@@ -25,12 +25,13 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Model.LocationMode;
 import com.ucm.informatica.spread.Model.PinMode;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MapFragmentView;
@@ -52,7 +53,7 @@ import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MapFragmentPresenter {
 
-    private CoordContract coordContract;
+    private AlertContract alertContract;
     private PosterContract posterContract;
 
     private LocationMode currentMode = Auto; //default := Auto
@@ -71,24 +72,32 @@ public class MapFragmentPresenter {
     }
 
     public void start(){
-        List<Event> historicalList = ((MainTabActivity)mapFragment.getActivity()).getDataSmartContract();
-        for (Event event:historicalList) {
+        List<Event> historicalEventList = ((MainTabActivity)mapFragment.getActivity()).getDataEventSmartContract();
+        List<Poster> historicalPosterList = ((MainTabActivity)mapFragment.getActivity()).getDataPosterSmartContract();
+        for (Event event:historicalEventList) {
             mapFragmentView.showNewMarkerIntoMap(
                     event.getLatitude(),
                     event.getLongitude(),
                     event.getTitle(),
-                    event.getDescription());
+                    event.getDescription(), true);
+        }
+        for (Event event:historicalPosterList) {
+            mapFragmentView.showNewMarkerIntoMap(
+                    event.getLatitude(),
+                    event.getLongitude(),
+                    event.getTitle(),
+                    event.getDescription(), false);
         }
     }
 
     public void saveData(String title, String description, String longitude, String latitude) {
         switch (pinMode) {
             case Alert: {
-                if(coordContract == null) {
-                    coordContract = ((MainTabActivity) mapFragment.getActivity()).getCoordContract();
+                if(alertContract == null) {
+                    alertContract = ((MainTabActivity) mapFragment.getActivity()).getAlertContract();
                 }
 
-                coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
+                alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -128,7 +137,7 @@ public class MapFragmentPresenter {
 
     public void onAddLocationButtonPressed(LatLng selectedLocation){
         mapFragmentView.showNewMarkerIntoMap( selectedLocation.getLatitude(),selectedLocation.getLongitude(),
-                titleText, descriptionText);
+                titleText, descriptionText, pinMode.equals(PinMode.Alert));
 
         saveData(titleText,descriptionText,
                 Double.toString(selectedLocation.getLongitude()),
@@ -252,7 +261,7 @@ public class MapFragmentPresenter {
                 Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getLocation();
                 if (latestLocation != null) {
                     mapFragmentView.showNewMarkerIntoMap(latestLocation.getLatitude(),
-                            latestLocation.getLongitude(), titleText, descriptionText);
+                            latestLocation.getLongitude(), titleText, descriptionText, pMode.equals(PinMode.Alert));
 
                     saveData(titleText,descriptionText,
                             Double.toString(latestLocation.getLongitude()),

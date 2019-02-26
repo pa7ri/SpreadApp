@@ -16,6 +16,8 @@ import android.widget.ImageView;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -160,7 +162,6 @@ public class MapFragment extends Fragment implements MapFragmentView {
         if(isUpdated) {
             isUpdated = false;
             mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageByteArray);
-            //imageByteArray.recycle();
         }
     }
 
@@ -215,7 +216,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     @Override
-    public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription){
+    public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isEvent){
         mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)

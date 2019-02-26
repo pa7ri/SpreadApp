@@ -14,9 +14,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Utils.Constants;
-import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
@@ -45,8 +45,8 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
-import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
-import static com.ucm.informatica.spread.Utils.Constants.Map.IMAGE_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
@@ -60,7 +60,7 @@ public class MainTabPresenter {
     private LocalWallet localWallet;
     private Web3j web3j;
 
-    private CoordContract coordContract;
+    private AlertContract alertContract;
     private PosterContract posterContract;
     private SmartContract smartContract;
 
@@ -180,15 +180,15 @@ public class MainTabPresenter {
                 });
     }
 
-    public CoordContract getCoordContract(){
+    public AlertContract getAlertContract(){
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
-        coordContract = smartContract.loadCoordSmartContract(CONTRACT_ADDRESS);
-        return coordContract;
+        alertContract = smartContract.loadAlertSmartContract(CONTRACT_ADDRESS_ALERT);
+        return alertContract;
     }
 
     public PosterContract getPosterContract(){
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
-        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS);
+        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS_POSTER);
         return posterContract;
     }
 
@@ -197,26 +197,54 @@ public class MainTabPresenter {
     }
 
     public void loadData() {
-        if(coordContract == null) { //|| !nameContract.isValid()) {
-            coordContract = context.getCoordContract();
+        if(alertContract == null) { //|| !nameContract.isValid()) {
+            alertContract = context.getAlertContract();
         }
-        coordContract.getEventsCount().observable()
+        alertContract.getAlertsCount().observable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (countCoords) -> {
                             for(int i =0; i<countCoords.intValue(); i++){
-                                coordContract.getEventByIndex(BigInteger.valueOf(i)).observable()
+                                alertContract.getAlertByIndex(BigInteger.valueOf(i)).observable()
                                         .subscribeOn(Schedulers.newThread())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(
                                                 (result) ->
-                                                        mainTabView.loadDataSmartContract(
+                                                        mainTabView.loadDataEventSmartContract(
                                                                 result.getValue1(),
                                                                 result.getValue2(),
                                                                 result.getValue3(),
                                                                 result.getValue4(),
                                                                 result.getValue5())
+                                                ,
+                                                (error) -> mainTabView.showErrorTransition()
+                                        );
+                            }
+                        },
+                        (error) -> mainTabView.showErrorTransition()
+                );
+        if(posterContract == null) { //|| !nameContract.isValid()) {
+            posterContract = context.getPosterContract();
+        }
+        posterContract.getPostersCount().observable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (countCoords) -> {
+                            for(int i =0; i<countCoords.intValue(); i++){
+                                posterContract.getPosterByIndex(BigInteger.valueOf(i)).observable()
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                                (result) ->
+                                                        mainTabView.loadDataPosterSmartContract(
+                                                                result.getValue1(),
+                                                                result.getValue2(),
+                                                                result.getValue3(),
+                                                                result.getValue4(),
+                                                                result.getValue5(),
+                                                                result.getValue6())
                                                 ,
                                                 (error) -> mainTabView.showErrorTransition()
                                         );

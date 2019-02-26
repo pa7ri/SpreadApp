@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
 
 import org.web3j.crypto.CipherException;
@@ -20,7 +20,8 @@ import java.security.NoSuchProviderException;
 
 import timber.log.Timber;
 
-import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILE;
 
 public class LocalWallet {
@@ -29,7 +30,7 @@ public class LocalWallet {
     private Credentials walletCredentials;
 
     private SmartContract smartContract;
-    private CoordContract coordContract;
+    private AlertContract alertContract;
     private PosterContract posterContract;
 
     private Activity view;
@@ -66,8 +67,8 @@ public class LocalWallet {
 
     public void loadContract(Web3j web3j){
         smartContract = new SmartContract(web3j, walletCredentials);
-        coordContract = smartContract.loadCoordSmartContract(CONTRACT_ADDRESS);
-        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS);
+        alertContract = smartContract.loadAlertSmartContract(CONTRACT_ADDRESS_ALERT);
+        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS_POSTER);
     }
 
     public boolean existWallet(){

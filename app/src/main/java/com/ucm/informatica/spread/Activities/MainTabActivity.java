@@ -21,9 +21,10 @@ import android.widget.TextView;
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
@@ -57,7 +58,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
-    private List<Event> dataSmartContractList = new ArrayList<>();
+    private List<Event> dataEventSmartContractList = new ArrayList<>();
+    private List<Poster> dataPosterSmartContractList = new ArrayList<>();
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -107,8 +109,13 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
 
     @Override
-    public void loadDataSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
-        dataSmartContractList.add(new Event(this, title,description, latitude, longitude, dataTime));
+    public void loadDataEventSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
+        dataEventSmartContractList.add(new Event(this, title,description, latitude, longitude, dataTime));
+    }
+
+    @Override
+    public void loadDataPosterSmartContract(String title, String description, String latitude, String longitude, String dataTime, byte[] image) {
+        dataPosterSmartContractList.add(new Poster(this, title,description, latitude, longitude, dataTime, image));
     }
 
     @Override
@@ -128,7 +135,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     }
 
-    public CoordContract getCoordContract() { return mainPresenter.getCoordContract(); }
+    public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
 
     public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
 
@@ -136,8 +143,12 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         return regionMap;
     }
 
-    public List<Event> getDataSmartContract() {
-        return dataSmartContractList;
+    public List<Event> getDataEventSmartContract() {
+        return dataEventSmartContractList;
+    }
+
+    public List<Poster> getDataPosterSmartContract() {
+        return dataPosterSmartContractList;
     }
 
     public Location getLocation() {
