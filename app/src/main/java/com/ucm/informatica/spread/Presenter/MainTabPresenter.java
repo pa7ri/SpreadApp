@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
@@ -25,6 +26,7 @@ import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
 import com.ucm.informatica.spread.Utils.LocalWallet;
 import com.ucm.informatica.spread.Utils.SmartContract;
+import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
 
 import org.web3j.protocol.Web3j;
@@ -47,7 +49,6 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
-import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
@@ -66,8 +67,6 @@ public class MainTabPresenter {
 
     private Location latestLocation;
     private Bitmap imageBitmap;
-
-    private String mode = "";
 
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
@@ -91,14 +90,7 @@ public class MainTabPresenter {
                 fragment = new ProfileFragment();
                 break;
             case 2:
-                if(mode.equals(UPDATE_MAP)){
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte[] imagePoster = stream.toByteArray();
-                    fragment = MapFragment.newInstance(true, imagePoster);
-                } else {
-                    fragment = new MapFragment();
-                }
+                fragment = new MapFragment();
                 break;
             case 3:
                 fragment = new HistoricalFragment();
@@ -226,55 +218,32 @@ public class MainTabPresenter {
         if(posterContract == null) { //|| !nameContract.isValid()) {
             posterContract = context.getPosterContract();
         }
-        posterContract.getPostersCount().observable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (countCoords) -> {
-                            for(int i =0; i<countCoords.intValue(); i++){
-                                posterContract.getPosterByIndex(BigInteger.valueOf(i)).observable()
-                                        .subscribeOn(Schedulers.newThread())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(
-                                                (result) ->
-                                                        mainTabView.loadDataPosterSmartContract(
-                                                                result.getValue1(),
-                                                                result.getValue2(),
-                                                                result.getValue3(),
-                                                                result.getValue4(),
-                                                                result.getValue5(),
-                                                                result.getValue6())
-                                                ,
-                                                (error) -> mainTabView.showErrorTransition()
-                                        );
-                            }
-                        },
-                        (error) -> mainTabView.showErrorTransition()
-                );
+        //TODO : load data from poster
     }
 
-    public void manageOnActivityResult(int requestCode, int resultCode, Intent data, ContentResolver contentResolver) {
+    public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
+                                       ContentResolver contentResolver, Fragment updatedFragment,
+                                       ViewPagerTab fragmentViewPager) {
         if(resultCode == RESULT_OK) {
-            mode = UPDATE_MAP;
             switch (requestCode) {
                 case REQUEST_IMAGE_POSTER_CAMERA:
                     Bundle extras = data.getExtras();
                     imageBitmap = (Bitmap) extras.get("data");
-
+                    fragmentViewPager.setCurrentItem(2);
+                    ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
                     break;
                 case REQUEST_IMAGE_POSTER_GALLERY:
                     try {
                         imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
+                        fragmentViewPager.setCurrentItem(2);
+                        ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
                     } catch (IOException e) {
                         Log.e("TAG", e.getMessage());
                     }
                     break;
                 //TODO : ask for profile
             }
-            mainTabView.initView();
-        }
-        else {
-            mode = "";
+
         }
     }
 

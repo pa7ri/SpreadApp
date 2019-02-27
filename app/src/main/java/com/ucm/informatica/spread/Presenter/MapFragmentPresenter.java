@@ -1,11 +1,8 @@
 package com.ucm.informatica.spread.Presenter;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -63,8 +60,7 @@ public class MapFragmentPresenter {
     private String titleText, descriptionText;
 
     private PinMode pinMode;
-    private byte[] posterImage;
-    private Bitmap posterImageBitmap;
+    private Bitmap posterImage;
 
     public MapFragmentPresenter(MapFragmentView mapFragmentView, MapFragment mapFragment) {
         this.mapFragment = mapFragment;
@@ -111,20 +107,7 @@ public class MapFragmentPresenter {
                     posterContract = ((MainTabActivity) mapFragment.getActivity()).getPosterContract();
                 }
 
-                posterContract.addPoster(title,
-                                description,
-                                latitude,
-                                longitude,
-                                String.valueOf(System.currentTimeMillis()),
-                                posterImage) //TODO : posterImage will return : Error processing transaction request: oversized data
-                        .observable()
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                (result) -> mapFragmentView.showFeedback()
-                                ,
-                                (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
-                        );
+                //TODO : store data into IPFS and has into ethereum
             }
         }
     }
@@ -204,7 +187,7 @@ public class MapFragmentPresenter {
                     ((p2.longitude() - p1.longitude())*(p2.longitude() - p1.longitude())));
     }
 
-    public void popUpDialog(PinMode pMode, String title, byte[] image) {
+    public void popUpDialog(PinMode pMode, String title, Bitmap image) {
         pinMode = pMode;
         posterImage = image;
 
@@ -232,11 +215,7 @@ public class MapFragmentPresenter {
                 break;
             case Poster:
                 if(posterImage!=null){
-                    if(posterImageBitmap!=null){
-                        posterImageBitmap.recycle();
-                    }
-                    posterImageBitmap  = BitmapFactory.decodeByteArray(posterImage, 0, posterImage.length);
-                    posterImageView.setImageBitmap(posterImageBitmap);
+                    posterImageView.setImageBitmap(posterImage);
                 }
                 posterImageView.setVisibility(View.VISIBLE);
                 cameraFloatingButton.setVisibility(View.VISIBLE);

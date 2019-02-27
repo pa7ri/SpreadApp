@@ -28,8 +28,6 @@ public final class Constants {
         public static final String POLYGON_LAYER ="polygonLayer";
         public static final String POINT_LAYER ="pointLayer";
 
-        public static final String UPDATE_MAP = "UPDATE_MAP";
-        public static final String IMAGE_POSTER = "IMAGE_POSTER";
     }
 
     public static final class Wallet {

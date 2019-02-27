@@ -88,8 +88,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mainPresenter.manageOnActivityResult(requestCode, resultCode, data, getContentResolver());
-        fragmentViewPager.setCurrentItem(2);
+        mainPresenter.manageOnActivityResult(requestCode, resultCode, data, getContentResolver(),
+                fragmentAdapter.getItem(2), fragmentViewPager);
     }
 
     @Override

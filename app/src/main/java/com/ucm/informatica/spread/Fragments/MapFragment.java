@@ -18,7 +18,6 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -40,7 +39,6 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
-import static com.ucm.informatica.spread.Utils.Constants.Map.IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
@@ -49,7 +47,6 @@ import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
-import static com.ucm.informatica.spread.Utils.Constants.Map.UPDATE_MAP;
 
 public class MapFragment extends Fragment implements MapFragmentView {
 
@@ -67,21 +64,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
-    private Boolean isUpdated = false;
-    private byte[] imageByteArray;
-    private Bitmap nuevoBitmap;
-
 
     public MapFragment() { }
-
-    public static MapFragment newInstance(Boolean param1, byte[] param2) {
-        MapFragment fragment = new MapFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(UPDATE_MAP, param1);
-        args.putByteArray(IMAGE_POSTER, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,11 +75,6 @@ public class MapFragment extends Fragment implements MapFragmentView {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (getArguments() != null) {
-            isUpdated = getArguments().getBoolean(UPDATE_MAP);
-            imageByteArray = getArguments().getByteArray(IMAGE_POSTER);
-            nuevoBitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
-        }
         Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
         view = inflater.inflate(R.layout.fragment_map, container, false);
         mapFragmentPresenter = new MapFragmentPresenter(this,this);
@@ -160,10 +139,6 @@ public class MapFragment extends Fragment implements MapFragmentView {
         addLocationButton = view.findViewById(R.id.saveLocationButton);
         markerImage = view.findViewById(R.id.markerImage);
         switchLayerButton = view.findViewById(R.id.switchLayerButton);
-        if(isUpdated) {
-            isUpdated = false;
-            mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageByteArray);
-        }
     }
 
     private void setupListeners() {
@@ -261,6 +236,10 @@ public class MapFragment extends Fragment implements MapFragmentView {
             addPinDial.setVisibility(View.GONE);
             switchLayerButton.setVisibility(View.GONE);
         }
+    }
+
+    public void renderContentWithPicture(Bitmap imageBitmap){
+        mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
     }
 
 }
