@@ -1,13 +1,17 @@
 package com.ucm.informatica.spread.Presenter;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.mapbox.geojson.Point;
@@ -18,10 +22,13 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Event;
 import com.ucm.informatica.spread.Model.LocationMode;
+import com.ucm.informatica.spread.Model.PinMode;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MapFragmentView;
@@ -39,10 +46,12 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
 import static com.ucm.informatica.spread.Model.LocationMode.Manual;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MapFragmentPresenter {
 
-    private CoordContract coordContract;
+    private AlertContract alertContract;
+    private PosterContract posterContract;
 
     private LocationMode currentMode = Auto; //default := Auto
 
@@ -50,36 +59,57 @@ public class MapFragmentPresenter {
     private MapFragment mapFragment;
     private String titleText, descriptionText;
 
+    private PinMode pinMode;
+    private Bitmap posterImage;
+
     public MapFragmentPresenter(MapFragmentView mapFragmentView, MapFragment mapFragment) {
         this.mapFragment = mapFragment;
         this.mapFragmentView = mapFragmentView;
     }
 
     public void start(){
-        List<Event> historicalList = ((MainTabActivity)mapFragment.getActivity()).getDataSmartContract();
-        for (Event event:historicalList) {
+        List<Event> historicalEventList = ((MainTabActivity)mapFragment.getActivity()).getDataEventSmartContract();
+        List<Poster> historicalPosterList = ((MainTabActivity)mapFragment.getActivity()).getDataPosterSmartContract();
+        for (Event event:historicalEventList) {
             mapFragmentView.showNewMarkerIntoMap(
                     event.getLatitude(),
                     event.getLongitude(),
                     event.getTitle(),
-                    event.getDescription());
+                    event.getDescription(), true);
+        }
+        for (Event event:historicalPosterList) {
+            mapFragmentView.showNewMarkerIntoMap(
+                    event.getLatitude(),
+                    event.getLongitude(),
+                    event.getTitle(),
+                    event.getDescription(), false);
         }
     }
 
     public void saveData(String title, String description, String longitude, String latitude) {
-        if(coordContract == null) {
-            coordContract = ((MainTabActivity) mapFragment.getActivity()).getNameContract();
+        switch (pinMode) {
+            case Alert: {
+                if(alertContract == null) {
+                    alertContract = ((MainTabActivity) mapFragment.getActivity()).getAlertContract();
+                }
+
+                alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                (result) -> mapFragmentView.showFeedback()
+                                ,
+                                (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
+                        );
+            }
+            case Poster: {
+                if(posterContract == null) {
+                    posterContract = ((MainTabActivity) mapFragment.getActivity()).getPosterContract();
+                }
+
+                //TODO : store data into IPFS and has into ethereum
+            }
         }
-
-        coordContract.addEvent(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (result) -> mapFragmentView.showFeedback()
-                        ,
-                        (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
-                );
-
     }
 
     public Map<Point, Region> getUpdatedContainedPointsInRegionMap(Point marker, Map<Point, Region> regionMap){
@@ -88,16 +118,15 @@ public class MapFragmentPresenter {
         return regionMap;
     }
 
-    public void onAddLocationButtonPresed(LatLng selectedLocation){
+    public void onAddLocationButtonPressed(LatLng selectedLocation){
         mapFragmentView.showNewMarkerIntoMap( selectedLocation.getLatitude(),selectedLocation.getLongitude(),
-                titleText, descriptionText);
+                titleText, descriptionText, pinMode.equals(PinMode.Alert));
 
         saveData(titleText,descriptionText,
                 Double.toString(selectedLocation.getLongitude()),
                 Double.toString(selectedLocation.getLatitude()));
         onSwitchLocationMode();
     }
-
 
     public void getPolygonLayer(@NonNull Style style, Map<Point,Region> regionMap){
         List<List<Point>> singlePolygon;
@@ -118,9 +147,12 @@ public class MapFragmentPresenter {
         }
     }
 
-    public LocationMode getCurrentMode() {
-        return currentMode;
+    public void onSwitchLocationMode() {
+        if(currentMode==Auto) currentMode = Manual;
+        else currentMode = Auto;
+        mapFragmentView.renderLocationView(currentMode);
     }
+
 
     private int getColorPolygon(int numContainedPoints){
         int color;
@@ -155,16 +187,40 @@ public class MapFragmentPresenter {
                     ((p2.longitude() - p1.longitude())*(p2.longitude() - p1.longitude())));
     }
 
-    public void popUpDialog(){
+    public void popUpDialog(PinMode pMode, String title, Bitmap image) {
+        pinMode = pMode;
+        posterImage = image;
+
+        //Todo: make a class as dialog builder and organise it
         final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(mapFragment.getContext())).create();
         LayoutInflater inflater = mapFragment.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_location, null);
 
+
+        ImageView posterImageView = dialogView.findViewById(R.id.posterImage);
+        FloatingActionButton cameraFloatingButton = dialogView.findViewById(R.id.addPosterButton);
+        TextView titleTextView = dialogView.findViewById(R.id.titleTextView);
         EditText infoTitleEditText = dialogView.findViewById(R.id.infoTitleEditText);
         EditText infoDescriptionEditText = dialogView.findViewById(R.id.infoDescriptionEditText);
-        Button buttonCancel = dialogView.findViewById(R.id.cancelButton);
-        Button buttonSubmit = dialogView.findViewById(R.id.storeButton);
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button submitButton = dialogView.findViewById(R.id.storeButton);
         ToggleButton toggleButton = dialogView.findViewById(R.id.toggleButton);
+
+        titleTextView.setText(title);
+
+        switch (pinMode) {
+            case Alert:
+                posterImageView.setVisibility(View.GONE);
+                cameraFloatingButton.setVisibility(View.GONE);
+                break;
+            case Poster:
+                if(posterImage!=null){
+                    posterImageView.setImageBitmap(posterImage);
+                }
+                posterImageView.setVisibility(View.VISIBLE);
+                cameraFloatingButton.setVisibility(View.VISIBLE);
+                break;
+        }
 
         toggleButton.setOnClickListener(view -> {
             if(((ToggleButton) view).isChecked()) {
@@ -174,7 +230,7 @@ public class MapFragmentPresenter {
             }
         });
 
-        buttonSubmit.setOnClickListener(view -> {
+        submitButton.setOnClickListener(view -> {
             titleText = infoTitleEditText.getText().toString().equals("")?
                     mapFragment.getResources().getString(R.string.no_text):infoTitleEditText.getText().toString();
             descriptionText = infoDescriptionEditText.getText().toString().equals("")?
@@ -184,7 +240,7 @@ public class MapFragmentPresenter {
                 Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getLocation();
                 if (latestLocation != null) {
                     mapFragmentView.showNewMarkerIntoMap(latestLocation.getLatitude(),
-                            latestLocation.getLongitude(), titleText, descriptionText);
+                            latestLocation.getLongitude(), titleText, descriptionText, pMode.equals(PinMode.Alert));
 
                     saveData(titleText,descriptionText,
                             Double.toString(latestLocation.getLongitude()),
@@ -199,16 +255,13 @@ public class MapFragmentPresenter {
             }
             dialogBuilder.dismiss();
         });
-        buttonCancel.setOnClickListener(view -> dialogBuilder.dismiss());
+        cameraFloatingButton.setOnClickListener(view -> {
+            ((MainTabActivity) mapFragment.getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+            dialogBuilder.dismiss();
+        });
+        cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());
 
         dialogBuilder.setView(dialogView);
         dialogBuilder.show();
     }
-
-    public void onSwitchLocationMode() {
-        if(currentMode==Auto) currentMode = Manual;
-        else currentMode = Auto;
-        mapFragmentView.renderLocationView(currentMode);
-    }
-
 }

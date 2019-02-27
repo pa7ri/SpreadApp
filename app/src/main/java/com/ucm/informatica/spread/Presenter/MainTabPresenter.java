@@ -1,17 +1,24 @@
 package com.ucm.informatica.spread.Presenter;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Contracts.AlertContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Utils.Constants;
-import com.ucm.informatica.spread.Contracts.CoordContract;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
@@ -19,6 +26,7 @@ import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
 import com.ucm.informatica.spread.Utils.LocalWallet;
 import com.ucm.informatica.spread.Utils.SmartContract;
+import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
 
 import org.web3j.protocol.Web3j;
@@ -28,18 +36,21 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
-import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
-import static com.ucm.informatica.spread.Utils.Constants.Wallet.LOCAL_NAME_CONTRACT;
-import static com.ucm.informatica.spread.Utils.Constants.Wallet.LOCAL_SMART_CONTRACT;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
 public class MainTabPresenter {
 
@@ -50,10 +61,12 @@ public class MainTabPresenter {
     private LocalWallet localWallet;
     private Web3j web3j;
 
-    private CoordContract coordContract;
+    private AlertContract alertContract;
+    private PosterContract posterContract;
     private SmartContract smartContract;
 
     private Location latestLocation;
+    private Bitmap imageBitmap;
 
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
@@ -102,7 +115,7 @@ public class MainTabPresenter {
                         .sendAsync()
                         .get();
             } catch (InterruptedException | ExecutionException e) {
-                Timber.e(e);
+                Log.e("TAG",e.getMessage());
             }
         }
         return ethGetBalance != null ? ethGetBalance.getBalance().toString() + " ETH" : "No disponible";
@@ -131,7 +144,6 @@ public class MainTabPresenter {
                 .subscribe(new Observer<Web3ClientVersion>() {
                     @Override
                     public void onCompleted() {
-                            Timber.e("Conexión completada");
                             if (!localWallet.existWallet()) {
                                 localWallet.createWallet(localWallet.getPasswordWallet(), walletPath);
                             }
@@ -140,7 +152,7 @@ public class MainTabPresenter {
                             if (filenameWallet != null && !filenameWallet.isEmpty()) {
                                 localWallet.setCredentials(localWallet.loadWallet(passwordWallet, walletPath));
                                 localWallet.loadContract(web3j);
-                                mainTabView.initViewContent();
+                                mainTabView.initView();
                                 mainTabView.hideLoading();
 
                                 loadData();
@@ -149,24 +161,26 @@ public class MainTabPresenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e);
+                        Log.e("TAG",e.getMessage());
                     }
 
                     @Override
                     public void onNext(Web3ClientVersion web3ClientVersion) {
-                        Timber.e("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
+                        Log.i("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
                     }
                 });
     }
 
-    public SmartContract getSmartContract(){
+    public AlertContract getAlertContract(){
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
-        return smartContract;
+        alertContract = smartContract.loadAlertSmartContract(CONTRACT_ADDRESS_ALERT);
+        return alertContract;
     }
 
-    public CoordContract getCoordContract(){
-        coordContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
-        return coordContract;
+    public PosterContract getPosterContract(){
+        smartContract = new SmartContract(web3j, localWallet.getCredentials());
+        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS_POSTER);
+        return posterContract;
     }
 
     public Location getLatestLocation() {
@@ -174,22 +188,21 @@ public class MainTabPresenter {
     }
 
     public void loadData() {
-        if(coordContract == null) { //|| !nameContract.isValid()) {
-            smartContract = context.getSmartContract();
-            coordContract = context.getNameContract();
+        if(alertContract == null) { //|| !nameContract.isValid()) {
+            alertContract = context.getAlertContract();
         }
-        coordContract.getEventsCount().observable()
+        alertContract.getAlertsCount().observable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (countCoords) -> {
                             for(int i =0; i<countCoords.intValue(); i++){
-                                coordContract.getEventByIndex(BigInteger.valueOf(i)).observable()
+                                alertContract.getAlertByIndex(BigInteger.valueOf(i)).observable()
                                         .subscribeOn(Schedulers.newThread())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(
                                                 (result) ->
-                                                        mainTabView.loadDataSmartContract(
+                                                        mainTabView.loadDataEventSmartContract(
                                                                 result.getValue1(),
                                                                 result.getValue2(),
                                                                 result.getValue3(),
@@ -202,6 +215,36 @@ public class MainTabPresenter {
                         },
                         (error) -> mainTabView.showErrorTransition()
                 );
+        if(posterContract == null) { //|| !nameContract.isValid()) {
+            posterContract = context.getPosterContract();
+        }
+        //TODO : load data from poster
+    }
+
+    public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
+                                       ContentResolver contentResolver, Fragment updatedFragment,
+                                       ViewPagerTab fragmentViewPager) {
+        if(resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_IMAGE_POSTER_CAMERA:
+                    Bundle extras = data.getExtras();
+                    imageBitmap = (Bitmap) extras.get("data");
+                    fragmentViewPager.setCurrentItem(2);
+                    ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
+                    break;
+                case REQUEST_IMAGE_POSTER_GALLERY:
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
+                        fragmentViewPager.setCurrentItem(2);
+                        ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
+                    } catch (IOException e) {
+                        Log.e("TAG", e.getMessage());
+                    }
+                    break;
+                //TODO : ask for profile
+            }
+
+        }
     }
 
     private class CustomLocationListener implements LocationListener {

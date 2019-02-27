@@ -3,8 +3,10 @@ package com.ucm.informatica.spread.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -17,9 +19,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import timber.log.Timber;
-
-import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
+import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILE;
 
 public class LocalWallet {
@@ -28,7 +29,8 @@ public class LocalWallet {
     private Credentials walletCredentials;
 
     private SmartContract smartContract;
-    private CoordContract nameContract;
+    private AlertContract alertContract;
+    private PosterContract posterContract;
 
     private Activity view;
 
@@ -48,7 +50,7 @@ public class LocalWallet {
             filenameWallet = WalletUtils.generateLightNewWalletFile(password, new File(filePath));
             updateWalletStored(filenameWallet);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException | IOException | CipherException e) {
-            Timber.e(e);
+            Log.e("TAG", e.getMessage());
         }
     }
 
@@ -57,14 +59,15 @@ public class LocalWallet {
         try {
             credentials = WalletUtils.loadCredentials(password, filePath + "/" + filenameWallet);
         }catch (IOException | CipherException e) {
-            Timber.e(e);
+            Log.e("TAG", e.getMessage());
         }
         return credentials;
     }
 
     public void loadContract(Web3j web3j){
         smartContract = new SmartContract(web3j, walletCredentials);
-        nameContract = smartContract.loadSmartContract(CONTRACT_ADDRESS);
+        alertContract = smartContract.loadAlertSmartContract(CONTRACT_ADDRESS_ALERT);
+        posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS_POSTER);
     }
 
     public boolean existWallet(){

@@ -1,5 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +16,8 @@ import android.widget.ImageView;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -21,6 +25,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Model.LocationMode;
+import com.ucm.informatica.spread.Model.PinMode;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MapFragmentPresenter;
 import com.ucm.informatica.spread.R;
@@ -70,7 +75,6 @@ public class MapFragment extends Fragment implements MapFragmentView {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
         view = inflater.inflate(R.layout.fragment_map, container, false);
         mapFragmentPresenter = new MapFragmentPresenter(this,this);
@@ -141,7 +145,16 @@ public class MapFragment extends Fragment implements MapFragmentView {
         addPinDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                mapFragmentPresenter.popUpDialog();
+                String title;
+                PinMode pinMode;
+                if(menuItem.getTitle()==getString(R.string.menu_item_alert)){
+                    title = getString(R.string.button_add_pin_alert);
+                    pinMode = PinMode.Alert;
+                } else {
+                    title = getString(R.string.button_add_pin_poster);
+                    pinMode = PinMode.Poster;
+                }
+                mapFragmentPresenter.popUpDialog(pinMode, title, null);
                 return false;
             }
         });
@@ -152,7 +165,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
             LatLng selectedLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
                     (markerImage.getLeft() + (markerImage.getWidth()/2), markerImage.getBottom()));
 
-            mapFragmentPresenter.onAddLocationButtonPresed(selectedLocation);
+            mapFragmentPresenter.onAddLocationButtonPressed(selectedLocation);
         });
 
         exitManualModeButton.setOnClickListener(v -> mapFragmentPresenter.onSwitchLocationMode());
@@ -179,10 +192,19 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     @Override
-    public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription){
+    public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert){
+        IconFactory iconFactory = IconFactory.getInstance((MainTabActivity) getActivity());
+        Icon icon;
+        if(isAlert){
+            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_alert));
+        } else{
+            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_poster));
+        }
+
         mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)
+                .icon(icon)
                 .snippet(markerDescription));
         regionMap = mapFragmentPresenter.getUpdatedContainedPointsInRegionMap(Point.fromLngLat(longitude,latitude),regionMap);
     }
@@ -215,4 +237,9 @@ public class MapFragment extends Fragment implements MapFragmentView {
             switchLayerButton.setVisibility(View.GONE);
         }
     }
+
+    public void renderContentWithPicture(Bitmap imageBitmap){
+        mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
+    }
+
 }

@@ -1,26 +1,34 @@
 package com.ucm.informatica.spread.Activities;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.provider.MediaStore;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
-import com.ucm.informatica.spread.Contracts.CoordContract;
+import com.ucm.informatica.spread.Contracts.AlertContract;
+import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.Utils.SmartContract;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
@@ -33,19 +41,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import timber.log.Timber;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
 
-    private MainTabPresenter presenter;
+    private MainTabPresenter mainPresenter;
 
     private RelativeLayout relativeLayout;
+    private ViewPagerTab fragmentViewPager;
+    private ViewPagerAdapter fragmentAdapter;
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
-    private List<Event> dataSmartContractList = new ArrayList<>();
+    private List<Event> dataEventSmartContractList = new ArrayList<>();
+    private List<Poster> dataPosterSmartContractList = new ArrayList<>();
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -69,27 +82,39 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
         readPolygonCoordinates();
-        presenter = new MainTabPresenter(this, this);
-        presenter.start(getFilesDir().getAbsolutePath());
+        mainPresenter = new MainTabPresenter(this, this);
+        mainPresenter.start(getFilesDir().getAbsolutePath());
     }
 
     @Override
-    public void initViewContent(){
-        ViewPagerTab mViewPager =  findViewById(R.id.container);
-        mViewPager.setMotionEventSplittingEnabled(false);
-        setupViewPager(mViewPager);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mainPresenter.manageOnActivityResult(requestCode, resultCode, data, getContentResolver(),
+                fragmentAdapter.getItem(2), fragmentViewPager);
+    }
+
+    @Override
+    public void initView(){
+        fragmentViewPager =  findViewById(R.id.container);
+        fragmentViewPager.setMotionEventSplittingEnabled(false);
+        setupViewPager();
 
         tabLayout = findViewById(R.id.tabs);
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-        tabLayout.setupWithViewPager(mViewPager);
+        fragmentViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.removeAllTabs();
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(fragmentViewPager));
+        tabLayout.setupWithViewPager(fragmentViewPager);
 
         setupTabContent();
     }
 
     @Override
-    public void loadDataSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
-        dataSmartContractList.add(new Event(this, title,description, latitude, longitude, dataTime));
+    public void loadDataEventSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
+        dataEventSmartContractList.add(new Event(this, title,description, latitude, longitude, dataTime));
+    }
+
+    @Override
+    public void loadDataPosterSmartContract(String title, String description, String latitude, String longitude, String dataTime, byte[] image) {
+        dataPosterSmartContractList.add(new Poster(this, title,description, latitude, longitude, dataTime, image));
     }
 
     @Override
@@ -108,28 +133,87 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
        relativeLayout.setVisibility(View.GONE);
 
     }
-    public SmartContract getSmartContract(){ return presenter.getSmartContract();}
 
-    public CoordContract getNameContract() { return presenter.getCoordContract(); }
+    public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
+
+    public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
 
     public Map getPolygonData() {
         return regionMap;
     }
 
-    public List<Event> getDataSmartContract() {
-        return dataSmartContractList;
+    public List<Event> getDataEventSmartContract() {
+        return dataEventSmartContractList;
+    }
+
+    public List<Poster> getDataPosterSmartContract() {
+        return dataPosterSmartContractList;
     }
 
     public Location getLocation() {
-        return presenter.getLatestLocation();
+        return mainPresenter.getLatestLocation();
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        for(int i=0; i< NUMBER_TABS; i++){
-            adapter.addFragment(presenter.getFragment(i), getResources().getString(tabNames[i]));
+    public void createPictureIntentPicker(int mode){
+        BottomSheetDialog dialogBuilder = new BottomSheetDialog(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_pick_image, null);
+
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        LinearLayout galleryLayout = dialogView.findViewById(R.id.galleryLayout);
+        ImageView galleryImage = dialogView.findViewById(R.id.galleryIconImage);
+        LinearLayout cameraLayout = dialogView.findViewById(R.id.cameraLayout);
+        ImageView cameraImage = dialogView.findViewById(R.id.cameraIconImage);
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String cameraPackage = cameraIntent.resolveActivity(getPackageManager()).getPackageName();
+
+        Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/");
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+        String galleryPackage = galleryIntent.resolveActivity(getPackageManager()).getPackageName();
+
+        try {
+            cameraImage.setImageDrawable(getPackageManager().getApplicationIcon(cameraPackage));
+            galleryImage.setImageDrawable(getPackageManager().getApplicationIcon(galleryPackage));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("TAG",e.getMessage());
         }
-        viewPager.setAdapter(adapter);
+
+        galleryLayout.setOnClickListener(view -> {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                if(mode == REQUEST_IMAGE_POSTER) {
+                    startActivityForResult(Intent.createChooser(intent, ""), REQUEST_IMAGE_POSTER_GALLERY);
+                } ///TODO : profile opt
+            dialogBuilder.dismiss();
+            });
+
+        cameraLayout.setOnClickListener(view -> {
+                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                    if(mode == REQUEST_IMAGE_POSTER) {
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_POSTER_CAMERA);
+                    }///TODO : profile opt
+                }
+            dialogBuilder.dismiss();
+            });
+
+        cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());
+
+        dialogBuilder.setContentView(dialogView);
+        dialogBuilder.show();
+    }
+
+    private void setupViewPager() {
+        if(getSupportFragmentManager().getFragments() != null) {
+            getSupportFragmentManager().getFragments().clear();
+        }
+        fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        for(int i=0; i< NUMBER_TABS; i++){
+            fragmentAdapter.addFragment(mainPresenter.getFragment(i));
+        }
+        fragmentViewPager.setAdapter(fragmentAdapter);
+        fragmentAdapter.notifyDataSetChanged();
     }
     private void setupTabContent(){
         TextView tabCurrent;
@@ -165,17 +249,18 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 regionMap.put(centroid, new Region(polyCoordList));
             }
         } catch (IOException e) {
-            Timber.e(e);
+            Log.e("TAG",e.getMessage());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Timber.e(e);
+                    Log.e("TAG",e.getMessage());
                 }
             }
         }
     }
+
 
     public Flashbar getAlertSnackBarGPS(){
         return new Flashbar.Builder(this)
