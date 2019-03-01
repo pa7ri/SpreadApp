@@ -1,7 +1,6 @@
 package com.ucm.informatica.spread.Fragments;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,7 +50,7 @@ public class HistoricalFragment extends Fragment implements HistoricalFragmentVi
     }
 
     @Override
-    public void showErrorTransition() {
+    public void showErrorTransaction() {
         ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 }

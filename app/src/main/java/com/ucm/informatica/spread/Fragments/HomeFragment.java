@@ -1,9 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
-import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,7 +17,6 @@ import com.ucm.informatica.spread.View.HomeFragmentView;
 
 
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
-import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 
 
 public class HomeFragment extends Fragment implements HomeFragmentView{
@@ -68,13 +65,13 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     }
 
     @Override
-    public void showSuccessfulStoredTransition(String result) {
-        ((MainTabActivity) getActivity()).getConfirmationSnackBar().show();
+    public void showConfirmationTransaction(String result) {
+        ((MainTabActivity) getActivity()).showConfirmationTransaction();
         nameText.setText(result);
     }
 
     @Override
-    public void showErrorTransition() {
+    public void showErrorTransaction() {
         ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 

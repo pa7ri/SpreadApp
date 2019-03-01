@@ -10,23 +10,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.andrognito.flashbar.Flashbar;
-import com.andrognito.flashbar.anim.FlashAnim;
-import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.R;
 
 import java.util.List;
-import java.util.Objects;
 
-import static java.security.AccessController.getContext;
 
 public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder> {
-    private List<Event> data;
+    private List<Alert> data;
     private LayoutInflater inflater;
 
-    public CustomRecyclerAdapter(Context context, List<Event> data) {
+    public CustomRecyclerAdapter(Context context, List<Alert> data) {
         this.inflater = LayoutInflater.from(context);
         this.data = data;
     }

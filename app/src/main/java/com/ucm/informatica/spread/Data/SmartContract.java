@@ -1,7 +1,8 @@
-package com.ucm.informatica.spread.Utils;
+package com.ucm.informatica.spread.Data;
 
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
+import com.ucm.informatica.spread.Utils.Constants;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;

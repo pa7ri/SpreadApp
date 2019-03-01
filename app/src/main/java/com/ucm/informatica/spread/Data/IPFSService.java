@@ -1,107 +1,79 @@
 package com.ucm.informatica.spread.Data;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
 
-import java.io.File;
-import java.io.IOException;
+import com.ucm.informatica.spread.Contracts.PosterContract;
+import com.ucm.informatica.spread.Model.Poster;
+import com.ucm.informatica.spread.View.MainTabView;
 
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.Okio;
+import io.ipfs.kotlin.defaults.InfuraIPFS;
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.ucm.informatica.spread.Utils.Constants.IPFS.CMD_INIT;
-import static com.ucm.informatica.spread.Utils.Constants.IPFS.CMD_RUN;
 
-
-public class IPFS {
+public class IPFSService {
 
     private Context context;
+    private MainTabView mainTabview;
 
-    private File binaryFile;
-    private File repositoryPath;
+    private int tries;
+    private InfuraIPFS ipfs;
 
-    public IPFS(Context context){
+    public IPFSService(Context context, MainTabView view){
         this.context = context;
+        this.mainTabview = view;
+        this.tries =0;
+        this.ipfs = new InfuraIPFS();
     }
 
-    public void initIPFSConnection() {
-        onDownloadObservable()
+    public void addStringGetHash(String jsonObject, PosterContract posterContract){
+        Observable.just(ipfs.getAdd())
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<File>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.i("IPFS download ", "SUCCESS");
-                        Observable.just(onInitCommand(CMD_INIT)).flatMap(
-                                resultRun-> Observable.just(onInitCommand(CMD_RUN)));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("IPFS download ", e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(File file) {
-
-                    }
-                });
+                .subscribe(
+                        functionResult -> Observable.just(functionResult.string(jsonObject, "", ""))
+                                .subscribeOn(Schedulers.newThread())
+                                .subscribe(
+                                        hashResult -> {
+                                            posterContract.addPoster(hashResult.getHash()).observable()
+                                                    .subscribeOn(Schedulers.newThread())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(
+                                                            (result) -> mainTabview.showConfirmationTransaction()
+                                                            ,
+                                                            (error) -> mainTabview.showErrorTransaction()
+                                                    );
+                                        },
+                                        error ->  mainTabview.showErrorTransaction()
+                                ),
+                        error -> {
+                            if(tries<3){
+                                tries++;
+                                addStringGetHash(jsonObject,posterContract);
+                            } else {
+                                mainTabview.showErrorTransaction();
+                            }
+                        }
+                );
     }
 
-    private Observable<File> onDownloadObservable(){
-        return Observable.create(emitter -> {
-            try {
-                binaryFile = new File(context.getFilesDir(), "ipfsbin");
-                downloadBinaryFiles();
-                binaryFile.setExecutable(true);
-                emitter.onCompleted();
-            } catch (Exception e) {
-                emitter.onError(e);
-            }
-        });
+    public void getDataFromHash(String hash){
+        Observable.just(ipfs.getGet())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(
+                        functionResult -> Observable.just(functionResult.cat(hash))
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                    result -> {
+                                        Poster poster = new Poster(context, result);
+                                        mainTabview.loadDataPosterIPFS(poster);
+                                    },
+                                    error -> mainTabview.showErrorTransaction()
+                                ),
+                        error -> mainTabview.showErrorTransaction()
+                );
     }
 
-    private Observable onInitCommand(String cmd){
-        return Observable.create(emitter -> {
-            try {
-                repositoryPath = new File(context.getFilesDir(), ".ipfs_repo");
-                String[] env = new String[]{"IPFS_PATH=" + repositoryPath.getAbsolutePath()};
-                String command = binaryFile.getAbsolutePath() + cmd;
 
-                Runtime.getRuntime().exec(command, env);
-            } catch (IOException e) {
-                Log.e("IPFS service ", e.getMessage());
-            }
-        });
-    }
-
-    private void downloadBinaryFiles(){
-        try {
-            BufferedSource source = Okio.buffer(Okio.source(context.getAssets().open(getBinaryFileByABI(Build.CPU_ABI))));
-            BufferedSink sink = Okio.buffer(Okio.sink(binaryFile));
-            while (!source.exhausted()) {
-                source.read(sink.buffer(), 1024);
-            }
-            source.close();
-            sink.close();
-        } catch (IOException e) {
-            Log.e("IPFS download ", e.getMessage());
-        }
-    }
-
-    private String getBinaryFileByABI(String abi) {
-        String binFileString;
-        if (abi.toLowerCase().startsWith("x86")) {
-            binFileString = "x86";
-        } else {
-            binFileString = "arm";
-        }
-        return binFileString;
-    }
 }

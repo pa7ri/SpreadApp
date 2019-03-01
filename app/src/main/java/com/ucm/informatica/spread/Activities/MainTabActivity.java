@@ -24,7 +24,7 @@ import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
-import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
@@ -57,7 +57,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
-    private List<Event> dataEventSmartContractList = new ArrayList<>();
+    private List<Alert> dataAlertSmartContractList = new ArrayList<>();
     private List<Poster> dataPosterSmartContractList = new ArrayList<>();
 
     private int[] tabIcons = {
@@ -108,18 +108,23 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
 
     @Override
-    public void loadDataEventSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
-        dataEventSmartContractList.add(new Event(this, title,description, latitude, longitude, dataTime));
+    public void loadDataAlertSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
+        dataAlertSmartContractList.add(new Alert(this, title,description, latitude, longitude, dataTime));
     }
 
     @Override
-    public void loadDataPosterSmartContract(String title, String description, String latitude, String longitude, String dataTime, byte[] image) {
-        dataPosterSmartContractList.add(new Poster(this, title,description, latitude, longitude, dataTime, image));
+    public void loadDataPosterIPFS(Poster poster) {
+        dataPosterSmartContractList.add(poster);
     }
 
     @Override
-    public void showErrorTransition() {
+    public void showErrorTransaction() {
         getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+    }
+
+    @Override
+    public void showConfirmationTransaction() {
+        getConfirmationSnackBar().show();
     }
 
     @Override
@@ -134,6 +139,14 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     }
 
+    public void saveDataPoster(String posterJson){
+        mainPresenter.onSaveDataPoster(posterJson);
+    }
+
+    public void saveDataAlert(String t, String d, String lat, String longi){
+        mainPresenter.onSaveDataAlert(t,d,lat,longi);
+    }
+
     public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
 
     public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
@@ -142,8 +155,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         return regionMap;
     }
 
-    public List<Event> getDataEventSmartContract() {
-        return dataEventSmartContractList;
+    public List<Alert> getDataAlertSmartContract() {
+        return dataAlertSmartContractList;
     }
 
     public List<Poster> getDataPosterSmartContract() {
@@ -260,7 +273,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             }
         }
     }
-
 
     public Flashbar getAlertSnackBarGPS(){
         return new Flashbar.Builder(this)

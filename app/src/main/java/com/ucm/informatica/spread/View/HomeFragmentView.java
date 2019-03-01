@@ -6,9 +6,9 @@ public interface HomeFragmentView {
 
     void setupListeners();
 
-    void showSuccessfulStoredTransition(String result);
+    void showConfirmationTransaction(String result);
 
-    void showErrorTransition();
+    void showErrorTransaction();
 
     void showErrorGPS();
 

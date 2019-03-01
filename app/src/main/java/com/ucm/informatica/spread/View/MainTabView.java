@@ -1,14 +1,18 @@
 package com.ucm.informatica.spread.View;
 
+import com.ucm.informatica.spread.Model.Poster;
+
 public interface MainTabView {
 
     void initView();
 
-    void loadDataEventSmartContract(String title, String description, String latitude, String longitude, String dataTime);
+    void loadDataAlertSmartContract(String title, String description, String latitude, String longitude, String dataTime);
 
-    void loadDataPosterSmartContract(String title, String description, String latitude, String longitude, String dataTime, byte[] image);
+    void loadDataPosterIPFS(Poster poster);
 
-    void showErrorTransition();
+    void showErrorTransaction();
+
+    void showConfirmationTransaction();
 
     void showLoading();
 

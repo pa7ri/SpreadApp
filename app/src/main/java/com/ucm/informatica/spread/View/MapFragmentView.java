@@ -6,10 +6,10 @@ public interface MapFragmentView {
 
     void renderLocationView(LocationMode state);
 
-    void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isEvent);
+    void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert);
 
-    void showFeedback();
+    void showConfirmationTransaction();
 
-    void showError(int text);
+    void showErrorTransaction(int text);
 
 }

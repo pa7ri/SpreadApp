@@ -7,5 +7,5 @@ public interface HistoricalFragmentView {
 
     void initView(CustomRecyclerAdapter adapter);
 
-    void showErrorTransition();
+    void showErrorTransaction();
 }
