@@ -213,6 +213,7 @@ public class MapFragmentPresenter {
         switch (pinMode) {
             case Alert: {
                 ((MainTabActivity) mapFragment.getActivity()).saveDataAlert(title,description,latitude,longitude);
+<<<<<<< HEAD
                 break;
             }
             case Poster: {
@@ -220,6 +221,13 @@ public class MapFragmentPresenter {
                         String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
                 ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
                 break;
+=======
+            }
+            case Poster: {
+                Poster samplePoster = new Poster(mapFragment.getContext(), title, description,
+                        latitude, longitude, String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
+                ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
+>>>>>>> feat\add IPFS service and store posters as json strings
             }
         }
     }

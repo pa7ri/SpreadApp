@@ -290,7 +290,6 @@ public class MainTabPresenter {
         ipfsService.addStringGetHash(posterJson, posterContract);
     }
 
-
     public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
                                        ContentResolver contentResolver, Fragment updatedFragment,
                                        ViewPagerTab fragmentViewPager) {
@@ -315,7 +314,5 @@ public class MainTabPresenter {
 
         }
     }
-
-
 
 }

@@ -169,6 +169,14 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         mainPresenter.onSaveDataAlert(t,d,lat,longi);
     }
 
+    public void saveDataPoster(String posterJson){
+        mainPresenter.onSaveDataPoster(posterJson);
+    }
+
+    public void saveDataAlert(String t, String d, String lat, String longi){
+        mainPresenter.onSaveDataAlert(t,d,lat,longi);
+    }
+
     public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
 
     public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
@@ -380,5 +388,4 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             }
         }
     }
-
 }
