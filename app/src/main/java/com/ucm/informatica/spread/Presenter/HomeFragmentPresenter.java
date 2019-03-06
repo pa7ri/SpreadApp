@@ -2,6 +2,8 @@ package com.ucm.informatica.spread.Presenter;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -11,6 +13,11 @@ import com.ucm.informatica.spread.Data.ApiFcmService;
 import com.ucm.informatica.spread.Data.ApiUtils;
 import com.ucm.informatica.spread.Model.Colours;
 import com.ucm.informatica.spread.Model.Notification;
+import android.util.Log;
+
+import com.ucm.informatica.spread.Contracts.AlertContract;
+import com.ucm.informatica.spread.Data.Telegram.ApiService;
+import com.ucm.informatica.spread.Data.Telegram.ApiUtils;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.View.HomeFragmentView;
@@ -19,6 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.List;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -31,15 +42,16 @@ import static com.ucm.informatica.spread.Utils.Constants.Notifications.*;
 public class HomeFragmentPresenter {
 
     private AlertContract alertContract;
-
     private HomeFragmentView homeFragmentView;
     private ApiFcmService apiFcmService;
+    private ApiService apiService;
 
     public HomeFragmentPresenter(HomeFragmentView homeFragmentView, AlertContract alertContract){
         this.homeFragmentView = homeFragmentView;
         this.alertContract = alertContract;
 
         apiFcmService = ApiUtils.getApiFcmService();
+        apiService = ApiUtils.getAPIService();
     }
 
     public void start() {
@@ -47,7 +59,8 @@ public class HomeFragmentPresenter {
         homeFragmentView.setupListeners();
     }
 
-    public void onHelpButtonPressed(Location location, Resources resources, SharedPreferences sharedPreferences) {
+
+    public void onHelpButtonPressed(Location location, Resources resources, Geocoder geocoder) {
         if(location != null) {
             sendNotifications(location, sharedPreferences);
             homeFragmentView.showSendConfirmation();
@@ -55,6 +68,26 @@ public class HomeFragmentPresenter {
                     resources.getString(R.string.button_help_description),
                     Double.toString(location.getLongitude()),
                     Double.toString(location.getLatitude()));
+
+            String telegramMessage = getTelegramMessage(geocoder, location.getLatitude(), location.getLongitude());
+
+            apiService.sendTelegramMessage( "-336585351",telegramMessage) //TODO : set list of saved chat_id
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<JSONObject>() {
+                        @Override
+                        public void onCompleted() {
+                            homeFragmentView.showConfirmationTransaction("Enviado a Telegram");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            homeFragmentView.showErrorTransaction();
+                        }
+
+                        @Override
+                        public void onNext(JSONObject responseBody) {}
+                    });
         } else {
             homeFragmentView.showErrorGPS();
         }
@@ -126,6 +159,18 @@ public class HomeFragmentPresenter {
             case White: return "Blanco";
             default: return NOTIFICATION_DATA_UNKNOWN;
         }
+
+    private String getTelegramMessage(Geocoder geocoder, double latitude, double longitude) {
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            Log.e("TAG", e.getMessage());
+        }
+
+        return "Alguien" + " necesita ayuda, está en " +
+                addresses.get(0).getAddressLine(0) + ". \n" +
+                "https://maps.google.com/?q=" + latitude + "," + longitude;
     }
 
     private void saveData(String title, String description, String longitude, String latitude) {
