@@ -27,6 +27,9 @@
     <string name="profile_dresscode">Vestuario</string>
     <string name="profile_name">Nombre</string>
     <string name="profile_age">Edad</string>
+    <string name="profile_watchword">Santo y seña</string>
+    <string name="profile_watchword_first">Mensaje</string>
+    <string name="profile_watchword_second">Respuesta</string>
     <string name="profile_contact">Contactos</string>
 
     <!-- MAP -->
