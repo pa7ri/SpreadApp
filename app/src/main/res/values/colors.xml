@@ -16,6 +16,7 @@
     <color name="snackbarConfirmColor">#3DBF72</color>
 
     <color name="white">#FFFFFF</color>
+    <color name="whiteBackground">#F1F1F1</color>
 
     <color name="dividerColor">#bdbdbd</color>
 </resources>
