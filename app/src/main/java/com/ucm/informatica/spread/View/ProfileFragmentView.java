@@ -16,4 +16,13 @@ public interface ProfileFragmentView {
 
     void changePants(Colours colour);
 
+
+    void initView();
+
+    void setupListeners();
+
+    void loadData();
+
+    void refreshView();
+
 }

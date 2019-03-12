@@ -33,7 +33,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private EditText editName;
     private EditText editAge;
     private TextView watchwordMessageText;
-    private TextView watchwordResponesText;
+    private TextView watchwordResponseText;
     private EditText editWatchwordMessage;
     private EditText editWatchwordResponse;
 
@@ -61,14 +61,12 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         //Deberían llamarse desde el presenter con un presenter.onStart o algo similar (mirar otras clases).
-        initView();
-        setupListeners();
-        loadData();
-        refreshView();
+        profileFragmentPresenter.onStart();
+        profileFragmentPresenter.onRefreshView(shirtColour, pantsColour);
         return view;
     }
 
-    private void initView(){
+    public void initView(){
         editContactsButton = view.findViewById(R.id.editContactsButton);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         saveProfileButton = view.findViewById(R.id.saveProfileButton);
@@ -81,7 +79,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         editName = view.findViewById(R.id.editName);
         editAge = view.findViewById(R.id.editAge);
         watchwordMessageText = view.findViewById(R.id.watchwordMessageDescription);
-        watchwordResponesText = view.findViewById(R.id.watchwordResponseDescription);
+        watchwordResponseText = view.findViewById(R.id.watchwordResponseDescription);
         editWatchwordMessage = view.findViewById(R.id.editWatchwordMessageDescription);
         editWatchwordResponse = view.findViewById(R.id.editWatchwordResponseDescription);
     }
@@ -109,7 +107,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     }
 
 
-    private void setupListeners(){
+    public void setupListeners(){
         editContactsButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
         editProfileButton.setOnClickListener(view -> profileFragmentPresenter.onEditPressed());
         saveProfileButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
@@ -173,9 +171,9 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             editWatchwordButton.setVisibility(View.GONE);
             saveWatchwordButton.setVisibility(View.VISIBLE);
             watchwordMessageText.setVisibility(View.GONE);
-            watchwordResponesText.setVisibility(View.GONE);
+            watchwordResponseText.setVisibility(View.GONE);
             editWatchwordMessage.setText(watchwordMessageText.getText());
-            editWatchwordResponse.setText(watchwordResponesText.getText());
+            editWatchwordResponse.setText(watchwordResponseText.getText());
             editWatchwordMessage.setVisibility(View.VISIBLE);
             editWatchwordResponse.setVisibility(View.VISIBLE);
         } else{
@@ -184,9 +182,9 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             if(!editWatchwordMessage.getText().toString().isEmpty())
                 watchwordMessageText.setText(editWatchwordMessage.getText());
             if(!editWatchwordResponse.getText().toString().isEmpty())
-                watchwordResponesText.setText(editWatchwordResponse.getText());
+                watchwordResponseText.setText(editWatchwordResponse.getText());
             watchwordMessageText.setVisibility(View.VISIBLE);
-            watchwordResponesText.setVisibility(View.VISIBLE);
+            watchwordResponseText.setVisibility(View.VISIBLE);
             editWatchwordMessage.setVisibility(View.GONE);
             editWatchwordResponse.setVisibility(View.GONE);
         }
@@ -207,7 +205,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         shirtColour = Colours.values()[sharedPreferences.getInt("Shirt", 0)];
         pantsColour = Colours.values()[sharedPreferences.getInt("Pants", 0)];
         watchwordMessageText.setText(sharedPreferences.getString("Message", ""));
-        watchwordResponesText.setText(sharedPreferences.getString("Response", ""));
+        watchwordResponseText.setText(sharedPreferences.getString("Response", ""));
     }
 
     public void refreshView(){

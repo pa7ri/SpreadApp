@@ -46,4 +46,16 @@ public class ProfileFragmentPresenter {
         pantsColour = Colours.values()[(pantsColour.ordinal()+1)%Colours.values().length];
         profileFragmentView.changePants(pantsColour);
     }
+
+    public void onStart(){
+        profileFragmentView.initView();
+        profileFragmentView.setupListeners();
+        profileFragmentView.loadData();
+    }
+
+    public void onRefreshView(Colours shirt, Colours pants){
+        shirtColour = shirt;
+        pantsColour = pants;
+        profileFragmentView.refreshView();
+    }
 }
