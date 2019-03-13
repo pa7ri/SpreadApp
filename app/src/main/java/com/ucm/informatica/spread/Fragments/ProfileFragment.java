@@ -1,16 +1,25 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.andrognito.flashbar.Flashbar;
+import com.ucm.informatica.spread.Presenter.ProfileFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.View.ProfileFragmentView;
+import com.ucm.informatica.spread.Model.Colours;
 
-public class ProfileFragment extends Fragment {
+import static android.content.Context.MODE_PRIVATE;
+
+public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
     private Button editContactsButton;
     private Button editProfileButton;
@@ -35,9 +44,16 @@ public class ProfileFragment extends Fragment {
 
     public ProfileFragment() { }
 
+    private ProfileFragmentPresenter profileFragmentPresenter;
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        profileFragmentPresenter = new ProfileFragmentPresenter(this);
+        sharedPreferences = getContext().getSharedPreferences("ProfileInfo", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -89,7 +105,6 @@ public class ProfileFragment extends Fragment {
         pantsButton[Colours.Blue.ordinal()] = view.findViewById(R.id.downImageBlue);
         pantsButton[Colours.Yellow.ordinal()] = view.findViewById(R.id.downImageYellow);
     }
-
 
     public void setupListeners(){
         editContactsButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());

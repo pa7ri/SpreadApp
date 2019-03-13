@@ -49,6 +49,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/personalDataTitle" />
 
+        <Button
+            android:id="@+id/saveProfileButton"
+            android:layout_width="@dimen/iconSide"
+            android:layout_height="@dimen/iconSide"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/ic_check"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/personalDataTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/personalDataTitle" />
+
         <TextView
             android:id="@+id/personalDataTitle"
             android:layout_width="wrap_content"
@@ -80,6 +92,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/dataNameTitle" />
 
+        <EditText
+            android:id="@+id/editName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:textSize="@dimen/msmallText"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/dataNameTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/dataNameTitle" />
+
         <TextView
             android:id="@+id/dataAgeTitle"
             android:layout_width="wrap_content"
@@ -101,6 +124,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/dataAgeTitle" />
 
+        <EditText
+            android:id="@+id/editAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/smallMargin"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:textSize="@dimen/msmallText"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/dataAgeTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/dataAgeTitle" />
+
         <TextView
             android:id="@+id/dresscodeTitle"
             android:layout_width="wrap_content"
@@ -112,6 +147,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dataAgeTitle" />
 
+
         <ImageView
             android:id="@+id/upperImage"
             android:layout_width="60dp"
@@ -119,9 +155,105 @@
             android:layout_marginEnd="@dimen/mediumMargin"
             android:layout_marginTop="@dimen/smallMargin"
             android:background="@drawable/round_button_shape"
-            android:foreground="@drawable/ic_body"
+            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageNA"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_na"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageWhite"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_white"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageGray"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageBlack"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_black"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageRed"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_red"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageGreen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_green"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageBlue"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_blue"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/upperImageYellow"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/shirt_yellow"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
 
         <ImageView
             android:id="@+id/downImage"
@@ -130,9 +262,202 @@
             android:layout_marginStart="@dimen/mediumMargin"
             android:layout_marginTop="@dimen/smallMargin"
             android:background="@drawable/round_button_shape"
-            android:foreground="@drawable/ic_body"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageNA"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_na"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageWhite"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_white"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageGray"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_gray"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageBlack"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_black"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageRed"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_red"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageGreen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_green"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageBlue"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_blue"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+        <Button
+            android:id="@+id/downImageYellow"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/pants_yellow"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
+
+
+        <TextView
+            android:id="@+id/watchwordTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:text="@string/profile_watchword"
+            android:textSize="@dimen/msmallText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/upperImage" />
+
+        <Button
+            android:id="@+id/editWatchwordButton"
+            android:layout_width="@dimen/iconSide"
+            android:layout_height="@dimen/iconSide"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/ic_edit"
+            app:layout_constraintBottom_toBottomOf="@+id/watchwordTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/watchwordTitle" />
+
+        <Button
+            android:id="@+id/saveWatchwordButton"
+            android:layout_width="@dimen/iconSide"
+            android:layout_height="@dimen/iconSide"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/round_button_shape"
+            android:foreground="@drawable/ic_check"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/watchwordTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/watchwordTitle" />
+
+        <TextView
+            android:id="@+id/watchwordMessageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/xmediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:text="@string/profile_watchword_first"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/watchwordTitle" />
+
+        <TextView
+            android:id="@+id/watchwordMessageDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:text="Hola caracola"
+            app:layout_constraintBottom_toBottomOf="@+id/watchwordMessageTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/watchwordMessageTitle" />
+
+        <EditText
+            android:id="@+id/editWatchwordMessageDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:textSize="@dimen/msmallText"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/watchwordMessageTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/watchwordMessageTitle" />
+
+        <TextView
+            android:id="@+id/watchwordResponseTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/xmediumMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:text="@string/profile_watchword_second"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/watchwordMessageTitle" />
+
+        <TextView
+            android:id="@+id/watchwordResponseDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:text="Me mola tu gramola"
+            app:layout_constraintBottom_toBottomOf="@+id/watchwordResponseTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/watchwordResponseTitle" />
+
+        <EditText
+            android:id="@+id/editWatchwordResponseDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:textSize="@dimen/msmallText"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/watchwordResponseTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/watchwordResponseTitle" />
+
 
         <View
             android:id="@+id/view2"
@@ -144,7 +469,7 @@
             android:background="@color/dividerColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upperImage" />
+            app:layout_constraintTop_toBottomOf="@+id/watchwordResponseTitle" />
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline"
