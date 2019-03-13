@@ -40,14 +40,14 @@ public class HomeFragmentPresenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             (result) ->
-                                homeFragmentView.showSuccessfulStoredTransition(
+                                homeFragmentView.showConfirmationTransaction(
                                         "Bloque : " + result.getBlockNumber().toString()
                                                 + " , Gas usado : " + result.getGasUsed().toString())
                             ,
-                            (error) -> homeFragmentView.showErrorTransition()
+                            (error) -> homeFragmentView.showErrorTransaction()
                     );
         } else {
-            homeFragmentView.showErrorTransition();
+            homeFragmentView.showErrorTransaction();
         }
 
     }

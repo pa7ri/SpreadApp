@@ -211,12 +211,12 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
 
     @Override
-    public void showFeedback(){
-        ((MainTabActivity) getActivity()).getConfirmationSnackBar().show();
+    public void showConfirmationTransaction(){
+        ((MainTabActivity) getActivity()).showConfirmationTransaction();
     }
 
     @Override
-    public void showError(int text) {
+    public void showErrorTransaction(int text) {
         ((MainTabActivity) getActivity()).getErrorSnackBar(text).show();
     }
 

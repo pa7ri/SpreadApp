@@ -12,20 +12,20 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
+import com.ucm.informatica.spread.Data.IPFSService;
 import com.ucm.informatica.spread.Utils.Constants;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
-import com.ucm.informatica.spread.Utils.LocalWallet;
-import com.ucm.informatica.spread.Utils.SmartContract;
+import com.ucm.informatica.spread.Data.LocalWallet;
+import com.ucm.informatica.spread.Data.SmartContract;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
 
@@ -36,7 +36,6 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
@@ -68,9 +67,13 @@ public class MainTabPresenter {
     private Location latestLocation;
     private Bitmap imageBitmap;
 
+    private IPFSService ipfsService;
+
+
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
         this.context = context;
+        this.ipfsService = new IPFSService(context, context);
     }
 
     public void start(String path){
@@ -187,7 +190,7 @@ public class MainTabPresenter {
         return latestLocation;
     }
 
-    public void loadData() {
+    private void loadData() {
         if(alertContract == null) { //|| !nameContract.isValid()) {
             alertContract = context.getAlertContract();
         }
@@ -195,31 +198,69 @@ public class MainTabPresenter {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (countCoords) -> {
-                            for(int i =0; i<countCoords.intValue(); i++){
-                                alertContract.getAlertByIndex(BigInteger.valueOf(i)).observable()
-                                        .subscribeOn(Schedulers.newThread())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(
-                                                (result) ->
-                                                        mainTabView.loadDataEventSmartContract(
-                                                                result.getValue1(),
-                                                                result.getValue2(),
-                                                                result.getValue3(),
-                                                                result.getValue4(),
-                                                                result.getValue5())
-                                                ,
-                                                (error) -> mainTabView.showErrorTransition()
-                                        );
-                            }
-                        },
-                        (error) -> mainTabView.showErrorTransition()
+                    (countCoords) -> {
+                        for(int i =0; i<countCoords.intValue(); i++){
+                            alertContract.getAlertByIndex(BigInteger.valueOf(i)).observable()
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                        (result) ->
+                                                mainTabView.loadDataAlertSmartContract(
+                                                        result.getValue1(),
+                                                        result.getValue2(),
+                                                        result.getValue3(),
+                                                        result.getValue4(),
+                                                        result.getValue5())
+                                        ,
+                                        (error) -> mainTabView.showErrorTransaction()
+                                    );
+                        }
+                    },
+                    (error) -> mainTabView.showErrorTransaction()
                 );
         if(posterContract == null) { //|| !nameContract.isValid()) {
             posterContract = context.getPosterContract();
         }
-        //TODO : load data from poster
+        posterContract.getPostersCount().observable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    (countCoords) -> {
+                        for(int i=0; i<countCoords.intValue(); i++){
+                            posterContract.getPosterByIndex(BigInteger.valueOf(i)).observable()
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                        (resultHash) -> ipfsService.getDataFromHash(resultHash)
+                                        ,
+                                        (error) -> mainTabView.showErrorTransaction()
+                                    );
+                        }
+                    },
+                    (error) -> mainTabView.showErrorTransaction()
+                );
     }
+
+    public void onSaveDataAlert(String title, String description, String latitude, String longitude){
+        if(alertContract == null) {
+            alertContract = getAlertContract();
+        }
+        alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(
+                        (result) -> mainTabView.showConfirmationTransaction()
+                        ,
+                        (error) -> mainTabView.showErrorTransaction()
+                );
+    }
+
+    public void onSaveDataPoster(String posterJson){
+        if(posterContract == null) {
+            posterContract = getPosterContract();
+        }
+        ipfsService.addStringGetHash(posterJson, posterContract);
+    }
+
 
     public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
                                        ContentResolver contentResolver, Fragment updatedFragment,
@@ -247,6 +288,7 @@ public class MainTabPresenter {
         }
     }
 
+
     private class CustomLocationListener implements LocationListener {
 
         @Override
@@ -269,6 +311,5 @@ public class MainTabPresenter {
 
         }
     }
-
 
 }

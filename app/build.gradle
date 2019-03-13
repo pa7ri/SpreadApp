@@ -41,6 +41,8 @@ dependencies {
     implementation 'com.andrognito.flashbar:flashbar:1.0.3'
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
 
+    implementation 'com.github.ligi:ipfs-api-kotlin:0.14'
+
     implementation 'com.tuyenmonkey:mkloader:1.4.0'
     implementation 'org.web3j:core:3.3.1-android'
     implementation 'io.reactivex:rxandroid:1.2.1'

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class Event {
+public class Alert {
     private String title;
     private String description;
     private Double latitude;
@@ -23,7 +23,11 @@ public class Event {
 
     private Context context;
 
-    public Event(Context context, String title, String description, String latitude, String longitude, String dateTime) {
+    public Alert(Context context){
+        this.context = context;
+    }
+
+    public Alert(Context context, String title, String description, String latitude, String longitude, String dateTime) {
         this.context = context;
         this.title = title;
         this.description = description;
@@ -31,6 +35,24 @@ public class Event {
         this.longitude = Double.valueOf(longitude);
         this.dateTime = Long.valueOf(dateTime);
         this.place = getLocation();
+    }
+
+    public void setTitle(String title){
+        this.title=title;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public void setLatitudeLongitude(String latitude,String longitude){
+        this.latitude = Double.valueOf(latitude);
+        this.longitude = Double.valueOf(longitude);
+        this.place = getLocation();
+    }
+
+    public void setDateTime(String dateTime){
+        this.dateTime = Long.valueOf(dateTime);
     }
 
     public String getTitle() {

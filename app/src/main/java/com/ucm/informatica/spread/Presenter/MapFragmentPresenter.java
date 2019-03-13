@@ -22,10 +22,8 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Contracts.AlertContract;
-import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
-import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.LocationMode;
 import com.ucm.informatica.spread.Model.PinMode;
 import com.ucm.informatica.spread.Model.Poster;
@@ -33,13 +31,11 @@ import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MapFragmentView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
@@ -50,10 +46,7 @@ import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MapFragmentPresenter {
 
-    private AlertContract alertContract;
-    private PosterContract posterContract;
-
-    private LocationMode currentMode = Auto; //default := Auto
+    private LocationMode currentMode = Auto;
 
     private MapFragmentView mapFragmentView;
     private MapFragment mapFragment;
@@ -68,47 +61,22 @@ public class MapFragmentPresenter {
     }
 
     public void start(){
-        List<Event> historicalEventList = ((MainTabActivity)mapFragment.getActivity()).getDataEventSmartContract();
+        List<Alert> historicalAlertList = ((MainTabActivity)mapFragment.getActivity()).getDataAlertSmartContract();
         List<Poster> historicalPosterList = ((MainTabActivity)mapFragment.getActivity()).getDataPosterSmartContract();
-        for (Event event:historicalEventList) {
+
+        for (Alert alert:historicalAlertList) {
             mapFragmentView.showNewMarkerIntoMap(
-                    event.getLatitude(),
-                    event.getLongitude(),
-                    event.getTitle(),
-                    event.getDescription(), true);
+                    alert.getLatitude(),
+                    alert.getLongitude(),
+                    alert.getTitle(),
+                    alert.getDescription(), true);
         }
-        for (Event event:historicalPosterList) {
+        for (Poster poster:historicalPosterList) {
             mapFragmentView.showNewMarkerIntoMap(
-                    event.getLatitude(),
-                    event.getLongitude(),
-                    event.getTitle(),
-                    event.getDescription(), false);
-        }
-    }
-
-    public void saveData(String title, String description, String longitude, String latitude) {
-        switch (pinMode) {
-            case Alert: {
-                if(alertContract == null) {
-                    alertContract = ((MainTabActivity) mapFragment.getActivity()).getAlertContract();
-                }
-
-                alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                (result) -> mapFragmentView.showFeedback()
-                                ,
-                                (error) -> mapFragmentView.showError(R.string.snackbar_alert_transaction)
-                        );
-            }
-            case Poster: {
-                if(posterContract == null) {
-                    posterContract = ((MainTabActivity) mapFragment.getActivity()).getPosterContract();
-                }
-
-                //TODO : store data into IPFS and has into ethereum
-            }
+                    poster.getLatitude(),
+                    poster.getLongitude(),
+                    poster.getTitle(),
+                    poster.getDescription(), false);
         }
     }
 
@@ -151,34 +119,6 @@ public class MapFragmentPresenter {
         if(currentMode==Auto) currentMode = Manual;
         else currentMode = Auto;
         mapFragmentView.renderLocationView(currentMode);
-    }
-
-
-    private int getColorPolygon(int numContainedPoints){
-        int color;
-        if(numContainedPoints==0 || numContainedPoints==1) {
-            color = Color.GREEN;
-        } else if (numContainedPoints>1 && numContainedPoints<6) {
-            color = Color.YELLOW;
-        } else {
-            color = Color.RED;
-        }
-        return color;
-    }
-
-    private Point getMinDistancePoint(Point marker, Map<Point, Region> regionMap) {
-        Point nearestPoint = marker; //just to have an initial value, it doesnt mean anything
-        Double minDistance = Double.MAX_VALUE;
-        Double currentDistance;
-        for (Map.Entry<Point, Region> entry : regionMap.entrySet())
-        {
-            currentDistance = getDistance(marker, entry.getKey());
-            if(currentDistance < minDistance) {
-                minDistance = currentDistance;
-                nearestPoint = entry.getKey();
-            }
-        }
-        return nearestPoint;
     }
 
     //not needed to compute square root because we dont want distance itself, just proportion
@@ -246,7 +186,7 @@ public class MapFragmentPresenter {
                             Double.toString(latestLocation.getLongitude()),
                             Double.toString(latestLocation.getLatitude()));
                 } else {
-                    mapFragmentView.showError(R.string.location_no_available);
+                    mapFragmentView.showErrorTransaction(R.string.location_no_available);
                     onSwitchLocationMode();
                 }
             } else {
@@ -263,5 +203,51 @@ public class MapFragmentPresenter {
 
         dialogBuilder.setView(dialogView);
         dialogBuilder.show();
+    }
+
+    private void saveData(String title, String description, String longitude, String latitude) {
+        switch (pinMode) {
+            case Alert: {
+                ((MainTabActivity) mapFragment.getActivity()).saveDataAlert(title,description,latitude,longitude);
+            }
+            case Poster: {
+                Poster samplePoster = new Poster(mapFragment.getContext(), title, description,
+                        latitude, longitude, String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
+                ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
+            }
+        }
+    }
+
+    private int getColorPolygon(int numContainedPoints){
+        int color;
+        if(numContainedPoints==0 || numContainedPoints==1) {
+            color = Color.GREEN;
+        } else if (numContainedPoints>1 && numContainedPoints<6) {
+            color = Color.YELLOW;
+        } else {
+            color = Color.RED;
+        }
+        return color;
+    }
+
+    private Point getMinDistancePoint(Point marker, Map<Point, Region> regionMap) {
+        Point nearestPoint = marker; //just to have an initial value, it doesnt mean anything
+        Double minDistance = Double.MAX_VALUE;
+        Double currentDistance;
+        for (Map.Entry<Point, Region> entry : regionMap.entrySet())
+        {
+            currentDistance = getDistance(marker, entry.getKey());
+            if(currentDistance < minDistance) {
+                minDistance = currentDistance;
+                nearestPoint = entry.getKey();
+            }
+        }
+        return nearestPoint;
+    }
+
+    private byte[] bitmapToByteArray(Bitmap posterImage){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        posterImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
     }
 }
