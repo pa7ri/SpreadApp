@@ -46,7 +46,6 @@ public class Alert {
     public void setLatitudeLongitude(String latitude,String longitude){
         this.latitude = Double.valueOf(latitude);
         this.longitude = Double.valueOf(longitude);
-        this.place = getLocation();
     }
 
     public void setDateTime(String dateTime){

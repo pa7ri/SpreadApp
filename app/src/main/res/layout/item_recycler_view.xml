@@ -42,8 +42,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="180dp"
                         android:visibility="gone"
-                        android:src="@drawable/ic_pic"
-                        android:padding="@dimen/smallMargin"
                         android:background="@color/backgroundColor"
                         android:layout_below="@+id/titleContentItemText"/>
 

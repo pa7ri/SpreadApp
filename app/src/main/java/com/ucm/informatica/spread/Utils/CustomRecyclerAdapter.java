@@ -2,25 +2,20 @@ package com.ucm.informatica.spread.Utils;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.andrognito.flashbar.Flashbar;
-import com.andrognito.flashbar.anim.FlashAnim;
 import com.ramotion.foldingcell.FoldingCell;
-import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Model.Event;
+import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.R;
 
@@ -28,12 +23,14 @@ import java.util.List;
 
 
 public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder> {
-    private List<Alert> data;
+    private List<Alert> dataAlert;
+    private List<Poster> dataPoster;
     private LayoutInflater inflater;
 
-    public CustomRecyclerAdapter(Context context, List<Alert> data) {
+    public CustomRecyclerAdapter(Context context, List<Alert> dataAlert, List<Poster> dataPoster) {
         this.inflater = LayoutInflater.from(context);
-        this.data = data;
+        this.dataAlert = dataAlert;
+        this.dataPoster = dataPoster;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,29 +40,52 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull CustomRecyclerAdapter.ViewHolder holder, int position) {
-        holder.titleItemText.setText(data.get(position).getTitle());
-        holder.dateItemText.setText(data.get(position).getDateTimeFormat().substring(0,
-                                        data.get(position).getDateTimeFormat().indexOf(" ")));
-        holder.iconItemImage.setImageDrawable(inflater.getContext().getResources().getDrawable(R.drawable.ic_location));
+        if (position<dataAlert.size()){
+            Alert singleAlert = dataAlert.get(position);
+            loadItemData(holder, singleAlert.getTitle(),singleAlert.getDescription(),
+                    singleAlert.getDateTimeFormat().substring(0, singleAlert.getDateTimeFormat().indexOf(" ")),
+                    singleAlert.getDateTimeFormat(),  getAddress(singleAlert.getLocation()),
+                    inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
+        } else {
+            Poster singlePoster = dataPoster.get(position-dataAlert.size());
+            loadItemData(holder, singlePoster.getTitle(),singlePoster.getDescription(),
+                    singlePoster.getDateTimeFormat().substring(0, singlePoster.getDateTimeFormat().indexOf(" ")),
+                    singlePoster.getDateTimeFormat(),  getAddress(singlePoster.getLocation()),
+                    inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
+                    singlePoster.getImage());
 
+        }
 
-        //holder.iconContentItemImage.setImageBitmap(BitmapFactory.decodeByteArray(
-          //      data.get(position).getImage(), 0, data.get(position).getImage().length));
-        holder.titleContentItemText.setText(data.get(position).getTitle());
-        holder.descriptionContentItemText.setText(data.get(position).getDescription());
-        Address address = data.get(position).getLocation();
-        String addressLine= address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n"
+    }
+
+    private void loadItemData(@NonNull CustomRecyclerAdapter.ViewHolder holder, String title,
+                              String description, String date, String datetime, String address,
+                              Drawable icon, byte[] image){
+        //header
+        holder.titleItemText.setText(title);
+        holder.dateItemText.setText(description);
+        holder.iconItemImage.setImageDrawable(icon);
+        //body
+        holder.titleContentItemText.setText(title);
+        holder.descriptionContentItemText.setText(description);
+        holder.placeDescriptionContentItemText.setText(address);
+        holder.dateContentItemText.setText(datetime);
+        if(image!=null) {
+            holder.iconContentItemImage.setVisibility(View.VISIBLE);
+            holder.iconContentItemImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+        }
+    }
+
+    private String getAddress(Address address) {
+        return address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n"
                 + address.getLocality() + "\n"
                 + address.getPostalCode() + " - " + address.getSubAdminArea() + "\n"
                 + address.getCountryName();
-
-        holder.placeDescriptionContentItemText.setText(addressLine);
-        holder.dateContentItemText.setText(data.get(position).getDateTimeFormat());
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return dataAlert.size() + dataPoster.size();
     }
 
 
