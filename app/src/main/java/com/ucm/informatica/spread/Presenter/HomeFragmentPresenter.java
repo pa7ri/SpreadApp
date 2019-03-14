@@ -39,11 +39,7 @@ public class HomeFragmentPresenter {
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            (result) ->
-                                homeFragmentView.showConfirmationTransaction(
-                                        "Bloque : " + result.getBlockNumber().toString()
-                                                + " , Gas usado : " + result.getGasUsed().toString())
-                            ,
+                            (result) -> homeFragmentView.showConfirmationTransaction(),
                             (error) -> homeFragmentView.showErrorTransaction()
                     );
         } else {

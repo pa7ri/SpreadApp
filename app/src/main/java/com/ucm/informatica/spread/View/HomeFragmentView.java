@@ -6,7 +6,7 @@ public interface HomeFragmentView {
 
     void setupListeners();
 
-    void showConfirmationTransaction(String result);
+    void showConfirmationTransaction();
 
     void showErrorTransaction();
 
