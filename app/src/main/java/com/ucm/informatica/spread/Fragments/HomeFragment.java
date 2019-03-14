@@ -24,7 +24,6 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     private View view;
     private HomeFragmentPresenter homeFragmentPresenter;
 
-    private TextView nameText;
     private Button helpButton;
     private FloatingActionButton cameraButton;
 
@@ -39,7 +38,6 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
-
         homeFragmentPresenter = new HomeFragmentPresenter(this,
                     ((MainTabActivity) getActivity()).getAlertContract());
         homeFragmentPresenter.start();
@@ -48,7 +46,6 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
 
     @Override
     public void initView() {
-        nameText = view.findViewById(R.id.nameText);
         helpButton = view.findViewById(R.id.helpButton);
         cameraButton = view.findViewById(R.id.addPosterButton);
     }
@@ -65,9 +62,8 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     }
 
     @Override
-    public void showConfirmationTransaction(String result) {
+    public void showConfirmationTransaction() {
         ((MainTabActivity) getActivity()).showConfirmationTransaction();
-        nameText.setText(result);
     }
 
     @Override

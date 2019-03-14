@@ -3,6 +3,7 @@ package com.ucm.informatica.spread.Presenter;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Model.Alert;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Utils.CustomRecyclerAdapter;
 import com.ucm.informatica.spread.View.HistoricalFragmentView;
 
@@ -20,8 +21,10 @@ public class HistoricalFragmentPresenter {
     }
 
     public void start(){
-        List<Alert> historicalList = ((MainTabActivity)historicalFragment.getActivity()).getDataAlertSmartContract();
-        CustomRecyclerAdapter customRecyclerAdapter = new CustomRecyclerAdapter(historicalFragment.getContext(), historicalList);
+        List<Alert> historicalAlertList = ((MainTabActivity)historicalFragment.getActivity()).getDataAlertSmartContract();
+        List<Poster> historicalPosterList = ((MainTabActivity)historicalFragment.getActivity()).getDataPosterSmartContract();
+        CustomRecyclerAdapter customRecyclerAdapter = new CustomRecyclerAdapter(
+                historicalFragment.getContext(), historicalAlertList, historicalPosterList);
         historicalFragmentView.initView(customRecyclerAdapter);
     }
 }

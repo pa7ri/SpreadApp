@@ -1,42 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:folding-cell="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="@dimen/smallMargin">
 
-    <TextView
-        android:id="@+id/titleItemText"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+    <com.ramotion.foldingcell.FoldingCell
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/folding_cell"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/smallMargin"
-        android:text="@string/title_hint"
-        android:gravity="left"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        folding-cell:animationDuration="1300"
+        folding-cell:backSideColor="@color/dividerColor"
+        folding-cell:cameraHeight="30">
 
-    <TextView
-        android:id="@+id/dateTimeItemText"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/smallMargin"
-        android:text="@string/description_hint"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:id="@+id/cellContentView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/whiteBackground"
+                android:visibility="gone">
 
-    <TextView
-        android:id="@+id/placerItemText"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/smallMargin"
-        android:text="@string/location_title"
-        android:gravity="right"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                <RelativeLayout
+                    android:id="@+id/headerItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/titleContentItemText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/smallMargin"
+                        android:text="@string/title_hint"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/mediumText"
+                        android:background="@color/backgroundColorDark"/>
+
+                    <ImageView
+                        android:id="@+id/iconContentItemImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:visibility="gone"
+                        android:background="@color/backgroundColor"
+                        android:layout_below="@+id/titleContentItemText"/>
+
+
+                    <TextView
+                        android:id="@+id/descriptionContentItemText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/smallMargin"
+                        android:layout_marginHorizontal="@dimen/mediumMargin"
+                        android:text="@string/description_hint"
+                        android:layout_centerVertical="true"
+                        android:layout_below="@+id/iconContentItemImage" />
+
+                </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/bodyItem"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <View
+                    android:id="@id/dottedLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginHorizontal="@dimen/smallMargin"
+                    android:layerType="software"
+                    android:background="@drawable/dotted_line"/>
+
+                <TextView
+                    android:id="@+id/placeTitleContentItemText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:layout_marginHorizontal="@dimen/mediumMargin"
+                    android:text="@string/place_title"
+                    android:textColor="@color/slate_black"
+                    android:textSize="@dimen/msmallText"
+                    android:layout_below="@+id/dottedLine"/>
+
+                <TextView
+                    android:id="@+id/placeDescriptionContentItemText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/xsmallMargin"
+                    android:layout_marginStart="@dimen/largeMargin"
+                    android:layout_marginEnd="@dimen/xlargeMargin"
+                    android:gravity="left"
+                    android:text="@string/place_title"
+                    android:layout_below="@+id/placeTitleContentItemText"/>
+
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/locationMapButton"
+                    android:layout_width="@dimen/iconSide"
+                    android:layout_height="@dimen/iconSide"
+                    android:layout_margin="@dimen/smallMargin"
+                    android:padding="@dimen/mediumMargin"
+                    android:foreground="@drawable/ic_map"
+                    android:background="@drawable/round_button_shape"
+                    android:layout_alignBaseline="@+id/placeTitleContentItemText"
+                    android:layout_alignParentRight="true" />
+
+                <TextView
+                    android:id="@+id/dateTimeContentItemText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/mediumMargin"
+                    android:layout_marginHorizontal="@dimen/mediumMargin"
+                    android:textColor="@color/slate_black"
+                    android:textSize="@dimen/msmallText"
+                    android:text="Fecha y hora"
+                    android:layout_below="@+id/placeDescriptionContentItemText"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/dateContentItemText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/xsmallMargin"
+                    android:layout_marginHorizontal="@dimen/largeMargin"
+                    android:layout_marginBottom="@dimen/mediumMargin"
+                    android:text="Hora"
+                    android:layout_below="@+id/dateTimeContentItemText"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/cellTitleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iconItemImage"
+                android:layout_width="@dimen/markerSide"
+                android:layout_height="@dimen/markerSide"
+                android:src="@drawable/ic_pic"
+                android:padding="@dimen/smallMargin"
+                android:background="@color/backgroundColor"/>
+
+            <TextView
+                android:id="@+id/titleItemText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/mediumMargin"
+                android:textColor="@color/slate_black"
+                android:textSize="@dimen/msmallText"
+                android:text="@string/title_hint"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/iconItemImage" />
+
+            <TextView
+                android:id="@+id/dateItemText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginHorizontal="@dimen/smallMargin"
+                android:layout_marginTop="@dimen/xsmallMargin"
+                android:layout_centerVertical="true"
+                android:text="Fecha" />
+
+        </RelativeLayout>
+
+    </com.ramotion.foldingcell.FoldingCell>
 
 </LinearLayout>
+

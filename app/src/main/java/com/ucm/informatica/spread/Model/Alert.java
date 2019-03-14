@@ -19,7 +19,6 @@ public class Alert {
     private Double latitude;
     private Double longitude;
     private Long dateTime;
-    private String place;
 
     private Context context;
 
@@ -34,7 +33,6 @@ public class Alert {
         this.latitude = Double.valueOf(latitude);
         this.longitude = Double.valueOf(longitude);
         this.dateTime = Long.valueOf(dateTime);
-        this.place = getLocation();
     }
 
     public void setTitle(String title){
@@ -48,7 +46,6 @@ public class Alert {
     public void setLatitudeLongitude(String latitude,String longitude){
         this.latitude = Double.valueOf(latitude);
         this.longitude = Double.valueOf(longitude);
-        this.place = getLocation();
     }
 
     public void setDateTime(String dateTime){
@@ -79,11 +76,7 @@ public class Alert {
         return formatDate(dateTime);
     }
 
-    public String getPlace() {
-        return place;
-    }
-
-    private String getLocation(){
+    public Address getLocation(){
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -91,11 +84,11 @@ public class Alert {
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
         }
-        return addresses.get(0).getLocality();
+        return addresses.get(0);
     }
 
     private String formatDate(Long data){
-        DateFormat df = new SimpleDateFormat("dd-MM-yyyy \n HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy           HH:mm:ss");
         return df.format(new Date(data));
     }
 }

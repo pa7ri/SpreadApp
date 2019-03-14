@@ -288,9 +288,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                         .duration(450)
                         .accelerateDecelerate())
                 .showIcon()
-                .backgroundColorRes(R.color.snackbarAlertColor)
+                .backgroundColorRes(R.color.snackbarBackground)
                 .message(getString(R.string.snackbar_alert_gps))
-                .primaryActionText(getResources().getString(R.string.button_active))
                 .build();
     }
 
@@ -307,8 +306,9 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                         .animateBar()
                         .duration(450)
                         .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarAlertColor)
+                .backgroundColorRes(R.color.snackbarBackground)
                 .message(getString(text))
+                .messageColorRes(R.color.snackbarAlertColor)
                 .build();
     }
 
@@ -326,8 +326,9 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                         .animateBar()
                         .duration(450)
                         .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarConfirmColor)
+                .backgroundColorRes(R.color.snackbarBackground)
                 .message(getString(R.string.snackbar_confirmation_transaction))
+                .messageColorRes(R.color.snackbarConfirmColor)
                 .build();
     }
 

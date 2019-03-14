@@ -75,5 +75,6 @@
     <string name="snackbar_alert_transaction">"Ha habido un error en la transacción"</string>
     <string name="snackbar_alert_image">"No se ha guardado correctamente la imagen"</string>
     <string name="snackbar_confirmation_transaction">Guardado correctamente</string>
+    <string name="place_title">Lugar</string>
 
 </resources>

@@ -6,6 +6,7 @@
     <dimen name="mediumMargin">16dp</dimen>
     <dimen name="xmediumMargin">24dp</dimen>
     <dimen name="largeMargin">32dp</dimen>
+    <dimen name="xlargeMargin">42dp</dimen>
 
 
     <!-- Image Dimensions -->

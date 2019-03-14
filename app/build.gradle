@@ -40,6 +40,8 @@ dependencies {
 
     implementation 'com.andrognito.flashbar:flashbar:1.0.3'
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
+    implementation 'com.ramotion.foldingcell:folding-cell:1.2.2'
+
 
     implementation 'com.github.ligi:ipfs-api-kotlin:0.14'
 
