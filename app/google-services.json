@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "346225385567",
+    "firebase_url": "https://tfg-spread-1542266711865.firebaseio.com",
+    "project_id": "tfg---spread-1542266711865",
+    "storage_bucket": "tfg---spread-1542266711865.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346225385567:android:d19337969d725d9d",
+        "android_client_info": {
+          "package_name": "com.ucm.informatica.spread"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346225385567-i4rl57774shh5adb9q63uv1pi3r8ha5f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpF3-WDmjoRh0RHSdfNG0hJ3BJ3n8Pfhk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,11 @@
 package com.ucm.informatica.spread.Presenter;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -17,6 +21,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
@@ -51,6 +59,8 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.TOPIC_ALL_DEVICES;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
@@ -83,7 +93,32 @@ public class MainTabPresenter {
         walletPath = path;
         mainTabView.showLoading();
         initLocationManager();
+        initNotificationService();
         initEthConnection();
+    }
+
+    private void initNotificationService(){
+        createNotificationChannel();
+
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_DEVICES);
+        FirebaseInstanceId.getInstance()
+                .getInstanceId()
+                .addOnSuccessListener( context, instanceIdResult -> {
+            String newToken = instanceIdResult.getToken();
+            Log.e("newToken",newToken);
+        });
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alertas emergencia";
+            String description = "Notificar a los usuarios si hay alguien en peligro cerca";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     public Fragment getFragment(int position) {
@@ -120,7 +155,7 @@ public class MainTabPresenter {
                         .ethGetBalance(localWallet.getCredentials().getAddress(), DefaultBlockParameterName.LATEST)
                         .sendAsync()
                         .get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | NullPointerException e) {
                 Log.e("TAG",e.getMessage());
             }
         }

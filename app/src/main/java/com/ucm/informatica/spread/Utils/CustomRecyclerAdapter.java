@@ -43,13 +43,11 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
         if (position<dataAlert.size()){
             Alert singleAlert = dataAlert.get(position);
             loadItemData(holder, singleAlert.getTitle(),singleAlert.getDescription(),
-                    singleAlert.getDateTimeFormat().substring(0, singleAlert.getDateTimeFormat().indexOf(" ")),
                     singleAlert.getDateTimeFormat(),  getAddress(singleAlert.getLocation()),
                     inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
         } else {
             Poster singlePoster = dataPoster.get(position-dataAlert.size());
             loadItemData(holder, singlePoster.getTitle(),singlePoster.getDescription(),
-                    singlePoster.getDateTimeFormat().substring(0, singlePoster.getDateTimeFormat().indexOf(" ")),
                     singlePoster.getDateTimeFormat(),  getAddress(singlePoster.getLocation()),
                     inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
                     singlePoster.getImage());
@@ -59,7 +57,7 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
     }
 
     private void loadItemData(@NonNull CustomRecyclerAdapter.ViewHolder holder, String title,
-                              String description, String date, String datetime, String address,
+                              String description, String datetime, String address,
                               Drawable icon, byte[] image){
         //header
         holder.titleItemText.setText(title);

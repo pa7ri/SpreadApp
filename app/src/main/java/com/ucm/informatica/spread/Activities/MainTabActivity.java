@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_MESSAGE;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
@@ -81,9 +83,11 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
-        readPolygonCoordinates();
-        mainPresenter = new MainTabPresenter(this, this);
-        mainPresenter.start(getFilesDir().getAbsolutePath());
+        if(!isNotificationIntent()) {
+            readPolygonCoordinates();
+            mainPresenter = new MainTabPresenter(this, this);
+            mainPresenter.start(getFilesDir().getAbsolutePath());
+        }
     }
 
     @Override
@@ -136,7 +140,21 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     @Override
     public void hideLoading() {
        relativeLayout.setVisibility(View.GONE);
+    }
 
+    private boolean isNotificationIntent() {
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            String notificationMessageJsonObject = intent.getExtras().get(NOTIFICATION_MESSAGE).toString();
+
+            Intent notificationIntent = new Intent(this, AlertDetailsActivity.class);
+            notificationIntent.putExtra(NOTIFICATION_MESSAGE, notificationMessageJsonObject);
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(notificationIntent);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void saveDataPoster(String posterJson){
@@ -217,6 +235,62 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         dialogBuilder.show();
     }
 
+    public Flashbar getAlertSnackBarGPS(){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .showIcon()
+                .backgroundColorRes(R.color.snackbarBackground)
+                .message(getString(R.string.snackbar_alert_gps))
+                .build();
+    }
+
+    public Flashbar getErrorSnackBar(int text){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarBackground)
+                .message(getString(text))
+                .messageColorRes(R.color.snackbarAlertColor)
+                .build();
+    }
+
+    public Flashbar getConfirmationSnackBar(){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarBackground)
+                .message(getString(R.string.snackbar_confirmation_transaction))
+                .messageColorRes(R.color.snackbarConfirmColor)
+                .build();
+    }
     private void setupViewPager() {
         if(getSupportFragmentManager().getFragments() != null) {
             getSupportFragmentManager().getFragments().clear();
@@ -228,6 +302,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         fragmentViewPager.setAdapter(fragmentAdapter);
         fragmentAdapter.notifyDataSetChanged();
     }
+
     private void setupTabContent(){
         TextView tabCurrent;
         for(int i=0; i < NUMBER_TABS; i++) {
@@ -272,64 +347,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 }
             }
         }
-    }
-
-    public Flashbar getAlertSnackBarGPS(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .showIcon()
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_alert_gps))
-                .build();
-    }
-
-    public Flashbar getErrorSnackBar(int text){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(text))
-                .messageColorRes(R.color.snackbarAlertColor)
-                .build();
-    }
-
-
-    public Flashbar getConfirmationSnackBar(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_confirmation_transaction))
-                .messageColorRes(R.color.snackbarConfirmColor)
-                .build();
     }
 
 }

@@ -1,7 +1,9 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
 
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 
@@ -54,7 +57,8 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     public void setupListeners(){
         helpButton.setOnClickListener(view -> {
             Location location = ((MainTabActivity) getActivity()).getLocation();
-            homeFragmentPresenter.onHelpButtonPressed(location,getResources());
+            homeFragmentPresenter.onHelpButtonPressed(location,getResources(),
+                    getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE));
         });
         cameraButton.setOnClickListener(view -> {
             ((MainTabActivity) getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);

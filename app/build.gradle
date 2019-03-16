@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.ucm.informatica.spread"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -41,6 +42,13 @@ dependencies {
     implementation 'com.andrognito.flashbar:flashbar:1.0.3'
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
     implementation 'com.ramotion.foldingcell:folding-cell:1.2.2'
+
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.4.0'
+
+
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
 
 
     implementation 'com.github.ligi:ipfs-api-kotlin:0.14'
