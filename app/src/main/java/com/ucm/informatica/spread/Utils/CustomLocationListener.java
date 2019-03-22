@@ -26,9 +26,6 @@ public class CustomLocationListener implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-
-        //FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_ALL_DEVICES);
-
         unregisterLastNotificationTopic(latestLocation);
         latestLocation = location;
         registerNewNotificationTopic(latestLocation);

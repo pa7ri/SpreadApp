@@ -310,7 +310,6 @@ public class MainTabPresenter {
                         Log.e("TAG", e.getMessage());
                     }
                     break;
-                //TODO : ask for profile
             }
 
         }

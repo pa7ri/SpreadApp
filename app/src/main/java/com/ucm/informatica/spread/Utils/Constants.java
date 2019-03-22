@@ -6,9 +6,8 @@ public final class Constants {
 
     public static final int NUMBER_TABS = 5;
     public static final int REQUEST_IMAGE_POSTER = 0;
-    public static final int REQUEST_IMAGE_PROFILE = 1;
-    public static final int REQUEST_IMAGE_POSTER_CAMERA = 2;
-    public static final int REQUEST_IMAGE_POSTER_GALLERY = 3;
+    public static final int REQUEST_IMAGE_POSTER_CAMERA = 1;
+    public static final int REQUEST_IMAGE_POSTER_GALLERY = 2;
 
     public static final String INFURA_PATH = "https://rinkeby.infura.io/";
     public static final String INFURA_PUBLIC_PROYECT_ADDRESS = "2dde3de7006043b88fb4e35189745853";
@@ -52,7 +51,6 @@ public final class Constants {
         public static final String API_FCM_URL = "https://fcm.googleapis.com/";
         public static final String NOTIFICATION_CHANNEL_ID = "NOTIFICATION_CHANNEL_ID_FCM";
         public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
-        public static final String TOPIC_ALL_DEVICES = "allDevices";
         public static final String TOPICS = "/topics/";
 
         public static final String NOTIFICATION_DATA="NOTIFICATION_DATA";

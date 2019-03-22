@@ -207,7 +207,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             cameraImage.setImageDrawable(getPackageManager().getApplicationIcon(cameraPackage));
             galleryImage.setImageDrawable(getPackageManager().getApplicationIcon(galleryPackage));
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("TAG",e.getMessage());
+            Log.e("PICTURE",e.getMessage());
         }
 
         galleryLayout.setOnClickListener(view -> {
@@ -216,7 +216,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 if(mode == REQUEST_IMAGE_POSTER) {
                     startActivityForResult(Intent.createChooser(intent, ""), REQUEST_IMAGE_POSTER_GALLERY);
-                } ///TODO : profile opt
+                }
             dialogBuilder.dismiss();
             });
 
@@ -224,7 +224,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                     if(mode == REQUEST_IMAGE_POSTER) {
                         startActivityForResult(cameraIntent, REQUEST_IMAGE_POSTER_CAMERA);
-                    }///TODO : profile opt
+                    }
                 }
             dialogBuilder.dismiss();
             });
