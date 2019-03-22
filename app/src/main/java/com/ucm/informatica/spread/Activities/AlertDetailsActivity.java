@@ -6,15 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationManager;
@@ -116,7 +113,6 @@ public class AlertDetailsActivity extends AppCompatActivity {
     public void initMap(Double latitude, Double longitude){
         mapView.getMapAsync(mp -> {
             mp.setStyle(MAP_STYLE);
-            //mp.setCameraPosition(Objects.requireNonNull(cam.getCameraPosition(mp)));
             mp.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude,longitude))
                     .title(getResources().getString(R.string.button_help))

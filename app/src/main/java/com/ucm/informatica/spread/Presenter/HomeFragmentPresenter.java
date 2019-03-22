@@ -95,14 +95,14 @@ public class HomeFragmentPresenter {
     private String notificationToJson(Double latitude, Double longitude, SharedPreferences sharedPreferences) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(NOTIFICATION_DATA_NAME, sharedPreferences.getString(NAME_PREF,""));
-            jsonObject.put(NOTIFICATION_DATA_AGE, sharedPreferences.getString(AGE_PREF,""));
+            jsonObject.put(NOTIFICATION_DATA_NAME, sharedPreferences.getString(NAME_PREF,NOTIFICATION_DATA_UNKNOWN));
+            jsonObject.put(NOTIFICATION_DATA_AGE, sharedPreferences.getString(AGE_PREF,NOTIFICATION_DATA_UNKNOWN));
             jsonObject.put(NOTIFICATION_DATA_LATITUDE, latitude);
             jsonObject.put(NOTIFICATION_DATA_LONGITUDE, longitude);
             jsonObject.put(NOTIFICATION_DATA_TSHIRT_COLOR, getColor(Colours.values()[sharedPreferences.getInt(TSHIRT_PREF,0)]));
             jsonObject.put(NOTIFICATION_DATA_PANTS_COLOR, getColor(Colours.values()[sharedPreferences.getInt(PANTS_PREF,0)]));
-            jsonObject.put(NOTIFICATION_DATA_WATCHWORD_KEY, sharedPreferences.getString(KEY_PREF,""));
-            jsonObject.put(NOTIFICATION_DATA_WATCHWORD_RESPONSE, sharedPreferences.getString(RESPONSE_PREF,""));
+            jsonObject.put(NOTIFICATION_DATA_WATCHWORD_KEY, sharedPreferences.getString(KEY_PREF,NOTIFICATION_DATA_UNKNOWN));
+            jsonObject.put(NOTIFICATION_DATA_WATCHWORD_RESPONSE, sharedPreferences.getString(RESPONSE_PREF,NOTIFICATION_DATA_UNKNOWN));
             return jsonObject.toString();
         } catch (JSONException e) {
             Log.e("JSON BUILDER", e.getMessage());
