@@ -113,7 +113,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     public void loadDataAlertSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
-        dataAlertSmartContractList.add(new Alert(this, title,description, latitude, longitude, dataTime));
+        dataAlertSmartContractList.add(new Alert(title,description, latitude, longitude, dataTime));
     }
 
     @Override
@@ -291,6 +291,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 .messageColorRes(R.color.snackbarConfirmColor)
                 .build();
     }
+
     private void setupViewPager() {
         if(getSupportFragmentManager().getFragments() != null) {
             getSupportFragmentManager().getFragments().clear();
@@ -314,7 +315,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             tabLayout.getTabAt(i).setCustomView(tabCurrent);
         }
     }
-
     //read coordinates from CoordinatesPolygon.txt
     private void readPolygonCoordinates() {
         Point centroid;

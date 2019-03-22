@@ -211,8 +211,8 @@ public class MapFragmentPresenter {
                 ((MainTabActivity) mapFragment.getActivity()).saveDataAlert(title,description,latitude,longitude);
             }
             case Poster: {
-                Poster samplePoster = new Poster(mapFragment.getContext(), title, description,
-                        latitude, longitude, String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
+                Poster samplePoster = new Poster(title, description,  latitude, longitude,
+                        String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
                 ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
             }
         }

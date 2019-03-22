@@ -3,28 +3,19 @@ package com.ucm.informatica.spread.Presenter;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.ContentProvider;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
@@ -37,6 +28,7 @@ import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
 import com.ucm.informatica.spread.Data.LocalWallet;
 import com.ucm.informatica.spread.Data.SmartContract;
+import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
 
@@ -60,7 +52,6 @@ import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
-import static com.ucm.informatica.spread.Utils.Constants.Notifications.TOPIC_ALL_DEVICES;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
@@ -77,7 +68,7 @@ public class MainTabPresenter {
     private PosterContract posterContract;
     private SmartContract smartContract;
 
-    private Location latestLocation;
+    private CustomLocationListener locationListener;
     private Bitmap imageBitmap;
 
     private IPFSService ipfsService;
@@ -86,7 +77,7 @@ public class MainTabPresenter {
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
         this.context = context;
-        this.ipfsService = new IPFSService(context, context);
+        this.ipfsService = new IPFSService(mainTabView);
     }
 
     public void start(String path){
@@ -100,10 +91,9 @@ public class MainTabPresenter {
     private void initNotificationService(){
         createNotificationChannel();
 
-        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_DEVICES);
         FirebaseInstanceId.getInstance()
                 .getInstanceId()
-                .addOnSuccessListener( context, instanceIdResult -> {
+                .addOnSuccessListener(context, instanceIdResult -> {
             String newToken = instanceIdResult.getToken();
             Log.e("newToken",newToken);
         });
@@ -165,7 +155,7 @@ public class MainTabPresenter {
 
     private void initLocationManager() {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        LocationListener locationListener = new CustomLocationListener();
+        locationListener = new CustomLocationListener(context);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions( context,
@@ -225,7 +215,7 @@ public class MainTabPresenter {
     }
 
     public Location getLatestLocation() {
-        return latestLocation;
+        return locationListener.getLatestLocation();
     }
 
     private void loadData() {
@@ -327,24 +317,5 @@ public class MainTabPresenter {
     }
 
 
-    private class CustomLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            latestLocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-    }
 
 }

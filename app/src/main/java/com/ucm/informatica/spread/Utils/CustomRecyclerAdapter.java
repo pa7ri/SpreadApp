@@ -26,8 +26,10 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
     private List<Alert> dataAlert;
     private List<Poster> dataPoster;
     private LayoutInflater inflater;
+    private CustomLocationManager locationManager;
 
     public CustomRecyclerAdapter(Context context, List<Alert> dataAlert, List<Poster> dataPoster) {
+        locationManager = new CustomLocationManager(context);
         this.inflater = LayoutInflater.from(context);
         this.dataAlert = dataAlert;
         this.dataPoster = dataPoster;
@@ -43,14 +45,16 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
         if (position<dataAlert.size()){
             Alert singleAlert = dataAlert.get(position);
             loadItemData(holder, singleAlert.getTitle(),singleAlert.getDescription(),
-                    singleAlert.getDateTimeFormat(),  getAddress(singleAlert.getLocation()),
-                    inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
+                singleAlert.getDateTimeFormat(),
+                locationManager.getFormatAddress(singleAlert.getLatitude(), singleAlert.getLongitude()),
+                inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
         } else {
             Poster singlePoster = dataPoster.get(position-dataAlert.size());
             loadItemData(holder, singlePoster.getTitle(),singlePoster.getDescription(),
-                    singlePoster.getDateTimeFormat(),  getAddress(singlePoster.getLocation()),
-                    inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
-                    singlePoster.getImage());
+                singlePoster.getDateTimeFormat(),
+                locationManager.getFormatAddress(singlePoster.getLatitude(), singlePoster.getLongitude()),
+                inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
+                singlePoster.getImage());
 
         }
 
@@ -72,13 +76,6 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
             holder.iconContentItemImage.setVisibility(View.VISIBLE);
             holder.iconContentItemImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
         }
-    }
-
-    private String getAddress(Address address) {
-        return address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n"
-                + address.getLocality() + "\n"
-                + address.getPostalCode() + " - " + address.getSubAdminArea() + "\n"
-                + address.getCountryName();
     }
 
     @Override

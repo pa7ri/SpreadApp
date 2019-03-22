@@ -1,8 +1,6 @@
 package com.ucm.informatica.spread.Activities;
 
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,24 +8,31 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.CustomLocationManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
+import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
+import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
+import static com.ucm.informatica.spread.Utils.Constants.Map.ZOOM_MARKER;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.*;
 
 public class AlertDetailsActivity extends AppCompatActivity {
 
     private Button cancelButton;
-    private Button showLocationButton;
 
-
-    private TextView placeText;
     private TextView nameText;
     private TextView ageText;
     private TextView tshirtText;
@@ -35,18 +40,69 @@ public class AlertDetailsActivity extends AppCompatActivity {
     private TextView watchwordKeyText;
     private TextView watchwordResponseText;
 
+    private CustomLocationManager locationManager;
+
+    private MapView mapView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mapbox.getInstance(Objects.requireNonNull(this), MAP_TOKEN);
+
         setContentView(R.layout.activity_alert_details);
 
+        locationManager = new CustomLocationManager(this);
+
         initView();
+        mapView.onCreate(savedInstanceState);
         initViewContent();
         setUpListeners();
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
 
     public void initView(){
-        placeText = findViewById(R.id.placeDescription);
+        mapView =findViewById(R.id.mapView);
+
         nameText = findViewById(R.id.dataNameDescription);
         ageText = findViewById(R.id.dataAgeDescription);
         tshirtText = findViewById(R.id.tshirtDescription);
@@ -55,7 +111,21 @@ public class AlertDetailsActivity extends AppCompatActivity {
         watchwordResponseText = findViewById(R.id.watchwordResponseDescription);
 
         cancelButton = findViewById(R.id.cancelButton);
-        showLocationButton = findViewById(R.id.showLocationButton);
+    }
+
+    public void initMap(Double latitude, Double longitude){
+        mapView.getMapAsync(mp -> {
+            mp.setStyle(MAP_STYLE);
+            //mp.setCameraPosition(Objects.requireNonNull(cam.getCameraPosition(mp)));
+            mp.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude,longitude))
+                    .title(getResources().getString(R.string.button_help))
+                    .snippet(getResources().getString(R.string.button_help_description)));
+
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(latitude,longitude),ZOOM_MARKER);
+            mp.animateCamera(cameraUpdate, 200, null);
+        });
     }
 
     public void initViewContent(){
@@ -65,7 +135,7 @@ public class AlertDetailsActivity extends AppCompatActivity {
             JSONObject notificationJsonObject = new JSONObject(notificationMessageJsonObject);
             String latitude = notificationJsonObject.getString(NOTIFICATION_DATA_LATITUDE);
             String longitude = notificationJsonObject.getString(NOTIFICATION_DATA_LONGITUDE);
-            placeText.setText(getAddress(Double.valueOf(latitude) , Double.valueOf(longitude)));
+            initMap(Double.valueOf(latitude), Double.valueOf(longitude));
             nameText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_NAME));
             ageText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_AGE));
             tshirtText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_TSHIRT_COLOR));
@@ -74,33 +144,11 @@ public class AlertDetailsActivity extends AppCompatActivity {
             watchwordResponseText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_WATCHWORD_RESPONSE));
 
         } catch (JSONException e) {
-            Log.e("Data notification", e.getMessage());
+            Log.e("DATA NOTIFICATION", e.getMessage());
         }
     }
 
     public void setUpListeners(){
         cancelButton.setOnClickListener(v->onBackPressed());
-        showLocationButton.setOnClickListener(v->
-                //TODO
-                Toast.makeText(this, "hola", Toast.LENGTH_SHORT).show());
-    }
-
-    private Address getLocation(Double latitude, Double longitude){
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-        } catch (IOException e) {
-            Log.e("TAG", e.getMessage());
-        }
-        return addresses.get(0);
-    }
-
-    private String getAddress(Double latitude, Double longitude) {
-        Address address = getLocation(latitude, longitude);
-        return address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n"
-                + address.getLocality() + "\n"
-                + address.getPostalCode() + " - " + address.getSubAdminArea() + "\n"
-                + address.getCountryName();
-    }
+       }
 }

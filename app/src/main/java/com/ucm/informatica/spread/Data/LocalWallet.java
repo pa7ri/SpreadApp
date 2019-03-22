@@ -94,8 +94,8 @@ public class LocalWallet {
 
     //manage local storage
     private void updateWalletStored(String walletFilename){
-        SharedPreferences sharedPref = view.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        SharedPreferences sharedPreferences = view.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(WALLET_FILE, walletFilename);
         editor.apply();
     }

@@ -64,8 +64,8 @@ public class HomeFragmentPresenter {
         data.put(NOTIFICATION_DATA_TITLE, NOTIFICATION_DATA_TITLE_CONTENT);
         data.put(NOTIFICATION_DATA_SUBTITLE, NOTIFICATION_DATA_SUBTITLE_CONTENT);
 
-        apiFcmService.sendBroadcastNotification(new Notification(
-                NOTIFICATION_DATA_TITLE_CONTENT, NOTIFICATION_DATA_SUBTITLE_CONTENT, data))
+        apiFcmService.sendBroadcastNotification(new Notification(NOTIFICATION_DATA_TITLE_CONTENT,
+                NOTIFICATION_DATA_SUBTITLE_CONTENT, getNotificationTopic(sharedPreferences), data))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JSONObject>() {
@@ -103,6 +103,10 @@ public class HomeFragmentPresenter {
             Log.e("JSON builder", e.getMessage());
             return "";
         }
+    }
+
+    private String getNotificationTopic(SharedPreferences sharedPreferences){
+        return sharedPreferences.getString(NOTIFICATION_TOPIC_PREF,"");
     }
 
     private String getColor(Colours color) {

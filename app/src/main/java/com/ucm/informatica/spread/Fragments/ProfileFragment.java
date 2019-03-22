@@ -170,7 +170,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             editor.putString(NAME_PREF, editName.getText().toString());
         if(!editAge.getText().toString().isEmpty())
             editor.putString(AGE_PREF, editAge.getText().toString());
-        editor.commit();
+        editor.apply();
     }
 
     @Override
@@ -204,7 +204,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             editor.putString(KEY_PREF, editWatchwordMessage.getText().toString());
         if(!editWatchwordResponse.getText().toString().isEmpty())
             editor.putString(RESPONSE_PREF, editWatchwordResponse.getText().toString());
-        editor.commit();
+        editor.apply();
     }
 
     public void loadData(){
@@ -233,7 +233,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         shirtButton[colour.ordinal()].setVisibility(View.VISIBLE);
 
         editor.putInt(TSHIRT_PREF, colour.ordinal());
-        editor.commit();
+        editor.apply();
     }
 
     public void changePants(Colours colour){
@@ -246,6 +246,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         pantsButton[colour.ordinal()].setVisibility(View.VISIBLE);
 
         editor.putInt(PANTS_PREF, colour.ordinal());
-        editor.commit();
+        editor.apply();
     }
 }

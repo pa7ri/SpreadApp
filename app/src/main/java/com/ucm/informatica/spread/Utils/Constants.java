@@ -26,6 +26,9 @@ public final class Constants {
         public static final String POLYGON_LAYER ="polygonLayer";
         public static final String POINT_LAYER ="pointLayer";
 
+
+        public static final int ZOOM_MARKER = 15;
+
     }
 
     public static final class Wallet {
@@ -33,8 +36,9 @@ public final class Constants {
     }
 
     public static final class LocalPreferences {
+        public static final String NOTIFICATION_TOPIC_PREF = "NOTIFICATION_TOPIC_PREF";
 
-        public static final String PROFILE_PREF = "ProfileInfo";
+        public static final String PROFILE_PREF = "PROFILE_PREF";
 
         public static final String NAME_PREF = "NAME_PREF";
         public static final String AGE_PREF = "AGE_PREF";
