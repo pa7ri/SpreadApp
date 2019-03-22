@@ -85,18 +85,19 @@ public class MainTabPresenter {
         mainTabView.showLoading();
         initLocationManager();
         initNotificationService();
-        initEthConnection();
     }
 
     private void initNotificationService(){
         createNotificationChannel();
-
         FirebaseInstanceId.getInstance()
-                .getInstanceId()
-                .addOnSuccessListener(context, instanceIdResult -> {
-            String newToken = instanceIdResult.getToken();
-            Log.e("newToken",newToken);
-        });
+            .getInstanceId()
+            .addOnSuccessListener(context, instanceIdResult -> {
+                initEthConnection();
+            });
+    }
+
+    public CustomLocationListener getLocationListener() {
+        return locationListener;
     }
 
     private void createNotificationChannel() {
@@ -146,7 +147,7 @@ public class MainTabPresenter {
                         .sendAsync()
                         .get();
             } catch (InterruptedException | ExecutionException | NullPointerException e) {
-                Log.e("TAG",e.getMessage());
+                Log.e("WALLET BALANCE",e.getMessage());
             }
         }
         return ethGetBalance != null ? ethGetBalance.getBalance().toString() + " ETH" : "No disponible";
@@ -307,7 +308,7 @@ public class MainTabPresenter {
                         fragmentViewPager.setCurrentItem(2);
                         ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
                     } catch (IOException e) {
-                        Log.e("TAG", e.getMessage());
+                        Log.e("PICTURE", e.getMessage());
                     }
                     break;
             }

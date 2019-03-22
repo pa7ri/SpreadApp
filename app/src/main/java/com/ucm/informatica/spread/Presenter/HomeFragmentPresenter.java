@@ -11,6 +11,8 @@ import com.ucm.informatica.spread.Data.ApiFcmService;
 import com.ucm.informatica.spread.Data.ApiUtils;
 import com.ucm.informatica.spread.Model.Colours;
 import com.ucm.informatica.spread.Model.Notification;
+import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
 import org.json.JSONException;
@@ -47,20 +49,22 @@ public class HomeFragmentPresenter {
 
     public void onHelpButtonPressed(Location location, Resources resources, SharedPreferences sharedPreferences) {
         if(location != null) {
-
-            sendNotifications(location.getLatitude(), location.getLongitude(), sharedPreferences);
-            /*saveData(resources.getString(R.string.button_help),
+            sendNotifications(location, sharedPreferences);
+            saveData(resources.getString(R.string.button_help),
                     resources.getString(R.string.button_help_description),
                     Double.toString(location.getLongitude()),
-                    Double.toString(location.getLatitude())); */
+                    Double.toString(location.getLatitude()));
         } else {
             homeFragmentView.showErrorGPS();
         }
     }
 
-    private void sendNotifications(Double latitude, Double longitude,SharedPreferences sharedPreferences) {
+    private void sendNotifications(Location location, SharedPreferences sharedPreferences) {
+        CustomLocationListener locationListener = homeFragmentView.getCustomLocationListener();
+        locationListener.unregisterLastNotificationTopic(location);
         Map<String, String> data = new ArrayMap<>();
-        data.put(NOTIFICATION_DATA, notificationToJson(latitude, longitude, sharedPreferences));
+        data.put(NOTIFICATION_DATA, notificationToJson(location.getLatitude(),
+                location.getLongitude(), sharedPreferences));
         data.put(NOTIFICATION_DATA_TITLE, NOTIFICATION_DATA_TITLE_CONTENT);
         data.put(NOTIFICATION_DATA_SUBTITLE, NOTIFICATION_DATA_SUBTITLE_CONTENT);
 
@@ -71,13 +75,14 @@ public class HomeFragmentPresenter {
                 .subscribe(new Subscriber<JSONObject>() {
                     @Override
                     public void onCompleted() {
-                        Log.e("Send notification","SUCCESS");
+                        locationListener.registerNewNotificationTopic(location);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("Send notification",e.getMessage());
+                        Log.e("SEND NOTIFICATION",e.getMessage());
                         homeFragmentView.showErrorTransaction();
+                        locationListener.registerNewNotificationTopic(location);
                     }
 
                     @Override
@@ -100,7 +105,7 @@ public class HomeFragmentPresenter {
             jsonObject.put(NOTIFICATION_DATA_WATCHWORD_RESPONSE, sharedPreferences.getString(RESPONSE_PREF,""));
             return jsonObject.toString();
         } catch (JSONException e) {
-            Log.e("JSON builder", e.getMessage());
+            Log.e("JSON BUILDER", e.getMessage());
             return "";
         }
     }

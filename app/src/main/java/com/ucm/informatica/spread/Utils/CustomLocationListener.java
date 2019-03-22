@@ -48,14 +48,14 @@ public class CustomLocationListener implements LocationListener {
         return latestLocation;
     }
 
-    private void unregisterLastNotificationTopic(Location location) {
+    public void unregisterLastNotificationTopic(Location location) {
         if(location != null) {
             String postalCode = locationManager.getPostalCode(location);
             FirebaseMessaging.getInstance().unsubscribeFromTopic(postalCode);
         }
     }
 
-    private void registerNewNotificationTopic(Location location) {
+    public void registerNewNotificationTopic(Location location) {
         String postalCode = locationManager.getPostalCode(location);
         FirebaseMessaging.getInstance().subscribeToTopic(postalCode);
     }

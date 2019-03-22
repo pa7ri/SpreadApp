@@ -12,9 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.kenai.jffi.Main;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
 
@@ -51,6 +53,11 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     public void initView() {
         helpButton = view.findViewById(R.id.helpButton);
         cameraButton = view.findViewById(R.id.addPosterButton);
+    }
+
+    @Override
+    public CustomLocationListener getCustomLocationListener() {
+        return ((MainTabActivity) getActivity()).getCustomLocationListener();
     }
 
     @Override

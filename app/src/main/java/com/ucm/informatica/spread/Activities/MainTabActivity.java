@@ -29,6 +29,7 @@ import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
@@ -290,6 +291,10 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 .message(getString(R.string.snackbar_confirmation_transaction))
                 .messageColorRes(R.color.snackbarConfirmColor)
                 .build();
+    }
+
+    public CustomLocationListener getCustomLocationListener(){
+        return mainPresenter.getLocationListener();
     }
 
     private void setupViewPager() {
