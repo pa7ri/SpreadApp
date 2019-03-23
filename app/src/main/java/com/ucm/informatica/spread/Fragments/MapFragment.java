@@ -22,6 +22,8 @@ import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -56,6 +58,7 @@ import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
+import static com.ucm.informatica.spread.Utils.Constants.Map.ZOOM_MARKER;
 
 public class MapFragment extends Fragment implements MapFragmentView {
 
@@ -241,8 +244,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
 
     @Override
-    public void showConfirmationTransaction(){
-        ((MainTabActivity) getActivity()).showConfirmationTransaction();
+    public void showSendConfirmation(){
+        ((MainTabActivity) getActivity()).getInformationSnackBar().show();
     }
 
     @Override
@@ -272,4 +275,9 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
     }
 
+    public void showSelectedLocation(Double latitude, Double longitude) {
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                new LatLng(latitude,longitude),ZOOM_MARKER);
+        mapboxMap.animateCamera(cameraUpdate, 1000, null);
+    }
 }

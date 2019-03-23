@@ -24,6 +24,7 @@ import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
+import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
@@ -238,6 +239,25 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         dialogBuilder.show();
     }
 
+    public Flashbar getInformationSnackBar(){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarBackground)
+                .message(getString(R.string.snackbar_information_transaction))
+                .messageColorRes(R.color.snackbarConfirmColor)
+                .build();
+    }
+
     public Flashbar getAlertSnackBarGPS(){
         return new Flashbar.Builder(this)
                 .gravity(Flashbar.Gravity.BOTTOM)
@@ -297,6 +317,11 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     public CustomLocationListener getCustomLocationListener(){
         return mainPresenter.getLocationListener();
+    }
+
+    public void showSelectedLocation(Double latitude, Double longitude){
+        fragmentViewPager.setCurrentItem(2); //force Map
+        ((MapFragment) fragmentAdapter.getItem(2)).showSelectedLocation(latitude, longitude);
     }
 
     private void setupViewPager() {

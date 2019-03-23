@@ -33,8 +33,8 @@ public class HistoricalFragmentPresenter {
 
         filterItemsByCameraBounds(cameraBounds);
 
-        CustomRecyclerAdapter customRecyclerAdapter = new CustomRecyclerAdapter(
-                historicalFragment.getContext(), historicalAlertList, historicalPosterList);
+        CustomRecyclerAdapter customRecyclerAdapter = new CustomRecyclerAdapter(historicalFragment.getContext(),
+                (MainTabActivity) historicalFragment.getActivity(), historicalAlertList, historicalPosterList);
         historicalFragmentView.initView(customRecyclerAdapter);
     }
 

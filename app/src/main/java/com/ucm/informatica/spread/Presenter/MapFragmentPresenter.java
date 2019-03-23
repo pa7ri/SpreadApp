@@ -87,6 +87,8 @@ public class MapFragmentPresenter {
     }
 
     public void onAddLocationButtonPressed(LatLng selectedLocation){
+        mapFragmentView.showSendConfirmation();
+
         mapFragmentView.showNewMarkerIntoMap( selectedLocation.getLatitude(),selectedLocation.getLongitude(),
                 titleText, descriptionText, pinMode.equals(PinMode.Alert));
 
@@ -179,6 +181,8 @@ public class MapFragmentPresenter {
             if (currentMode == Auto) {
                 Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getLocation();
                 if (latestLocation != null) {
+                    mapFragmentView.showSendConfirmation();
+
                     mapFragmentView.showNewMarkerIntoMap(latestLocation.getLatitude(),
                             latestLocation.getLongitude(), titleText, descriptionText, pMode.equals(PinMode.Alert));
 

@@ -50,6 +50,7 @@ public class HomeFragmentPresenter {
     public void onHelpButtonPressed(Location location, Resources resources, SharedPreferences sharedPreferences) {
         if(location != null) {
             sendNotifications(location, sharedPreferences);
+            homeFragmentView.showSendConfirmation();
             saveData(resources.getString(R.string.button_help),
                     resources.getString(R.string.button_help_description),
                     Double.toString(location.getLongitude()),

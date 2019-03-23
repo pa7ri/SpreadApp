@@ -146,7 +146,7 @@
 
             <TextView
                 android:id="@+id/titleItemText"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/mediumMargin"
                 android:textColor="@color/slate_black"
@@ -157,8 +157,9 @@
 
             <TextView
                 android:id="@+id/dateItemText"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
+                android:gravity="right"
                 android:layout_alignParentRight="true"
                 android:layout_marginHorizontal="@dimen/smallMargin"
                 android:layout_marginTop="@dimen/xsmallMargin"

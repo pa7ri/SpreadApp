@@ -8,8 +8,7 @@ public interface MapFragmentView {
 
     void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert);
 
-    void showConfirmationTransaction();
-
     void showErrorTransaction(int text);
 
+    void showSendConfirmation();
 }

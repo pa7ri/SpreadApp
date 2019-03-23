@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
@@ -120,7 +121,7 @@ public class AlertDetailsActivity extends AppCompatActivity {
 
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
                     new LatLng(latitude,longitude),ZOOM_MARKER);
-            mp.animateCamera(cameraUpdate, 200, null);
+            mp.animateCamera(cameraUpdate, 1000, null);
         });
     }
 

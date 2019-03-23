@@ -16,4 +16,5 @@ public interface HomeFragmentView {
 
     void showErrorGPS();
 
+    void showSendConfirmation();
 }

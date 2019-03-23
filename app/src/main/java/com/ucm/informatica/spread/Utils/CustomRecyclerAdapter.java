@@ -13,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kenai.jffi.Main;
 import com.ramotion.foldingcell.FoldingCell;
+import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.R;
@@ -27,7 +29,10 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
     private LayoutInflater inflater;
     private CustomLocationManager locationManager;
 
-    public CustomRecyclerAdapter(Context context, List<Alert> dataAlert, List<Poster> dataPoster) {
+    private MainTabActivity mainTabActivity;
+
+    public CustomRecyclerAdapter(Context context, MainTabActivity mainTabActivity, List<Alert> dataAlert, List<Poster> dataPoster) {
+        this.mainTabActivity = mainTabActivity;
         locationManager = new CustomLocationManager(context);
         this.inflater = LayoutInflater.from(context);
         this.dataAlert = dataAlert;
@@ -41,21 +46,28 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull CustomRecyclerAdapter.ViewHolder holder, int position) {
+        Double latitude, longitude;
         if (position<dataAlert.size()){
             Alert singleAlert = dataAlert.get(position);
+            latitude = singleAlert.getLatitude();
+            longitude = singleAlert.getLongitude();
             loadItemData(holder, singleAlert.getTitle(),singleAlert.getDescription(),
-                singleAlert.getDateTimeFormat(),
-                locationManager.getFormatAddress(singleAlert.getLatitude(), singleAlert.getLongitude()),
+                singleAlert.getDateTimeFormat(),locationManager.getFormatAddress(latitude, longitude),
                 inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
         } else {
             Poster singlePoster = dataPoster.get(position-dataAlert.size());
+            latitude = singlePoster.getLatitude();
+            longitude = singlePoster.getLongitude();
             loadItemData(holder, singlePoster.getTitle(),singlePoster.getDescription(),
                 singlePoster.getDateTimeFormat(),
-                locationManager.getFormatAddress(singlePoster.getLatitude(), singlePoster.getLongitude()),
+                locationManager.getFormatAddress(latitude, longitude),
                 inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
                 singlePoster.getImage());
-
         }
+
+        holder.locationMapButton.setOnClickListener(view -> {
+            mainTabActivity.showSelectedLocation(latitude,longitude);
+        });
 
     }
 
@@ -109,10 +121,6 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
             locationMapButton = itemView.findViewById(R.id.locationMapButton);
 
             foldingCell.setOnClickListener(v -> foldingCell.toggle(false));
-
-
-            locationMapButton.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), "Llévame al mapa", Toast.LENGTH_SHORT).show());
 
         }
     }

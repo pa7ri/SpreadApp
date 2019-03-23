@@ -7,18 +7,32 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.HomeFragment">
 
-    <Button
-        android:id="@+id/helpButton"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
-        android:text="@string/button_help"
+    <FrameLayout
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:textSize="@dimen/largeText"
-        android:background="@drawable/round_button_shape"
-        android:textColor="@color/white"
+        android:background="@drawable/circle_shape_double"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.jackandphantom.androidlikebutton.AndroidLikeButton
+        android:id="@+id/helpButton"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        app:like_icon="@drawable/ic_megaphone"
+        app:unlike_icon="@drawable/ic_megaphone"
+        app:circle_startColor="@color/backgroundColor"
+        app:circle_endColor="@color/hintTextColor"
+        app:dot_color_1="@color/accentColor"
+        app:dot_color_2="@color/accentColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addPosterButton"
