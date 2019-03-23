@@ -26,6 +26,13 @@ public final class Constants {
         public static final String POINT_LAYER ="pointLayer";
 
 
+        public static final String CAMERA_BOUND_LATITUDE_START = "CAMERA_BOUND_LATITUDE_START";
+        public static final String CAMERA_BOUND_LATITUDE_END = "CAMERA_BOUND_LATITUDE_END";
+        public static final String CAMERA_BOUND_LONGITUDE_START = "CAMERA_BOUND_LONGITUDE_START";
+        public static final String CAMERA_BOUND_LONGITUDE_END = "CAMERA_BOUND_LONGITUDE_END";
+
+        public static final String NOTIFICATION_TOPIC_PREF = "NOTIFICATION_TOPIC_PREF";
+
         public static final int ZOOM_MARKER = 15;
 
     }

@@ -73,4 +73,24 @@
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintStart_toStartOf="parent" />
 
+    <View
+        android:id="@+id/startCamera"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:visibility="invisible"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/endCamera"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/smallMargin"
+        android:layout_marginEnd="@dimen/smallMargin"
+        android:visibility="invisible"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

@@ -85,15 +85,14 @@ public class MainTabPresenter {
         mainTabView.showLoading();
         initLocationManager();
         initNotificationService();
+        initEthConnection();
     }
 
     private void initNotificationService(){
         createNotificationChannel();
         FirebaseInstanceId.getInstance()
             .getInstanceId()
-            .addOnSuccessListener(context, instanceIdResult -> {
-                initEthConnection();
-            });
+            .addOnSuccessListener(context, instanceIdResult -> {});
     }
 
     public CustomLocationListener getLocationListener() {

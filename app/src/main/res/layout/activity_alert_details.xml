@@ -1,222 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Activities.AlertDetailsActivity">
+    android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/headerTab"
+    <RelativeLayout
+        android:id="@+id/headerTab"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/heightTab"
+        android:background="@color/backgroundColor">
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="@dimen/smallMargin"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_cancel_white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_help_description"
+            android:textColor="@color/white"
+            android:textSize="@dimen/mediumText"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/cancelButton"/>
+    </RelativeLayout>
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headerTab">
+
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/heightTab"
-            android:background="@color/backgroundColor">
+            android:layout_height="wrap_content"
+            tools:context=".Activities.AlertDetailsActivity">
 
-            <Button
-                android:id="@+id/cancelButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+            <com.mapbox.mapboxsdk.maps.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                app:mapbox_cameraTargetLat="@dimen/madLat"
+                app:mapbox_cameraTargetLng="@dimen/madLong"
+                app:mapbox_cameraZoom="11"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+
+            <View
+                android:id="@id/dottedLine"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
                 android:layout_marginHorizontal="@dimen/smallMargin"
-                android:layout_centerVertical="true"
-                android:background="@drawable/ic_cancel_white"/>
+                android:layout_marginTop="@dimen/smallMargin"
+                android:background="@drawable/dotted_line"
+                android:layerType="software"
+                app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
             <TextView
+                android:id="@+id/personalDataTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/button_help_description"
-                android:textColor="@color/white"
-                android:textSize="@dimen/mediumText"
                 android:layout_marginStart="@dimen/mediumMargin"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/cancelButton"/>
-        </RelativeLayout>
+                android:layout_marginTop="@dimen/mediumMargin"
+                android:text="@string/profile_personal_data"
+                android:textSize="@dimen/msmallText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dottedLine" />
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:mapbox_cameraTargetLat="@dimen/madLat"
-        app:mapbox_cameraTargetLng="@dimen/madLong"
-        app:mapbox_cameraZoom="11"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerTab" />
+                <TextView
+                    android:id="@+id/dataNameTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/xmediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:text="@string/profile_name"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/personalDataTitle" />
 
+                <TextView
+                    android:id="@+id/dataNameDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/mediumMargin"
+                    android:text="María"
+                    app:layout_constraintBottom_toBottomOf="@+id/dataNameTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/dataNameTitle" />
 
-    <View
-        android:id="@id/dottedLine"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_marginHorizontal="@dimen/smallMargin"
-        android:layout_marginTop="@dimen/smallMargin"
-        android:background="@drawable/dotted_line"
-        android:layerType="software"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
+                <TextView
+                    android:id="@+id/dataAgeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/xmediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:text="@string/profile_age"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dataNameTitle" />
 
-    <TextView
-        android:id="@+id/personalDataTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/mediumMargin"
-        android:layout_marginTop="@dimen/smallMargin"
-        android:text="@string/profile_personal_data"
-        android:textSize="@dimen/msmallText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dottedLine" />
+                <TextView
+                    android:id="@+id/dataAgeDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/smallMargin"
+                    android:layout_marginEnd="@dimen/mediumMargin"
+                    android:text="26"
+                    app:layout_constraintBottom_toBottomOf="@+id/dataAgeTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/dataAgeTitle" />
 
-        <TextView
-            android:id="@+id/dataNameTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/xmediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:text="@string/profile_name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/personalDataTitle" />
+                <TextView
+                    android:id="@+id/dresscodeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/mediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:textSize="@dimen/msmallText"
+                    android:text="@string/profile_dresscode"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dataAgeTitle" />
 
-        <TextView
-            android:id="@+id/dataNameDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/mediumMargin"
-            android:text="María"
-            app:layout_constraintBottom_toBottomOf="@+id/dataNameTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/dataNameTitle" />
+                <TextView
+                    android:id="@+id/tshirtTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/xmediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:text="Parte de arriba"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
 
-        <TextView
-            android:id="@+id/dataAgeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/xmediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:text="@string/profile_age"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dataNameTitle" />
+            <TextView
+                android:id="@+id/tshirtDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/mediumMargin"
+                android:text="colorcami"
+                app:layout_constraintBottom_toBottomOf="@+id/tshirtTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tshirtTitle" />
 
-        <TextView
-            android:id="@+id/dataAgeDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/smallMargin"
-            android:layout_marginEnd="@dimen/mediumMargin"
-            android:text="26"
-            app:layout_constraintBottom_toBottomOf="@+id/dataAgeTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/dataAgeTitle" />
+                <TextView
+                    android:id="@+id/pantsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/xmediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:text="Parte de abajo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tshirtTitle" />
 
-        <TextView
-            android:id="@+id/dresscodeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/mediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:textSize="@dimen/msmallText"
-            android:text="@string/profile_dresscode"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dataAgeTitle" />
-
-        <TextView
-            android:id="@+id/tshirtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/xmediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:text="Parte de arriba"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
-
-    <TextView
-        android:id="@+id/tshirtDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/mediumMargin"
-        android:text="colorcami"
-        app:layout_constraintBottom_toBottomOf="@+id/tshirtTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tshirtTitle" />
-
-        <TextView
-            android:id="@+id/pantsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/xmediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:text="Parte de abajo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tshirtTitle" />
-
-    <TextView
-        android:id="@+id/pantsDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/mediumMargin"
-        android:text="colorpants"
-        app:layout_constraintBottom_toBottomOf="@+id/pantsTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pantsTitle" />
+            <TextView
+                android:id="@+id/pantsDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/mediumMargin"
+                android:text="colorpants"
+                app:layout_constraintBottom_toBottomOf="@+id/pantsTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/pantsTitle" />
 
 
-    <View
-        android:id="@+id/dottedLine2"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_marginHorizontal="@dimen/smallMargin"
-        android:layout_marginTop="@dimen/smallMargin"
-        android:background="@drawable/dotted_line"
-        android:layerType="software"
-        app:layout_constraintTop_toBottomOf="@+id/pantsTitle" />
+            <View
+                android:id="@+id/dottedLine2"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginHorizontal="@dimen/smallMargin"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:background="@drawable/dotted_line"
+                android:layerType="software"
+                app:layout_constraintTop_toBottomOf="@+id/pantsTitle" />
 
-    <TextView
-        android:id="@+id/watchwordTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/mediumMargin"
-        android:layout_marginTop="@dimen/smallMargin"
-        android:text="@string/profile_watchword"
-        android:textSize="@dimen/msmallText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dottedLine2" />
+            <TextView
+                android:id="@+id/watchwordTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mediumMargin"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:text="@string/profile_watchword"
+                android:textSize="@dimen/msmallText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dottedLine2" />
 
-        <TextView
-            android:id="@+id/watchwordKeyTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/xmediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:text="@string/profile_watchword_first"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/watchwordTitle" />
+                <TextView
+                    android:id="@+id/watchwordKeyTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/xmediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:text="@string/profile_watchword_first"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/watchwordTitle" />
 
-        <TextView
-            android:id="@+id/watchwordKeyDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/mediumMargin"
-            android:text="Hola caracola"
-            app:layout_constraintBottom_toBottomOf="@+id/watchwordKeyTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/watchwordKeyTitle" />
+                <TextView
+                    android:id="@+id/watchwordKeyDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/mediumMargin"
+                    android:text="Hola caracola"
+                    app:layout_constraintBottom_toBottomOf="@+id/watchwordKeyTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/watchwordKeyTitle" />
 
-        <TextView
-            android:id="@+id/watchwordResponseTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/xmediumMargin"
-            android:layout_marginTop="@dimen/smallMargin"
-            android:text="@string/profile_watchword_second"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/watchwordKeyTitle" />
+                <TextView
+                    android:id="@+id/watchwordResponseTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/xmediumMargin"
+                    android:layout_marginTop="@dimen/smallMargin"
+                    android:text="@string/profile_watchword_second"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/watchwordKeyTitle" />
 
-        <TextView
-            android:id="@+id/watchwordResponseDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/mediumMargin"
-            android:text="Me mola tu gramola"
-            app:layout_constraintBottom_toBottomOf="@+id/watchwordResponseTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/watchwordResponseTitle" />
+                <TextView
+                    android:id="@+id/watchwordResponseDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/mediumMargin"
+                    android:text="Me mola tu gramola"
+                    app:layout_constraintBottom_toBottomOf="@+id/watchwordResponseTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/watchwordResponseTitle" />
 
+            </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+</RelativeLayout>
 
-
-</android.support.constraint.ConstraintLayout>

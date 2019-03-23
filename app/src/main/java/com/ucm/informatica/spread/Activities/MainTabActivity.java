@@ -30,6 +30,7 @@ import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
+import com.ucm.informatica.spread.Utils.CustomTabLayoutOnPageChangeListener;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
@@ -104,6 +105,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         setupViewPager();
 
         tabLayout = findViewById(R.id.tabs);
+        tabLayout.addOnTabSelectedListener(new CustomTabLayoutOnPageChangeListener(fragmentViewPager, fragmentAdapter));
         fragmentViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.removeAllTabs();
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(fragmentViewPager));

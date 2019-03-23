@@ -209,11 +209,13 @@ public class MapFragmentPresenter {
         switch (pinMode) {
             case Alert: {
                 ((MainTabActivity) mapFragment.getActivity()).saveDataAlert(title,description,latitude,longitude);
+                break;
             }
             case Poster: {
                 Poster samplePoster = new Poster(title, description,  latitude, longitude,
                         String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
                 ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
+                break;
             }
         }
     }
