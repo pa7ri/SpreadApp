@@ -3,7 +3,6 @@ package com.ucm.informatica.spread.Utils;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kenai.jffi.Main;
 import com.ramotion.foldingcell.FoldingCell;
+import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.R;
@@ -26,8 +27,13 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
     private List<Alert> dataAlert;
     private List<Poster> dataPoster;
     private LayoutInflater inflater;
+    private CustomLocationManager locationManager;
 
-    public CustomRecyclerAdapter(Context context, List<Alert> dataAlert, List<Poster> dataPoster) {
+    private MainTabActivity mainTabActivity;
+
+    public CustomRecyclerAdapter(Context context, MainTabActivity mainTabActivity, List<Alert> dataAlert, List<Poster> dataPoster) {
+        this.mainTabActivity = mainTabActivity;
+        locationManager = new CustomLocationManager(context);
         this.inflater = LayoutInflater.from(context);
         this.dataAlert = dataAlert;
         this.dataPoster = dataPoster;
@@ -40,26 +46,33 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull CustomRecyclerAdapter.ViewHolder holder, int position) {
+        Double latitude, longitude;
         if (position<dataAlert.size()){
             Alert singleAlert = dataAlert.get(position);
+            latitude = singleAlert.getLatitude();
+            longitude = singleAlert.getLongitude();
             loadItemData(holder, singleAlert.getTitle(),singleAlert.getDescription(),
-                    singleAlert.getDateTimeFormat().substring(0, singleAlert.getDateTimeFormat().indexOf(" ")),
-                    singleAlert.getDateTimeFormat(),  getAddress(singleAlert.getLocation()),
-                    inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
+                singleAlert.getDateTimeFormat(),locationManager.getFormatAddress(latitude, longitude),
+                inflater.getContext().getResources().getDrawable(R.drawable.ic_location), null);
         } else {
             Poster singlePoster = dataPoster.get(position-dataAlert.size());
+            latitude = singlePoster.getLatitude();
+            longitude = singlePoster.getLongitude();
             loadItemData(holder, singlePoster.getTitle(),singlePoster.getDescription(),
-                    singlePoster.getDateTimeFormat().substring(0, singlePoster.getDateTimeFormat().indexOf(" ")),
-                    singlePoster.getDateTimeFormat(),  getAddress(singlePoster.getLocation()),
-                    inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
-                    singlePoster.getImage());
-
+                singlePoster.getDateTimeFormat(),
+                locationManager.getFormatAddress(latitude, longitude),
+                inflater.getContext().getResources().getDrawable(R.drawable.ic_pic),
+                singlePoster.getImage());
         }
+
+        holder.locationMapButton.setOnClickListener(view -> {
+            mainTabActivity.showSelectedLocation(latitude,longitude);
+        });
 
     }
 
     private void loadItemData(@NonNull CustomRecyclerAdapter.ViewHolder holder, String title,
-                              String description, String date, String datetime, String address,
+                              String description, String datetime, String address,
                               Drawable icon, byte[] image){
         //header
         holder.titleItemText.setText(title);
@@ -74,13 +87,6 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
             holder.iconContentItemImage.setVisibility(View.VISIBLE);
             holder.iconContentItemImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
         }
-    }
-
-    private String getAddress(Address address) {
-        return address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n"
-                + address.getLocality() + "\n"
-                + address.getPostalCode() + " - " + address.getSubAdminArea() + "\n"
-                + address.getCountryName();
     }
 
     @Override
@@ -115,10 +121,6 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
             locationMapButton = itemView.findViewById(R.id.locationMapButton);
 
             foldingCell.setOnClickListener(v -> foldingCell.toggle(false));
-
-
-            locationMapButton.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), "Llévame al mapa", Toast.LENGTH_SHORT).show());
 
         }
     }

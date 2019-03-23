@@ -1,6 +1,5 @@
 package com.ucm.informatica.spread.Model;
 
-import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -11,14 +10,14 @@ public class Poster extends Alert {
 
     private byte[] image;
 
-    public Poster(Context context, String title, String description, String latitude,
+    public Poster(String title, String description, String latitude,
                   String longitude, String dateTime, byte[] image) {
-        super(context, title, description, latitude, longitude, dateTime);
+        super(title, description, latitude, longitude, dateTime);
         this.image = image;
     }
 
-    public Poster(Context context, String jsonObject) {
-        super(context);
+    public Poster(String jsonObject) {
+        super();
         try {
             JSONObject posterJSONObject = new JSONObject(jsonObject);
             setTitle(posterJSONObject.getString("title"));
@@ -51,10 +50,6 @@ public class Poster extends Alert {
             Log.e("JSON builder", e.getMessage());
             return "";
         }
-    }
-
-    public void parseJson(Context context, String jsonObject) {
-
     }
 
 }

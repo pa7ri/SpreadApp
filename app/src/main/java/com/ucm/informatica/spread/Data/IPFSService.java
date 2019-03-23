@@ -1,7 +1,5 @@
 package com.ucm.informatica.spread.Data;
 
-import android.content.Context;
-
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.View.MainTabView;
@@ -14,14 +12,12 @@ import rx.schedulers.Schedulers;
 
 public class IPFSService {
 
-    private Context context;
     private MainTabView mainTabview;
 
     private int tries;
     private InfuraIPFS ipfs;
 
-    public IPFSService(Context context, MainTabView view){
-        this.context = context;
+    public IPFSService(MainTabView view){
         this.mainTabview = view;
         this.tries =0;
         this.ipfs = new InfuraIPFS();
@@ -66,7 +62,7 @@ public class IPFSService {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                     result -> {
-                                        Poster poster = new Poster(context, result);
+                                        Poster poster = new Poster(result);
                                         mainTabview.loadDataPosterIPFS(poster);
                                     },
                                     error -> mainTabview.showErrorTransaction()

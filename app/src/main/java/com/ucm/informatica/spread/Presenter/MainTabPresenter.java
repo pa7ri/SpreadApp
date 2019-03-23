@@ -1,22 +1,21 @@
 package com.ucm.informatica.spread.Presenter;
 
 import android.Manifest;
-import android.content.ContentProvider;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
@@ -29,6 +28,7 @@ import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
 import com.ucm.informatica.spread.Data.LocalWallet;
 import com.ucm.informatica.spread.Data.SmartContract;
+import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
 
@@ -51,6 +51,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
@@ -67,7 +68,7 @@ public class MainTabPresenter {
     private PosterContract posterContract;
     private SmartContract smartContract;
 
-    private Location latestLocation;
+    private CustomLocationListener locationListener;
     private Bitmap imageBitmap;
 
     private IPFSService ipfsService;
@@ -76,14 +77,38 @@ public class MainTabPresenter {
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
         this.mainTabView = mainTabView;
         this.context = context;
-        this.ipfsService = new IPFSService(context, context);
+        this.ipfsService = new IPFSService(mainTabView);
     }
 
     public void start(String path){
         walletPath = path;
         mainTabView.showLoading();
         initLocationManager();
+        initNotificationService();
         initEthConnection();
+    }
+
+    private void initNotificationService(){
+        createNotificationChannel();
+        FirebaseInstanceId.getInstance()
+            .getInstanceId()
+            .addOnSuccessListener(context, instanceIdResult -> {});
+    }
+
+    public CustomLocationListener getLocationListener() {
+        return locationListener;
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alertas emergencia";
+            String description = "Notificar a los usuarios si hay alguien en peligro cerca";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     public Fragment getFragment(int position) {
@@ -120,8 +145,8 @@ public class MainTabPresenter {
                         .ethGetBalance(localWallet.getCredentials().getAddress(), DefaultBlockParameterName.LATEST)
                         .sendAsync()
                         .get();
-            } catch (InterruptedException | ExecutionException e) {
-                Log.e("TAG",e.getMessage());
+            } catch (InterruptedException | ExecutionException | NullPointerException e) {
+                Log.e("WALLET BALANCE",e.getMessage());
             }
         }
         return ethGetBalance != null ? ethGetBalance.getBalance().toString() + " ETH" : "No disponible";
@@ -130,7 +155,7 @@ public class MainTabPresenter {
 
     private void initLocationManager() {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        LocationListener locationListener = new CustomLocationListener();
+        locationListener = new CustomLocationListener(context);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions( context,
@@ -190,7 +215,7 @@ public class MainTabPresenter {
     }
 
     public Location getLatestLocation() {
-        return latestLocation;
+        return locationListener.getLatestLocation();
     }
 
     private void loadData() {
@@ -250,6 +275,7 @@ public class MainTabPresenter {
         }
         alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
                 .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (result) -> mainTabView.showConfirmationTransaction()
                         ,
@@ -282,34 +308,14 @@ public class MainTabPresenter {
                         fragmentViewPager.setCurrentItem(2);
                         ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
                     } catch (IOException e) {
-                        Log.e("TAG", e.getMessage());
+                        Log.e("PICTURE", e.getMessage());
                     }
                     break;
-                //TODO : ask for profile
             }
 
         }
     }
 
 
-    private class CustomLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            latestLocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-    }
 
 }

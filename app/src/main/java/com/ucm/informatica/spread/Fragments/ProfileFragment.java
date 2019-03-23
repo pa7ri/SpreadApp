@@ -2,26 +2,31 @@ package com.ucm.informatica.spread.Fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.andrognito.flashbar.Flashbar;
 import com.ucm.informatica.spread.Presenter.ProfileFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.ProfileFragmentView;
 import com.ucm.informatica.spread.Model.Colours;
 
-import static android.content.Context.MODE_PRIVATE;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Random;
+
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
 
 public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
-    private Button editContactsButton;
     private Button editProfileButton;
     private Button saveProfileButton;
     private Button[] shirtButton = new Button[Colours.values().length];
@@ -37,6 +42,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private EditText editWatchwordMessage;
     private EditText editWatchwordResponse;
 
+    private ImageView profileImage;
     private Colours shirtColour = Colours.NA;
     private Colours pantsColour = Colours.NA;
 
@@ -53,27 +59,28 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
         super.onCreate(savedInstanceState);
         profileFragmentPresenter = new ProfileFragmentPresenter(this);
-        sharedPreferences = getContext().getSharedPreferences("ProfileInfo", Context.MODE_PRIVATE);
+        sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
-        //Deberían llamarse desde el presenter con un presenter.onStart o algo similar (mirar otras clases).
         profileFragmentPresenter.onStart();
         profileFragmentPresenter.onRefreshView(shirtColour, pantsColour);
         return view;
     }
 
     public void initView(){
-        editContactsButton = view.findViewById(R.id.editContactsButton);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         saveProfileButton = view.findViewById(R.id.saveProfileButton);
         editWatchwordButton = view.findViewById(R.id.editWatchwordButton);
         saveWatchwordButton = view.findViewById(R.id.saveWatchwordButton);
+        profileImage = view.findViewById(R.id.imageProfileView);
+
         initShirtButtons();
         initPantsButtons();
+        initProfilePhoto();
         nameText = view.findViewById(R.id.dataNameDescription);
         ageText = view.findViewById(R.id.dataAgeDescription);
         editName = view.findViewById(R.id.editName);
@@ -82,6 +89,19 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         watchwordResponseText = view.findViewById(R.id.watchwordResponseDescription);
         editWatchwordMessage = view.findViewById(R.id.editWatchwordMessageDescription);
         editWatchwordResponse = view.findViewById(R.id.editWatchwordResponseDescription);
+    }
+
+    private void initProfilePhoto(){
+        try {
+            Random rand = new Random();
+            int index = rand.nextInt(15);
+            InputStream ims = getActivity().getAssets().open("monster/monster-"+index+".png");
+            Drawable d = Drawable.createFromStream(ims, null);
+            profileImage.setForeground(d);
+        }
+        catch(IOException e) {
+            Log.e("Profile picture", e.getMessage());
+        }
     }
 
     private void initShirtButtons(){
@@ -107,7 +127,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     }
 
     public void setupListeners(){
-        editContactsButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
         editProfileButton.setOnClickListener(view -> profileFragmentPresenter.onEditPressed());
         saveProfileButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
         editWatchwordButton.setOnClickListener(view -> profileFragmentPresenter.onEditWatchwordPressed());
@@ -118,16 +137,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         for(int i=0; i<Colours.values().length; i++){
             pantsButton[i].setOnClickListener(view -> profileFragmentPresenter.onPantsPressed());
         }
-    }
-
-    private void showSnackBar(String text) {
-        new Flashbar.Builder(getActivity())
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .backgroundColorRes(R.color.warm_grey)
-                .message(text)
-                .build()
-                .show();
     }
 
     @Override
@@ -158,10 +167,10 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     public void saveData(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if(!editName.getText().toString().isEmpty())
-            editor.putString("Name", editName.getText().toString());
+            editor.putString(NAME_PREF, editName.getText().toString());
         if(!editAge.getText().toString().isEmpty())
-            editor.putString("Age", editAge.getText().toString());
-        editor.commit();
+            editor.putString(AGE_PREF, editAge.getText().toString());
+        editor.apply();
     }
 
     @Override
@@ -192,19 +201,19 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     public void saveWatchwordData(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if(!editWatchwordMessage.getText().toString().isEmpty())
-            editor.putString("Message", editWatchwordMessage.getText().toString());
+            editor.putString(KEY_PREF, editWatchwordMessage.getText().toString());
         if(!editWatchwordResponse.getText().toString().isEmpty())
-            editor.putString("Response", editWatchwordResponse.getText().toString());
-        editor.commit();
+            editor.putString(RESPONSE_PREF, editWatchwordResponse.getText().toString());
+        editor.apply();
     }
 
     public void loadData(){
-        nameText.setText(sharedPreferences.getString("Name", ""));
-        ageText.setText(sharedPreferences.getString("Age", ""));
-        shirtColour = Colours.values()[sharedPreferences.getInt("Shirt", 0)];
-        pantsColour = Colours.values()[sharedPreferences.getInt("Pants", 0)];
-        watchwordMessageText.setText(sharedPreferences.getString("Message", ""));
-        watchwordResponseText.setText(sharedPreferences.getString("Response", ""));
+        nameText.setText(sharedPreferences.getString(NAME_PREF, ""));
+        ageText.setText(sharedPreferences.getString(AGE_PREF, ""));
+        shirtColour = Colours.values()[sharedPreferences.getInt(TSHIRT_PREF, 0)];
+        pantsColour = Colours.values()[sharedPreferences.getInt(PANTS_PREF, 0)];
+        watchwordMessageText.setText(sharedPreferences.getString(KEY_PREF, ""));
+        watchwordResponseText.setText(sharedPreferences.getString(RESPONSE_PREF, ""));
     }
 
     public void refreshView(){
@@ -223,8 +232,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             shirtButton[colour.ordinal()-1].setVisibility(View.GONE);
         shirtButton[colour.ordinal()].setVisibility(View.VISIBLE);
 
-        editor.putInt("Shirt", colour.ordinal());
-        editor.commit();
+        editor.putInt(TSHIRT_PREF, colour.ordinal());
+        editor.apply();
     }
 
     public void changePants(Colours colour){
@@ -236,7 +245,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             pantsButton[colour.ordinal()-1].setVisibility(View.GONE);
         pantsButton[colour.ordinal()].setVisibility(View.VISIBLE);
 
-        editor.putInt("Pants", colour.ordinal());
-        editor.commit();
+        editor.putInt(PANTS_PREF, colour.ordinal());
+        editor.apply();
     }
 }

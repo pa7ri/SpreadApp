@@ -24,11 +24,14 @@ import com.andrognito.flashbar.anim.FlashAnim;
 import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
+import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.CustomLocationListener;
+import com.ucm.informatica.spread.Utils.CustomTabLayoutOnPageChangeListener;
 import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
@@ -42,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_MESSAGE;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
@@ -81,9 +86,11 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
-        readPolygonCoordinates();
-        mainPresenter = new MainTabPresenter(this, this);
-        mainPresenter.start(getFilesDir().getAbsolutePath());
+        if(!isNotificationIntent()) {
+            readPolygonCoordinates();
+            mainPresenter = new MainTabPresenter(this, this);
+            mainPresenter.start(getFilesDir().getAbsolutePath());
+        }
     }
 
     @Override
@@ -99,6 +106,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         setupViewPager();
 
         tabLayout = findViewById(R.id.tabs);
+        tabLayout.addOnTabSelectedListener(new CustomTabLayoutOnPageChangeListener(fragmentViewPager, fragmentAdapter));
         fragmentViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.removeAllTabs();
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(fragmentViewPager));
@@ -109,7 +117,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     public void loadDataAlertSmartContract(String title, String description, String latitude, String longitude, String dataTime) {
-        dataAlertSmartContractList.add(new Alert(this, title,description, latitude, longitude, dataTime));
+        dataAlertSmartContractList.add(new Alert(title,description, latitude, longitude, dataTime));
     }
 
     @Override
@@ -136,7 +144,21 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     @Override
     public void hideLoading() {
        relativeLayout.setVisibility(View.GONE);
+    }
 
+    private boolean isNotificationIntent() {
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            String notificationMessageJsonObject = intent.getExtras().get(NOTIFICATION_MESSAGE).toString();
+
+            Intent notificationIntent = new Intent(this, AlertDetailsActivity.class);
+            notificationIntent.putExtra(NOTIFICATION_MESSAGE, notificationMessageJsonObject);
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(notificationIntent);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void saveDataPoster(String posterJson){
@@ -189,7 +211,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             cameraImage.setImageDrawable(getPackageManager().getApplicationIcon(cameraPackage));
             galleryImage.setImageDrawable(getPackageManager().getApplicationIcon(galleryPackage));
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("TAG",e.getMessage());
+            Log.e("PICTURE",e.getMessage());
         }
 
         galleryLayout.setOnClickListener(view -> {
@@ -198,7 +220,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 if(mode == REQUEST_IMAGE_POSTER) {
                     startActivityForResult(Intent.createChooser(intent, ""), REQUEST_IMAGE_POSTER_GALLERY);
-                } ///TODO : profile opt
+                }
             dialogBuilder.dismiss();
             });
 
@@ -206,7 +228,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                     if(mode == REQUEST_IMAGE_POSTER) {
                         startActivityForResult(cameraIntent, REQUEST_IMAGE_POSTER_CAMERA);
-                    }///TODO : profile opt
+                    }
                 }
             dialogBuilder.dismiss();
             });
@@ -217,61 +239,23 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         dialogBuilder.show();
     }
 
-    private void setupViewPager() {
-        if(getSupportFragmentManager().getFragments() != null) {
-            getSupportFragmentManager().getFragments().clear();
-        }
-        fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        for(int i=0; i< NUMBER_TABS; i++){
-            fragmentAdapter.addFragment(mainPresenter.getFragment(i));
-        }
-        fragmentViewPager.setAdapter(fragmentAdapter);
-        fragmentAdapter.notifyDataSetChanged();
-    }
-    private void setupTabContent(){
-        TextView tabCurrent;
-        for(int i=0; i < NUMBER_TABS; i++) {
-            tabCurrent = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-            tabCurrent.setTextColor(getResources().getColor(R.color.mainTextColor));
-            tabCurrent.setGravity(Gravity.CENTER);
-            tabCurrent.setText(getResources().getString(tabNames[i]));
-            tabCurrent.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[i], 0, 0);
-            tabLayout.getTabAt(i).setCustomView(tabCurrent);
-        }
-    }
-
-    //read coordinates from CoordinatesPolygon.txt
-    private void readPolygonCoordinates() {
-        Point centroid;
-        List<Point> polyCoordList;
-        BufferedReader reader = null;
-        String[] coords;
-        try {
-            reader = new BufferedReader(
-                    new InputStreamReader(getAssets().open("CoordinatesPolygon.txt"), "UTF-8"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                coords = line.split("\\s+");
-                //first pair is the centroid of the polygon
-                centroid = Point.fromLngLat(Double.parseDouble(coords[1]),Double.parseDouble(coords[0]));
-                polyCoordList = new ArrayList<>();
-                //the rest of pairs are the polygon coordinates
-                for(int i=2; i < coords.length-1; i=i+2) {
-                    polyCoordList.add(Point.fromLngLat(Double.parseDouble(coords[i+1]),Double.parseDouble(coords[i])));
-                }
-                regionMap.put(centroid, new Region(polyCoordList));
-            }
-        } catch (IOException e) {
-            Log.e("TAG",e.getMessage());
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    Log.e("TAG",e.getMessage());
-                }
-            }
-        }
+    public Flashbar getInformationSnackBar(){
+        return new Flashbar.Builder(this)
+                .gravity(Flashbar.Gravity.BOTTOM)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(this)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarBackground)
+                .message(getString(R.string.snackbar_information_transaction))
+                .messageColorRes(R.color.snackbarConfirmColor)
+                .build();
     }
 
     public Flashbar getAlertSnackBarGPS(){
@@ -312,7 +296,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 .build();
     }
 
-
     public Flashbar getConfirmationSnackBar(){
         return new Flashbar.Builder(this)
                 .gravity(Flashbar.Gravity.BOTTOM)
@@ -330,6 +313,72 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 .message(getString(R.string.snackbar_confirmation_transaction))
                 .messageColorRes(R.color.snackbarConfirmColor)
                 .build();
+    }
+
+    public CustomLocationListener getCustomLocationListener(){
+        return mainPresenter.getLocationListener();
+    }
+
+    public void showSelectedLocation(Double latitude, Double longitude){
+        fragmentViewPager.setCurrentItem(2); //force Map
+        ((MapFragment) fragmentAdapter.getItem(2)).showSelectedLocation(latitude, longitude);
+    }
+
+    private void setupViewPager() {
+        if(getSupportFragmentManager().getFragments() != null) {
+            getSupportFragmentManager().getFragments().clear();
+        }
+        fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        for(int i=0; i< NUMBER_TABS; i++){
+            fragmentAdapter.addFragment(mainPresenter.getFragment(i));
+        }
+        fragmentViewPager.setAdapter(fragmentAdapter);
+        fragmentAdapter.notifyDataSetChanged();
+    }
+
+    private void setupTabContent(){
+        TextView tabCurrent;
+        for(int i=0; i < NUMBER_TABS; i++) {
+            tabCurrent = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+            tabCurrent.setTextColor(getResources().getColor(R.color.mainTextColor));
+            tabCurrent.setGravity(Gravity.CENTER);
+            tabCurrent.setText(getResources().getString(tabNames[i]));
+            tabCurrent.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[i], 0, 0);
+            tabLayout.getTabAt(i).setCustomView(tabCurrent);
+        }
+    }
+    //read coordinates from CoordinatesPolygon.txt
+    private void readPolygonCoordinates() {
+        Point centroid;
+        List<Point> polyCoordList;
+        BufferedReader reader = null;
+        String[] coords;
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getAssets().open("CoordinatesPolygon.txt"), "UTF-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                coords = line.split("\\s+");
+                //first pair is the centroid of the polygon
+                centroid = Point.fromLngLat(Double.parseDouble(coords[1]),Double.parseDouble(coords[0]));
+                polyCoordList = new ArrayList<>();
+                //the rest of pairs are the polygon coordinates
+                for(int i=2; i < coords.length-1; i=i+2) {
+                    polyCoordList.add(Point.fromLngLat(Double.parseDouble(coords[i+1]),Double.parseDouble(coords[i])));
+                }
+                regionMap.put(centroid, new Region(polyCoordList));
+            }
+        } catch (IOException e) {
+            Log.e("TAG",e.getMessage());
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e("TAG",e.getMessage());
+                }
+            }
+        }
     }
 
 }

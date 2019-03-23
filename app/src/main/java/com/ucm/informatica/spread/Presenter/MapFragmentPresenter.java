@@ -87,6 +87,8 @@ public class MapFragmentPresenter {
     }
 
     public void onAddLocationButtonPressed(LatLng selectedLocation){
+        mapFragmentView.showSendConfirmation();
+
         mapFragmentView.showNewMarkerIntoMap( selectedLocation.getLatitude(),selectedLocation.getLongitude(),
                 titleText, descriptionText, pinMode.equals(PinMode.Alert));
 
@@ -179,6 +181,8 @@ public class MapFragmentPresenter {
             if (currentMode == Auto) {
                 Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getLocation();
                 if (latestLocation != null) {
+                    mapFragmentView.showSendConfirmation();
+
                     mapFragmentView.showNewMarkerIntoMap(latestLocation.getLatitude(),
                             latestLocation.getLongitude(), titleText, descriptionText, pMode.equals(PinMode.Alert));
 
@@ -209,11 +213,13 @@ public class MapFragmentPresenter {
         switch (pinMode) {
             case Alert: {
                 ((MainTabActivity) mapFragment.getActivity()).saveDataAlert(title,description,latitude,longitude);
+                break;
             }
             case Poster: {
-                Poster samplePoster = new Poster(mapFragment.getContext(), title, description,
-                        latitude, longitude, String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
+                Poster samplePoster = new Poster(title, description,  latitude, longitude,
+                        String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
                 ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
+                break;
             }
         }
     }

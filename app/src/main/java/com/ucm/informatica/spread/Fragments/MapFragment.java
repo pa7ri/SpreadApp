@@ -1,5 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
@@ -19,6 +21,9 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -39,6 +44,12 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_END;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_START;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_END;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_START;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
@@ -47,6 +58,7 @@ import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
+import static com.ucm.informatica.spread.Utils.Constants.Map.ZOOM_MARKER;
 
 public class MapFragment extends Fragment implements MapFragmentView {
 
@@ -61,6 +73,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
     private Button addLocationButton;
     private FloatingActionButton switchLayerButton;
     private FabSpeedDial addPinDial;
+
+    private View cameraStartDelimit, cameraEndDelimit;
 
     private Map<Point, Region> regionMap = new HashMap<>();
 
@@ -82,6 +96,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
         regionMap = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonData();
         
         initView(savedInstanceState);
+        initMapView();
         setupListeners();
 
         return view;
@@ -131,8 +146,9 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private void initView(Bundle savedInstanceState) {
         mapView = view.findViewById(R.id.mapView);
+        cameraStartDelimit = view.findViewById(R.id.startCamera);
+        cameraEndDelimit = view.findViewById(R.id.endCamera);
         mapView.onCreate(savedInstanceState);
-        initMapView();
 
         exitManualModeButton = view.findViewById(R.id.exitManualModeButton);
         addPinDial = view.findViewById(R.id.floatingDial);
@@ -175,6 +191,23 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapView.getMapAsync(mp -> {
             mapboxMap = mp;
             mapboxMap.setStyle(MAP_STYLE, style -> mapFragmentPresenter.getPolygonLayer(style, regionMap));
+            mapboxMap.addOnCameraMoveListener(() -> {
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                LatLng startCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
+                        (cameraStartDelimit.getLeft(), cameraStartDelimit.getTop()));
+                LatLng endCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
+                        (cameraEndDelimit.getRight() , cameraEndDelimit.getBottom()));
+
+                editor.putString(CAMERA_BOUND_LATITUDE_START, Double.toString(startCameraBoundLocation.getLatitude()));
+                editor.putString(CAMERA_BOUND_LATITUDE_END,  Double.toString(endCameraBoundLocation.getLatitude()));
+                editor.putString(CAMERA_BOUND_LONGITUDE_START,  Double.toString(startCameraBoundLocation.getLongitude()));
+                editor.putString(CAMERA_BOUND_LONGITUDE_END,  Double.toString(endCameraBoundLocation.getLongitude()));
+
+                editor.apply();
+
+            });
             mapFragmentPresenter.start();
         });
     }
@@ -211,8 +244,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
 
     @Override
-    public void showConfirmationTransaction(){
-        ((MainTabActivity) getActivity()).showConfirmationTransaction();
+    public void showSendConfirmation(){
+        ((MainTabActivity) getActivity()).getInformationSnackBar().show();
     }
 
     @Override
@@ -242,4 +275,9 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
     }
 
+    public void showSelectedLocation(Double latitude, Double longitude) {
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                new LatLng(latitude,longitude),ZOOM_MARKER);
+        mapboxMap.animateCamera(cameraUpdate, 1000, null);
+    }
 }
