@@ -10,7 +10,8 @@ public final class Constants {
     public static final int REQUEST_IMAGE_POSTER_GALLERY = 2;
 
     public static final String INFURA_PATH = "https://rinkeby.infura.io/v3/";
-    public static final String TELEGRAM_URL = "https://api.telegram.org/bot<BOT_TOKEN>"; //TODO
+    public static final String API_TELEGRAM_URL = "https://api.telegram.org/bot840390970:AAGDD_DX9E8ucSPB95XZxOtR6T21dHJr9Qc/"; //TODO
+    //https://api.telegram.org/bot840390970:AAGDD_DX9E8ucSPB95XZxOtR6T21dHJr9Qc/sendMessage?chat_id=-342148486&text=hola
     public static final String INFURA_PUBLIC_PROYECT_ADDRESS = "2dde3de7006043b88fb4e35189745853";
 
     public static final class Contract {

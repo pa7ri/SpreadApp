@@ -39,7 +39,7 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
-        homeFragmentPresenter = new HomeFragmentPresenter(this,
+        homeFragmentPresenter = new HomeFragmentPresenter(getContext(), this,
                     ((MainTabActivity) getActivity()).getAlertContract());
         homeFragmentPresenter.start();
         return view;
@@ -71,6 +71,9 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
             public void onUnlikeClicked(AndroidLikeButton androidLikeButton) {
                 androidLikeButton.setCurrentlyLiked(false);
             }
+        });
+        cameraButton.setOnClickListener(view -> {
+            ((MainTabActivity) getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
         });
     }
 

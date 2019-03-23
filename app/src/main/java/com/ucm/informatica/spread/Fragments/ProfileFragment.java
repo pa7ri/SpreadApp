@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.ucm.informatica.spread.Model.Colours;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Random;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
@@ -29,6 +31,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
     private Button editProfileButton;
     private Button saveProfileButton;
+    private Button editTelegramGroupButton;
+
     private Button[] shirtButton = new Button[Colours.values().length];
     private Button[] pantsButton = new Button[Colours.values().length];
     private Button editWatchwordButton;
@@ -74,6 +78,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     public void initView(){
         editProfileButton = view.findViewById(R.id.editProfileButton);
         saveProfileButton = view.findViewById(R.id.saveProfileButton);
+        editTelegramGroupButton = view.findViewById(R.id.editTelegramGroupButton);
+
         editWatchwordButton = view.findViewById(R.id.editWatchwordButton);
         saveWatchwordButton = view.findViewById(R.id.saveWatchwordButton);
         profileImage = view.findViewById(R.id.imageProfileView);
@@ -137,6 +143,26 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         for(int i=0; i<Colours.values().length; i++){
             pantsButton[i].setOnClickListener(view -> profileFragmentPresenter.onPantsPressed());
         }
+
+        editTelegramGroupButton.setOnClickListener(view -> {
+            final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext())).create();
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_add_telegram, null);
+
+            EditText chatNameEditText, chatIdEditText;
+            Button storeButton, cancelButton;
+            chatNameEditText = dialogView.findViewById(R.id.chatNameEditText);
+            chatIdEditText = dialogView.findViewById(R.id.chatIdEditText);
+            storeButton = dialogView.findViewById(R.id.storeButton);
+            cancelButton = dialogView.findViewById(R.id.cancelButton);
+
+
+            storeButton.setOnClickListener(v -> dialogBuilder.dismiss());
+            cancelButton.setOnClickListener(v -> dialogBuilder.dismiss());
+
+            dialogBuilder.setView(dialogView);
+            dialogBuilder.show();
+        });
     }
 
     @Override

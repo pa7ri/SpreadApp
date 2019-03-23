@@ -14,4 +14,5 @@ public interface ApiFcmService {
             "Content-Type:application/json"})
     @POST("fcm/send")
     Observable<JSONObject> sendBroadcastNotification(@Body Notification notification);
+
 }
