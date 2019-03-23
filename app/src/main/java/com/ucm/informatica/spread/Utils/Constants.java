@@ -9,7 +9,7 @@ public final class Constants {
     public static final int REQUEST_IMAGE_POSTER_CAMERA = 1;
     public static final int REQUEST_IMAGE_POSTER_GALLERY = 2;
 
-    public static final String INFURA_PATH = "https://rinkeby.infura.io/";
+    public static final String INFURA_PATH = "https://rinkeby.infura.io/v3/";
     public static final String INFURA_PUBLIC_PROYECT_ADDRESS = "2dde3de7006043b88fb4e35189745853";
 
     public static final class Contract {
