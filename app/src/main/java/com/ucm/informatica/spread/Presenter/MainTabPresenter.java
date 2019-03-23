@@ -275,6 +275,7 @@ public class MainTabPresenter {
         }
         alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
                 .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (result) -> mainTabView.showConfirmationTransaction()
                         ,
