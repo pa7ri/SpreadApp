@@ -54,6 +54,10 @@ public final class Constants {
         public static final String PANTS_PREF = "PANTS_PREF";
         public static final String KEY_PREF = "KEY_PREF";
         public static final String RESPONSE_PREF = "RESPONSE_PREF";
+
+        public static final String TELEGRAM_GROUPS_NUMBER_PREF = "TELEGRAM_GROUPS_NUMBER_PREF";
+        public static final String TELEGRAM_GROUP_NAME_PREF = "TELEGRAM_GROUP_NAME_PREF";
+        public static final String TELEGRAM_GROUP_CHAT_ID_PREF = "TELEGRAM_GROUP_CHAT_ID_PREF";
     }
 
     public static final class Notifications {

@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HistoricalFragmentPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.Utils.CustomRecyclerAdapter;
+import com.ucm.informatica.spread.Utils.HistoricalRecyclerAdapter;
 import com.ucm.informatica.spread.View.HistoricalFragmentView;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
@@ -53,7 +53,7 @@ public class HistoricalFragment extends Fragment implements HistoricalFragmentVi
     }
 
     @Override
-    public void initView(CustomRecyclerAdapter adapter) {
+    public void initView(HistoricalRecyclerAdapter adapter) {
         historicalListView = view.findViewById(R.id.historicalListView);
 
         historicalListView.setLayoutManager(new LinearLayoutManager(getContext()));

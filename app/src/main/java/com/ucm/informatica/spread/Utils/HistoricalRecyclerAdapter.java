@@ -12,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.kenai.jffi.Main;
 import com.ramotion.foldingcell.FoldingCell;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Model.Alert;
@@ -22,7 +21,7 @@ import com.ucm.informatica.spread.R;
 import java.util.List;
 
 
-public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder> {
+public class HistoricalRecyclerAdapter extends RecyclerView.Adapter<HistoricalRecyclerAdapter.ViewHolder> {
     private List<Alert> dataAlert;
     private List<Poster> dataPoster;
     private LayoutInflater inflater;
@@ -30,7 +29,7 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
 
     private MainTabActivity mainTabActivity;
 
-    public CustomRecyclerAdapter(Context context, MainTabActivity mainTabActivity, List<Alert> dataAlert, List<Poster> dataPoster) {
+    public HistoricalRecyclerAdapter(Context context, MainTabActivity mainTabActivity, List<Alert> dataAlert, List<Poster> dataPoster) {
         this.mainTabActivity = mainTabActivity;
         locationManager = new CustomLocationManager(context);
         this.inflater = LayoutInflater.from(context);
@@ -39,12 +38,12 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = inflater.inflate(R.layout.item_recycler_view, parent, false);
+        View v = inflater.inflate(R.layout.item_historical_recycler_view, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HistoricalRecyclerAdapter.ViewHolder holder, int position) {
         Double latitude, longitude;
         if (position<dataAlert.size()){
             Alert singleAlert = dataAlert.get(position);
@@ -70,7 +69,7 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
 
     }
 
-    private void loadItemData(@NonNull CustomRecyclerAdapter.ViewHolder holder, String title,
+    private void loadItemData(@NonNull HistoricalRecyclerAdapter.ViewHolder holder, String title,
                               String description, String datetime, String address,
                               Drawable icon, byte[] image){
         //header

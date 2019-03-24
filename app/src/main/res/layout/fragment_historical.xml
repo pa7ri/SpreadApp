@@ -23,7 +23,7 @@
         android:id="@+id/historicalListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="@dimen/smallText"
+        android:paddingHorizontal="@dimen/smallText"
         android:layout_marginTop="@dimen/xlargeMargin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

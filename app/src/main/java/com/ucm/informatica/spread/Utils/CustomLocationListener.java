@@ -56,8 +56,10 @@ public class CustomLocationListener implements LocationListener {
     }
 
     public void registerNewNotificationTopic(Location location) {
-        String postalCode = locationManager.getPostalCode(location);
-        FirebaseMessaging.getInstance().subscribeToTopic(postalCode);
+        if(location != null) {
+            String postalCode = locationManager.getPostalCode(location);
+            FirebaseMessaging.getInstance().subscribeToTopic(postalCode);
+        }
     }
 
     private void storeNotificationTopicLocally(Location location) {

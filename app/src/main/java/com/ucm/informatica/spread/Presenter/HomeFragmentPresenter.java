@@ -13,7 +13,6 @@ import com.ucm.informatica.spread.Data.ApiTelegramService;
 import com.ucm.informatica.spread.Data.ApiUtils;
 import com.ucm.informatica.spread.Model.Colours;
 import com.ucm.informatica.spread.Model.Notification;
-import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.CustomLocationManager;
 import com.ucm.informatica.spread.View.HomeFragmentView;
@@ -21,6 +20,8 @@ import com.ucm.informatica.spread.View.HomeFragmentView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import rx.Subscriber;
@@ -71,7 +72,7 @@ public class HomeFragmentPresenter {
 
     private void sendPushNotification(Location location, SharedPreferences sharedPreferences) {
         CustomLocationListener locationListener = homeFragmentView.getCustomLocationListener();
-        //locationListener.unregisterLastNotificationTopic(location);
+        locationListener.unregisterLastNotificationTopic(location);
         Map<String, String> data = new ArrayMap<>();
         data.put(NOTIFICATION_DATA, notificationToJson(location.getLatitude(),
                 location.getLongitude(), sharedPreferences));
@@ -92,7 +93,7 @@ public class HomeFragmentPresenter {
                     public void onError(Throwable e) {
                         Log.e("SEND NOTIFICATION",e.getMessage());
                         homeFragmentView.showErrorTransaction();
-                        //locationListener.registerNewNotificationTopic(location);
+                        locationListener.registerNewNotificationTopic(location);
                     }
 
                     @Override
@@ -104,23 +105,28 @@ public class HomeFragmentPresenter {
 
     private void sendTelegramNotification(Location location, SharedPreferences sharedPreferences) {
         String telegramMessage = getTelegramMessage(location, sharedPreferences);
+        int count = sharedPreferences.getInt(TELEGRAM_GROUPS_NUMBER_PREF, 0);
+        for (int i = 0; i < count; i++) {
+            apiTelegramService.sendTelegramMessage(
+                    sharedPreferences.getString(TELEGRAM_GROUP_CHAT_ID_PREF+i,""),
+                    telegramMessage)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<JSONObject>() {
+                        @Override
+                        public void onCompleted() {
+                        }
 
-        apiTelegramService.sendTelegramMessage( "-342148486",telegramMessage) //TODO : set list of saved chat_id
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JSONObject>() {
-                    @Override
-                    public void onCompleted() { }
+                        @Override
+                        public void onError(Throwable e) {
+                        }
 
-                    @Override
-                    public void onError(Throwable e) { }
-
-                    @Override
-                    public void onNext(JSONObject responseBody) {}
-                });
+                        @Override
+                        public void onNext(JSONObject responseBody) {
+                        }
+                    });
+        }
     }
-
-
 
     private String notificationToJson(Double latitude, Double longitude, SharedPreferences sharedPreferences) {
         JSONObject jsonObject = new JSONObject();

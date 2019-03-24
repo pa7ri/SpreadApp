@@ -1,11 +1,11 @@
 package com.ucm.informatica.spread.View;
 
-import com.ucm.informatica.spread.Utils.CustomRecyclerAdapter;
+import com.ucm.informatica.spread.Utils.HistoricalRecyclerAdapter;
 
 
 public interface HistoricalFragmentView {
 
-    void initView(CustomRecyclerAdapter adapter);
+    void initView(HistoricalRecyclerAdapter adapter);
 
     void showErrorTransaction();
 }

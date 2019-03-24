@@ -5,7 +5,11 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +21,20 @@ import android.widget.TextView;
 
 import com.ucm.informatica.spread.Presenter.ProfileFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.TelegramRecyclerAdapter;
 import com.ucm.informatica.spread.View.ProfileFragmentView;
 import com.ucm.informatica.spread.Model.Colours;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_END;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_START;
 
 public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
@@ -49,6 +58,10 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private ImageView profileImage;
     private Colours shirtColour = Colours.NA;
     private Colours pantsColour = Colours.NA;
+
+    private RecyclerView telegramRecyclerView;
+    private List<Pair<String, String>> telegramGroupList;
+
 
     private View view;
 
@@ -79,6 +92,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         editProfileButton = view.findViewById(R.id.editProfileButton);
         saveProfileButton = view.findViewById(R.id.saveProfileButton);
         editTelegramGroupButton = view.findViewById(R.id.editTelegramGroupButton);
+        telegramRecyclerView = view.findViewById(R.id.telegramGroupRecyclewView);
 
         editWatchwordButton = view.findViewById(R.id.editWatchwordButton);
         saveWatchwordButton = view.findViewById(R.id.saveWatchwordButton);
@@ -97,6 +111,14 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         editWatchwordResponse = view.findViewById(R.id.editWatchwordResponseDescription);
     }
 
+    private void initTelegramGroups() {
+        telegramRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        TelegramRecyclerAdapter adapter = new TelegramRecyclerAdapter(getContext(), telegramGroupList);
+        telegramRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        telegramRecyclerView.setAdapter(adapter);
+    }
+
+
     private void initProfilePhoto(){
         try {
             Random rand = new Random();
@@ -106,7 +128,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             profileImage.setForeground(d);
         }
         catch(IOException e) {
-            Log.e("Profile picture", e.getMessage());
+            Log.e("PROFILE PICTURE", e.getMessage());
         }
     }
 
@@ -157,7 +179,25 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             cancelButton = dialogView.findViewById(R.id.cancelButton);
 
 
-            storeButton.setOnClickListener(v -> dialogBuilder.dismiss());
+            storeButton.setOnClickListener(v -> {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if(!chatIdEditText.getText().toString().isEmpty()
+                        && !chatNameEditText.getText().toString().isEmpty()) {
+
+                    editor.putInt(TELEGRAM_GROUPS_NUMBER_PREF,telegramGroupList.size());
+                    editor.putString(TELEGRAM_GROUP_NAME_PREF + telegramGroupList.size(),
+                            chatNameEditText.getText().toString());
+                    editor.putString(TELEGRAM_GROUP_CHAT_ID_PREF + telegramGroupList.size(),
+                            chatIdEditText.getText().toString());
+                    editor.apply();
+
+                    telegramGroupList.add(new Pair<>(chatNameEditText.getText().toString(),
+                            chatIdEditText.getText().toString()));
+
+                    telegramRecyclerView.getAdapter().notifyDataSetChanged();
+                    dialogBuilder.dismiss();
+                }
+            });
             cancelButton.setOnClickListener(v -> dialogBuilder.dismiss());
 
             dialogBuilder.setView(dialogView);
@@ -240,6 +280,15 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         pantsColour = Colours.values()[sharedPreferences.getInt(PANTS_PREF, 0)];
         watchwordMessageText.setText(sharedPreferences.getString(KEY_PREF, ""));
         watchwordResponseText.setText(sharedPreferences.getString(RESPONSE_PREF, ""));
+
+        telegramGroupList = new ArrayList<>();
+        int numTelegramGroups = sharedPreferences.getInt(TELEGRAM_GROUPS_NUMBER_PREF, 0);
+        for(int i=0; i<numTelegramGroups; i++) {
+            telegramGroupList.add(new Pair<>(
+                    sharedPreferences.getString(TELEGRAM_GROUP_NAME_PREF+i, "Grupo "+i),
+                    sharedPreferences.getString(TELEGRAM_GROUP_CHAT_ID_PREF+i, "")));
+        }
+        initTelegramGroups();
     }
 
     public void refreshView(){

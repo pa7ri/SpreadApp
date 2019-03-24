@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA;
@@ -148,7 +149,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private boolean isNotificationIntent() {
         Intent intent = getIntent();
-        if (intent != null && intent.getExtras() != null) {
+        if (intent != null && intent.getExtras() != null && intent.getExtras().get(NOTIFICATION_MESSAGE)!= null) {
             String notificationMessageJsonObject = intent.getExtras().get(NOTIFICATION_MESSAGE).toString();
 
             Intent notificationIntent = new Intent(this, AlertDetailsActivity.class);
