@@ -58,6 +58,9 @@ public final class Constants {
         public static final String TELEGRAM_GROUPS_NUMBER_PREF = "TELEGRAM_GROUPS_NUMBER_PREF";
         public static final String TELEGRAM_GROUP_NAME_PREF = "TELEGRAM_GROUP_NAME_PREF";
         public static final String TELEGRAM_GROUP_CHAT_ID_PREF = "TELEGRAM_GROUP_CHAT_ID_PREF";
+
+
+        public static final String RADIUS_PREF = "RADIUS_PREF";
     }
 
     public static final class Notifications {

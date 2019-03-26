@@ -39,6 +39,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+    implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
     implementation 'com.jackandphantom.android:androidlikebutton:1.2.0'
     implementation 'com.andrognito.flashbar:flashbar:1.0.3'
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'

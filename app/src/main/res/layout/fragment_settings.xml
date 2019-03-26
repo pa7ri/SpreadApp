@@ -108,30 +108,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
-    <SeekBar
+
+    <com.warkiz.widget.IndicatorSeekBar
         android:id="@+id/radiusSeekBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/smallMargin"
-        android:layout_marginHorizontal="@dimen/mediumMargin"
-        android:progress="3"
-        android:max="6"
+        android:layout_height="@dimen/iconSide"
+        android:layout_marginTop="@dimen/mediumMargin"
+        app:isb_indicator_text_color="@color/white"
+        app:isb_indicator_text_size="18sp"
+        app:isb_max="3"
+        app:isb_min="0"
+        app:isb_only_thumb_draggable="false"
+        app:isb_progress="1"
+        app:isb_seek_smoothly="true"
+        app:isb_show_indicator="rounded_rectangle"
+        app:isb_show_tick_marks_type="oval"
+        app:isb_show_tick_texts="true"
+        app:isb_tick_texts_array="@array/tick_below_text"
+        app:isb_thumb_size="20dp"
+        app:isb_tick_marks_size="13dp"
+        app:isb_tick_texts_size="15sp"
+        app:isb_ticks_count="4"
+        app:isb_track_background_size="2dp"
+        app:isb_track_progress_size="4dp"
         app:layout_constraintTop_toBottomOf="@+id/radiusTitle" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/mediumMargin"
-        android:text="@string/radius_min"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/mediumMargin"
-        android:text="@string/radius_max"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
 
 </android.support.constraint.ConstraintLayout>

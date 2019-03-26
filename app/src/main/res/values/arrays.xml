@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="tick_below_text">
+        <item>Nadie</item>
+        <item>100m</item>
+        <item>300m</item>
+        <item>1km</item>
+    </array>
+</resources>
