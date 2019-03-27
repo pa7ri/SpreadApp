@@ -179,7 +179,7 @@ public class MapFragmentPresenter {
                     mapFragment.getResources().getString(R.string.no_text):infoDescriptionEditText.getText().toString();
 
             if (currentMode == Auto) {
-                Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getLocation();
+                Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getCustomLocationListener().getLatestLocation();
                 if (latestLocation != null) {
                     mapFragmentView.showSendConfirmation();
 

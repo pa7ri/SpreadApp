@@ -15,6 +15,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
@@ -68,10 +70,10 @@ public class MainTabPresenter {
     private PosterContract posterContract;
     private SmartContract smartContract;
 
-    private CustomLocationListener locationListener;
     private Bitmap imageBitmap;
 
     private IPFSService ipfsService;
+    private CustomLocationListener locationListener;
 
 
     public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
@@ -83,20 +85,30 @@ public class MainTabPresenter {
     public void start(String path){
         walletPath = path;
         mainTabView.showLoading();
-        initLocationManager();
+
         initNotificationService();
         initEthConnection();
+        initLocationService();
+    }
+
+    private void initLocationService(){
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        locationListener = new CustomLocationListener(context);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions( context,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
     }
 
     private void initNotificationService(){
         createNotificationChannel();
+        FirebaseApp.initializeApp(context);
         FirebaseInstanceId.getInstance()
             .getInstanceId()
             .addOnSuccessListener(context, instanceIdResult -> {});
-    }
-
-    public CustomLocationListener getLocationListener() {
-        return locationListener;
     }
 
     private void createNotificationChannel() {
@@ -153,17 +165,6 @@ public class MainTabPresenter {
 
     }
 
-    private void initLocationManager() {
-        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        locationListener = new CustomLocationListener(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( context,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-    }
-
     private void initEthConnection() {
         localWallet = new LocalWallet(context);
         if(web3j == null) {
@@ -212,10 +213,6 @@ public class MainTabPresenter {
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
         posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS_POSTER);
         return posterContract;
-    }
-
-    public Location getLatestLocation() {
-        return locationListener.getLatestLocation();
     }
 
     private void loadData() {
@@ -315,4 +312,7 @@ public class MainTabPresenter {
         }
     }
 
+    public CustomLocationListener getLocationListener() {
+        return locationListener;
+    }
 }

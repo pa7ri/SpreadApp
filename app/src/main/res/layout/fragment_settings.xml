@@ -119,7 +119,7 @@
         app:isb_max="3"
         app:isb_min="0"
         app:isb_only_thumb_draggable="false"
-        app:isb_progress="1"
+        app:isb_progress="0"
         app:isb_seek_smoothly="true"
         app:isb_show_indicator="rounded_rectangle"
         app:isb_show_tick_marks_type="oval"

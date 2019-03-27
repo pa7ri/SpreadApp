@@ -82,6 +82,7 @@ public class SettingsFragment extends Fragment {
         accountText.setText(accountData.length()>22 ? accountData.substring(0,22) + "..." : accountData);
         passwordText.setText(passwordData);
         balanceText.setText(balanceData);
+        indicatorSeekBar.setProgress(sharedPreferences.getInt(RADIUS_PREF, 1));
         indicatorSeekBar.setIndicatorTextFormat("${TICK_TEXT}");
     }
 

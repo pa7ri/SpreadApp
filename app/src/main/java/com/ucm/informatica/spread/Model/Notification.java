@@ -8,8 +8,8 @@ import static com.ucm.informatica.spread.Utils.Constants.Notifications.TOPICS;
 
 public class Notification {
 
-    @SerializedName("to")
-    private String to;
+    @SerializedName("condition")
+    private String condition;
 
     @SerializedName("title")
     private String title;
@@ -20,8 +20,8 @@ public class Notification {
     @SerializedName("data")
     private Map<String, String> data;
 
-    public Notification(String title, String body, String to, Map<String, String> data){
-        this.to = TOPICS+to;
+    public Notification(String title, String body, String condition, Map<String, String> data){
+        this.condition = condition;
         this.title = title;
         this.body = body;
         this.data = data;

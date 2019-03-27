@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
             @Override
             public void onLikeClicked(AndroidLikeButton androidLikeButton) {
                 androidLikeButton.setCurrentlyLiked(false);
-                Location location = ((MainTabActivity) getActivity()).getLocation();
+                Location location = ((MainTabActivity) getActivity()).getCustomLocationListener().getLatestLocation();
                 homeFragmentPresenter.onHelpButtonPressed(location,getResources(),
                         getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE));
             }

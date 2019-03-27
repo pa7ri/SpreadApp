@@ -13,6 +13,7 @@ import com.ucm.informatica.spread.Data.ApiTelegramService;
 import com.ucm.informatica.spread.Data.ApiUtils;
 import com.ucm.informatica.spread.Model.Colours;
 import com.ucm.informatica.spread.Model.Notification;
+import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.CustomLocationManager;
 import com.ucm.informatica.spread.View.HomeFragmentView;
@@ -41,6 +42,8 @@ public class HomeFragmentPresenter {
 
     private CustomLocationManager locationManager;
 
+    private int currentTopic;
+
     public HomeFragmentPresenter(Context context, HomeFragmentView homeFragmentView, AlertContract alertContract){
         this.homeFragmentView = homeFragmentView;
         this.alertContract = alertContract;
@@ -61,32 +64,46 @@ public class HomeFragmentPresenter {
             sendTelegramNotification(location, sharedPreferences);
             sendPushNotification(location, sharedPreferences);
             homeFragmentView.showSendConfirmation();
-            /*saveData(resources.getString(R.string.button_help),
+            saveData(resources.getString(R.string.button_help),
                     resources.getString(R.string.button_help_description),
                     Double.toString(location.getLongitude()),
-                    Double.toString(location.getLatitude()));*/
+                    Double.toString(location.getLatitude()));
         } else {
             homeFragmentView.showErrorGPS();
         }
     }
 
     private void sendPushNotification(Location location, SharedPreferences sharedPreferences) {
+        currentTopic=0;
+        sendBroadcastToTopics(location,sharedPreferences);
+    }
+
+    private void sendBroadcastToTopics(Location location,SharedPreferences sharedPreferences) {
+        Map<String, String> data = new ArrayMap<>();
+
         CustomLocationListener locationListener = homeFragmentView.getCustomLocationListener();
         locationListener.unregisterLastNotificationTopic(location);
-        Map<String, String> data = new ArrayMap<>();
         data.put(NOTIFICATION_DATA, notificationToJson(location.getLatitude(),
                 location.getLongitude(), sharedPreferences));
         data.put(NOTIFICATION_DATA_TITLE, NOTIFICATION_DATA_TITLE_CONTENT);
         data.put(NOTIFICATION_DATA_SUBTITLE, NOTIFICATION_DATA_SUBTITLE_CONTENT);
 
+        final int radius = sharedPreferences.getInt(RADIUS_PREF,0);
+        String postalCode = sharedPreferences.getString(NOTIFICATION_TOPIC_PREF,"");
+        String condition = getNotificationTopic(radius,postalCode);
+
         apiFcmService.sendBroadcastNotification(new Notification(NOTIFICATION_DATA_TITLE_CONTENT,
-                NOTIFICATION_DATA_SUBTITLE_CONTENT, getNotificationTopic(sharedPreferences), data))
+                NOTIFICATION_DATA_SUBTITLE_CONTENT, condition, data))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JSONObject>() {
                     @Override
                     public void onCompleted() {
-                       //locationListener.registerNewNotificationTopic(location);
+                        if((radius==2 && currentTopic<10) || (radius==3 && currentTopic<100)){
+                            sendBroadcastToTopics(location,sharedPreferences);
+                        } else {
+                            locationListener.registerNewNotificationTopic(location);
+                        }
                     }
 
                     @Override
@@ -146,8 +163,49 @@ public class HomeFragmentPresenter {
         }
     }
 
-    private String getNotificationTopic(SharedPreferences sharedPreferences){
-        return sharedPreferences.getString(NOTIFICATION_TOPIC_PREF,"");
+    private String getNotificationTopic(int radius, String postalCode){
+        String condition="";
+        //there is a limit of 5 conditions for each notification
+        switch (radius) {
+            case 1 :
+                condition = "'" + postalCode + "' in topics";
+                break;
+            case 2 :
+                for (int i=currentTopic; i<currentTopic+5; i++) {
+                    postalCode = postalCode.substring(0, postalCode.length() - 1) + i;
+                    if(i==currentTopic) {
+                        condition = "'" + postalCode + "' in topics";
+                    } else {
+                        condition = condition + " || '" + postalCode + "' in topics";
+                    }
+                }
+                currentTopic+=5;
+                break;
+            case 3 :
+                postalCode = postalCode.substring(0,postalCode.length() - 2) + "00";
+                condition = "'" + postalCode + "' in topics";
+                for (int i=currentTopic; i<currentTopic+5; i++) {
+                    if(i<10) {
+                        postalCode = postalCode.substring(0,postalCode.length() - 2) + "0"+ i;
+                        if(i==currentTopic) {
+                            condition = "'" + postalCode + "' in topics";
+                        } else {
+                            condition = condition + " || '" + postalCode + "' in topics";
+                        }
+                    } else {
+                        postalCode = postalCode.substring(0, postalCode.length() - 2) + i;
+                        if(i==currentTopic) {
+                            condition = "'" + postalCode + "' in topics";
+                        } else {
+                            condition = condition + " || '" + postalCode + "' in topics";
+                        }
+                    }
+                }
+                currentTopic+=5;
+                break;
+            default : condition = "";
+        }
+        return condition;
     }
 
     private String getColor(Colours color) {

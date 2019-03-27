@@ -2,13 +2,11 @@ package com.ucm.informatica.spread.Activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,9 +30,9 @@ import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.CustomTabLayoutOnPageChangeListener;
-import com.ucm.informatica.spread.View.MainTabView;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
+import com.ucm.informatica.spread.View.MainTabView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,10 +41,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
-import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_MESSAGE;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
@@ -186,8 +182,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         return dataPosterSmartContractList;
     }
 
-    public Location getLocation() {
-        return mainPresenter.getLatestLocation();
+    public CustomLocationListener getCustomLocationListener(){
+        return mainPresenter.getLocationListener();
     }
 
     public void createPictureIntentPicker(int mode){
@@ -314,10 +310,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 .message(getString(R.string.snackbar_confirmation_transaction))
                 .messageColorRes(R.color.snackbarConfirmColor)
                 .build();
-    }
-
-    public CustomLocationListener getCustomLocationListener(){
-        return mainPresenter.getLocationListener();
     }
 
     public void showSelectedLocation(Double latitude, Double longitude){
