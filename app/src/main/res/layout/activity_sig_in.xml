@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor_60"
+    tools:context=".Activities.SignInActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/side_icon_medium"
+        android:layout_height="@dimen/side_icon_medium"
+        android:background="@drawable/ic_toast_login"
+        android:layout_marginBottom="@dimen/smallMargin"
+        android:layout_marginEnd="@dimen/smallMargin"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.30" />
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_button_shape_dark"
+        android:backgroundTint="@color/white"
+        android:orientation="horizontal"
+        android:textColorHint="@color/hintTextColor"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:layout_marginHorizontal="@dimen/mediumMargin"
+        android:paddingHorizontal="@dimen/smallMargin"
+        android:paddingVertical="@dimen/smallMargin"
+
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/hintTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/prompt_password"
+            android:imeActionId="6"
+            android:imeActionLabel="@string/button_sign_in"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/passwordErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/snackbarAlertColor"
+            android:visibility="gone"
+            android:text="@string/error_invalid_password"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/email_sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_button_shape_dark"
+        android:backgroundTint="@color/backgroundColorLight"
+        android:paddingHorizontal="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/xmediumMargin"
+        android:text="@string/button_sign_in"
+        android:textColor="@color/backgroundColor"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+    <RelativeLayout
+        android:id="@+id/ethereumInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/infoEthereumImage"
+            android:layout_width="@dimen/iconSide"
+            android:layout_height="@dimen/iconSide"
+            android:background="@drawable/ic_info"
+            android:backgroundTint="@color/hintTextColor"
+            android:layout_marginHorizontal="@dimen/mediumMargin"
+            android:layout_marginVertical="@dimen/smallMargin"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/iconSide"
+            android:textColor="@color/warm_grey"
+            android:layout_marginEnd="@dimen/mediumMargin"
+            android:layout_marginVertical="@dimen/smallMargin"
+            android:layout_toRightOf="@+id/infoEthereumImage"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:text="@string/ethereum_info_title"/>
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/loadingAnimationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/accentColor"
+        android:visibility="gone">
+
+        <com.tuyenmonkey.mkloader.MKLoader
+            android:id="@+id/loadingAnimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:mk_type="TwinFishesSpinner"
+            app:mk_color="@android:color/white"
+            android:layout_centerInParent="true"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loadingAnimation"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:textColor="@color/white"
+            android:text="Creando tu wallet"/>
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

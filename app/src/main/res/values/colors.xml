@@ -2,6 +2,9 @@
 <resources>
 
     <color name="backgroundColor">#A60C4A</color>
+    <color name="backgroundColorLight">#F6E8EE</color>
+    <color name="backgroundColorNormal">#DEA6BD</color>
+    <color name="backgroundColor_60">#E5A60C4A</color>
     <color name="backgroundColorDark">#6E0C33</color>
     <color name="accentColor">#A60C4A</color>
 

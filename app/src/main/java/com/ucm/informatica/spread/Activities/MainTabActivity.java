@@ -1,11 +1,19 @@
 package com.ucm.informatica.spread.Activities;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,9 +27,10 @@ import android.widget.TextView;
 
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.mapbox.geojson.Point;
 import com.ucm.informatica.spread.Contracts.AlertContract;
-import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
@@ -42,18 +51,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_MESSAGE;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILENAME;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_PASSWORD;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
 
     private MainTabPresenter mainPresenter;
 
-    private RelativeLayout relativeLayout;
+    private RelativeLayout loadingLayout;
     private ViewPagerTab fragmentViewPager;
     private ViewPagerAdapter fragmentAdapter;
 
@@ -61,6 +74,9 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private List<Alert> dataAlertSmartContractList = new ArrayList<>();
     private List<Poster> dataPosterSmartContractList = new ArrayList<>();
+
+    private CustomLocationListener locationListener;
+    private SharedPreferences sharedPreferences;
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -83,10 +99,12 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
+        sharedPreferences =  getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         if(!isNotificationIntent()) {
+            loadingLayout=findViewById(R.id.loadingAnimationLayout); //as exception
             readPolygonCoordinates();
-            mainPresenter = new MainTabPresenter(this, this);
-            mainPresenter.start(getFilesDir().getAbsolutePath());
+            mainPresenter = new MainTabPresenter(this);
+            mainPresenter.start();
         }
     }
 
@@ -134,13 +152,62 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     public void showLoading() {
-       relativeLayout=findViewById(R.id.loadingAnimationLayout);
-       relativeLayout.setVisibility(View.VISIBLE);
+       loadingLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-       relativeLayout.setVisibility(View.GONE);
+       loadingLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public String getWalletFilePath() {
+        return getFilesDir().getAbsolutePath();
+    }
+
+    @Override
+    public String getPasswordLocally() {
+        return sharedPreferences.getString(WALLET_PASSWORD, "");
+    }
+
+    @Override
+    public String getFilenameWalletLocally() {
+        return sharedPreferences.getString(WALLET_FILENAME, "");
+    }
+
+    @Override
+    public void initNotificationService() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new CustomLocationListener(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions( this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
+    }
+
+    @Override
+    public void initLocationService() {
+        createNotificationChannel();
+        FirebaseApp.initializeApp(this);
+        FirebaseInstanceId.getInstance()
+                .getInstanceId()
+                .addOnSuccessListener(this, instanceIdResult -> {});
+    }
+
+    @Override
+    public void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alertas emergencia";
+            String description = "Notificar a los usuarios si hay alguien en peligro cerca";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private boolean isNotificationIntent() {
@@ -168,8 +235,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
 
-    public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
-
     public Map getPolygonData() {
         return regionMap;
     }
@@ -183,7 +248,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
 
     public CustomLocationListener getCustomLocationListener(){
-        return mainPresenter.getLocationListener();
+        return locationListener;
     }
 
     public void createPictureIntentPicker(int mode){

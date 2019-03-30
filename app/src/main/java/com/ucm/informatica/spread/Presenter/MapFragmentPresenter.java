@@ -21,8 +21,6 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.ucm.informatica.spread.Activities.MainTabActivity;
-import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.LocationMode;
 import com.ucm.informatica.spread.Model.PinMode;
@@ -35,7 +33,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
@@ -49,20 +46,18 @@ public class MapFragmentPresenter {
     private LocationMode currentMode = Auto;
 
     private MapFragmentView mapFragmentView;
-    private MapFragment mapFragment;
     private String titleText, descriptionText;
 
     private PinMode pinMode;
     private Bitmap posterImage;
 
-    public MapFragmentPresenter(MapFragmentView mapFragmentView, MapFragment mapFragment) {
-        this.mapFragment = mapFragment;
+    public MapFragmentPresenter(MapFragmentView mapFragmentView) {
         this.mapFragmentView = mapFragmentView;
     }
 
     public void start(){
-        List<Alert> historicalAlertList = ((MainTabActivity)mapFragment.getActivity()).getDataAlertSmartContract();
-        List<Poster> historicalPosterList = ((MainTabActivity)mapFragment.getActivity()).getDataPosterSmartContract();
+        List<Alert> historicalAlertList = mapFragmentView.getAlerts();
+        List<Poster> historicalPosterList = mapFragmentView.getPosters();
 
         for (Alert alert:historicalAlertList) {
             mapFragmentView.showNewMarkerIntoMap(
@@ -129,15 +124,11 @@ public class MapFragmentPresenter {
                     ((p2.longitude() - p1.longitude())*(p2.longitude() - p1.longitude())));
     }
 
-    public void popUpDialog(PinMode pMode, String title, Bitmap image) {
+    public void popUpDialog(PinMode pMode, String title, Bitmap image, LayoutInflater inflater, AlertDialog dialogBuilder) {
         pinMode = pMode;
         posterImage = image;
 
-        //Todo: make a class as dialog builder and organise it
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(mapFragment.getContext())).create();
-        LayoutInflater inflater = mapFragment.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_location, null);
-
 
         ImageView posterImageView = dialogView.findViewById(R.id.posterImage);
         FloatingActionButton cameraFloatingButton = dialogView.findViewById(R.id.addPosterButton);
@@ -173,13 +164,13 @@ public class MapFragmentPresenter {
         });
 
         submitButton.setOnClickListener(view -> {
-            titleText = infoTitleEditText.getText().toString().equals("")?
-                    mapFragment.getResources().getString(R.string.no_text):infoTitleEditText.getText().toString();
-            descriptionText = infoDescriptionEditText.getText().toString().equals("")?
-                    mapFragment.getResources().getString(R.string.no_text):infoDescriptionEditText.getText().toString();
+            titleText = infoTitleEditText.getText().toString().isEmpty()? "None"
+                    :infoTitleEditText.getText().toString();
+            descriptionText = infoDescriptionEditText.getText().toString().isEmpty()? "None"
+                    :infoDescriptionEditText.getText().toString();
 
             if (currentMode == Auto) {
-                Location latestLocation = ((MainTabActivity)mapFragment.getActivity()).getCustomLocationListener().getLatestLocation();
+                Location latestLocation = mapFragmentView.getLatestLocation();
                 if (latestLocation != null) {
                     mapFragmentView.showSendConfirmation();
 
@@ -200,7 +191,7 @@ public class MapFragmentPresenter {
             dialogBuilder.dismiss();
         });
         cameraFloatingButton.setOnClickListener(view -> {
-            ((MainTabActivity) mapFragment.getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+            mapFragmentView.buildPicturePicker(REQUEST_IMAGE_POSTER);
             dialogBuilder.dismiss();
         });
         cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());
@@ -212,13 +203,13 @@ public class MapFragmentPresenter {
     private void saveData(String title, String description, String longitude, String latitude) {
         switch (pinMode) {
             case Alert: {
-                ((MainTabActivity) mapFragment.getActivity()).saveDataAlert(title,description,latitude,longitude);
+                mapFragmentView.saveDataAlert(title,description,latitude,longitude);
                 break;
             }
             case Poster: {
                 Poster samplePoster = new Poster(title, description,  latitude, longitude,
                         String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
-                ((MainTabActivity) mapFragment.getActivity()).saveDataPoster(samplePoster.toJson());
+                mapFragmentView.saveDataPoster(samplePoster.toJson());
                 break;
             }
         }

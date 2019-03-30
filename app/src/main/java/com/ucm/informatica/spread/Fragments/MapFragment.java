@@ -5,16 +5,21 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -29,14 +34,17 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.LocationMode;
 import com.ucm.informatica.spread.Model.PinMode;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MapFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MapFragmentView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,6 +52,7 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
+import static com.ucm.informatica.spread.Model.LocationMode.Manual;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_END;
@@ -59,6 +68,7 @@ import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Utils.Constants.Map.ZOOM_MARKER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MapFragment extends Fragment implements MapFragmentView {
 
@@ -76,7 +86,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private View cameraStartDelimit, cameraEndDelimit;
 
-    private Map<Point, Region> regionMap = new HashMap<>();
+    private Map regionMap = new HashMap<>();
 
 
     public MapFragment() { }
@@ -91,7 +101,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
                              Bundle savedInstanceState) {
         Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
         view = inflater.inflate(R.layout.fragment_map, container, false);
-        mapFragmentPresenter = new MapFragmentPresenter(this,this);
+        mapFragmentPresenter = new MapFragmentPresenter(this);
 
         regionMap = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonData();
         
@@ -170,7 +180,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
                     title = getString(R.string.button_add_pin_poster);
                     pinMode = PinMode.Poster;
                 }
-                mapFragmentPresenter.popUpDialog(pinMode, title, null);
+                mapFragmentPresenter.popUpDialog(pinMode, title, null
+                        , getLayoutInflater(),new AlertDialog.Builder(getContext()).create());
                 return false;
             }
         });
@@ -226,7 +237,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     @Override
     public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert){
-        IconFactory iconFactory = IconFactory.getInstance((MainTabActivity) getActivity());
+        IconFactory iconFactory = IconFactory.getInstance(Objects.requireNonNull(getActivity()));
         Icon icon;
         if(isAlert){
             icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_alert));
@@ -244,13 +255,43 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
 
     @Override
+    public void saveDataAlert(String title, String description, String latitude, String longitude) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataAlert(title,description,latitude,longitude);
+    }
+
+    @Override
+    public void saveDataPoster(String poster) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataPoster(poster);
+    }
+
+    @Override
+    public void buildPicturePicker(int requestImagePoster) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+    }
+
+    @Override
+    public List<Alert> getAlerts() {
+        return ((MainTabActivity) Objects.requireNonNull(getActivity())).getDataAlertSmartContract();
+    }
+
+    @Override
+    public List<Poster> getPosters() {
+        return ((MainTabActivity) Objects.requireNonNull(getActivity())).getDataPosterSmartContract();
+    }
+
+    @Override
+    public Location getLatestLocation() {
+        return ((MainTabActivity) Objects.requireNonNull(getActivity())).getCustomLocationListener().getLatestLocation();
+    }
+
+    @Override
     public void showSendConfirmation(){
-        ((MainTabActivity) getActivity()).getInformationSnackBar().show();
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).getInformationSnackBar().show();
     }
 
     @Override
     public void showErrorTransaction(int text) {
-        ((MainTabActivity) getActivity()).getErrorSnackBar(text).show();
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).getErrorSnackBar(text).show();
     }
 
     @Override
@@ -272,7 +313,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     public void renderContentWithPicture(Bitmap imageBitmap){
-        mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
+        mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster),
+                imageBitmap, getLayoutInflater(),new AlertDialog.Builder(getContext()).create());
     }
 
     public void showSelectedLocation(Double latitude, Double longitude) {

@@ -14,6 +14,7 @@ import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
+import com.ucm.informatica.spread.Utils.CustomLocationManager;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
@@ -39,8 +40,8 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
-        homeFragmentPresenter = new HomeFragmentPresenter(getContext(), this,
-                    ((MainTabActivity) getActivity()).getAlertContract());
+        homeFragmentPresenter = new HomeFragmentPresenter(this,
+                new CustomLocationManager(getContext()));
         homeFragmentPresenter.start();
         return view;
     }
@@ -78,11 +79,6 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     }
 
     @Override
-    public void showConfirmationTransaction() {
-        ((MainTabActivity) getActivity()).showConfirmationTransaction();
-    }
-
-    @Override
     public void showErrorTransaction() {
         ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
@@ -95,5 +91,10 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     @Override
     public void showSendConfirmation() {
         ((MainTabActivity) getActivity()).getInformationSnackBar().show();
+    }
+
+    @Override
+    public void saveData(String title, String description, String latitude, String logitude) {
+        ((MainTabActivity) getActivity()).saveDataAlert(title, description, latitude, logitude);
     }
 }

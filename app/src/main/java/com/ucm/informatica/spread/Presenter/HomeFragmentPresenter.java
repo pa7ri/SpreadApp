@@ -1,13 +1,11 @@
 package com.ucm.informatica.spread.Presenter;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Data.ApiFcmService;
 import com.ucm.informatica.spread.Data.ApiTelegramService;
 import com.ucm.informatica.spread.Data.ApiUtils;
@@ -21,21 +19,40 @@ import com.ucm.informatica.spread.View.HomeFragmentView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
-import static com.ucm.informatica.spread.Utils.Constants.Notifications.*;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.AGE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.KEY_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NOTIFICATION_TOPIC_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PANTS_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RADIUS_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RESPONSE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUPS_NUMBER_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUP_CHAT_ID_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TSHIRT_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_AGE;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_LATITUDE;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_LONGITUDE;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_NAME;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_PANTS_COLOR;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_SUBTITLE;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_SUBTITLE_CONTENT;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_TITLE;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_TITLE_CONTENT;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_TSHIRT_COLOR;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_UNKNOWN;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_WATCHWORD_KEY;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_WATCHWORD_RESPONSE;
 
 
 public class HomeFragmentPresenter {
 
-    private AlertContract alertContract;
     private HomeFragmentView homeFragmentView;
     private ApiFcmService apiFcmService;
     private ApiTelegramService apiTelegramService;
@@ -44,13 +61,11 @@ public class HomeFragmentPresenter {
 
     private int currentTopic;
 
-    public HomeFragmentPresenter(Context context, HomeFragmentView homeFragmentView, AlertContract alertContract){
+    public HomeFragmentPresenter(HomeFragmentView homeFragmentView, CustomLocationManager locationManager){
         this.homeFragmentView = homeFragmentView;
-        this.alertContract = alertContract;
-
         apiFcmService = ApiUtils.getApiFcmService();
         apiTelegramService = ApiUtils.getApiTelegramService();
-        locationManager = new CustomLocationManager(context);
+        this.locationManager = locationManager;
     }
 
     public void start() {
@@ -64,10 +79,10 @@ public class HomeFragmentPresenter {
             sendTelegramNotification(location, sharedPreferences);
             sendPushNotification(location, sharedPreferences);
             homeFragmentView.showSendConfirmation();
-            saveData(resources.getString(R.string.button_help),
+            homeFragmentView.saveData(resources.getString(R.string.button_help),
                     resources.getString(R.string.button_help_description),
-                    Double.toString(location.getLongitude()),
-                    Double.toString(location.getLatitude()));
+                    Double.toString(location.getLatitude()),
+                    Double.toString(location.getLongitude()));
         } else {
             homeFragmentView.showErrorGPS();
         }
@@ -136,6 +151,8 @@ public class HomeFragmentPresenter {
 
                         @Override
                         public void onError(Throwable e) {
+                            Log.e("SEND TELEGRAM MESSAGE",e.getMessage());
+                            homeFragmentView.showErrorTransaction();
                         }
 
                         @Override
@@ -235,20 +252,5 @@ public class HomeFragmentPresenter {
                 locationManager.getLineAddress(location.getLatitude(), location.getLongitude())
                 + ". \n" + "https://maps.google.com/?q=" + Double.toString(location.getLatitude())
                 + "," + Double.toString(location.getLongitude());
-    }
-
-    private void saveData(String title, String description, String longitude, String latitude) {
-        if(alertContract != null) {
-            alertContract.addAlert(title, description, latitude, longitude, String.valueOf(System.currentTimeMillis())).observable()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            (result) -> homeFragmentView.showConfirmationTransaction(),
-                            (error) -> homeFragmentView.showErrorTransaction()
-                    );
-        } else {
-            homeFragmentView.showErrorTransaction();
-        }
-
     }
 }

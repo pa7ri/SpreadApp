@@ -60,7 +60,6 @@ import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GA
 public class MainTabPresenter {
 
     private MainTabView mainTabView;
-    private MainTabActivity context;
     private String walletPath;
 
     private LocalWallet localWallet;
@@ -73,54 +72,19 @@ public class MainTabPresenter {
     private Bitmap imageBitmap;
 
     private IPFSService ipfsService;
-    private CustomLocationListener locationListener;
 
-
-    public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
+    public MainTabPresenter(MainTabView mainTabView){
         this.mainTabView = mainTabView;
-        this.context = context;
         this.ipfsService = new IPFSService(mainTabView);
     }
 
-    public void start(String path){
-        walletPath = path;
+    public void start(){
+        walletPath = mainTabView.getWalletFilePath();
         mainTabView.showLoading();
 
-        initNotificationService();
+        mainTabView.initNotificationService();
         initEthConnection();
-        initLocationService();
-    }
-
-    private void initLocationService(){
-        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        locationListener = new CustomLocationListener(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( context,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
-    }
-
-    private void initNotificationService(){
-        createNotificationChannel();
-        FirebaseApp.initializeApp(context);
-        FirebaseInstanceId.getInstance()
-            .getInstanceId()
-            .addOnSuccessListener(context, instanceIdResult -> {});
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Alertas emergencia";
-            String description = "Notificar a los usuarios si hay alguien en peligro cerca";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        mainTabView.initLocationService();
     }
 
     public Fragment getFragment(int position) {
@@ -139,7 +103,7 @@ public class MainTabPresenter {
                 fragment = new HistoricalFragment();
                 break;
             default:
-                fragment = SettingsFragment.newInstance(getAddress(), "password", getBalance());
+                fragment = SettingsFragment.newInstance(getAddress(), mainTabView.getPasswordLocally(), getBalance());
                 break;
         }
         return fragment;
@@ -166,7 +130,7 @@ public class MainTabPresenter {
     }
 
     private void initEthConnection() {
-        localWallet = new LocalWallet(context);
+        localWallet = new LocalWallet(mainTabView.getPasswordLocally());
         if(web3j == null) {
             web3j = Web3jFactory.build(new HttpService(Constants.INFURA_PATH + Constants.INFURA_PUBLIC_PROYECT_ADDRESS));
         }
@@ -176,14 +140,9 @@ public class MainTabPresenter {
                 .subscribe(new Observer<Web3ClientVersion>() {
                     @Override
                     public void onCompleted() {
-                            if (!localWallet.existWallet()) {
-                                localWallet.createWallet(localWallet.getPasswordWallet(), walletPath);
-                            }
-                            String filenameWallet = localWallet.getFilenameWallet();
-                            String passwordWallet = localWallet.getPasswordWallet();
+                            String filenameWallet = mainTabView.getFilenameWalletLocally();
                             if (filenameWallet != null && !filenameWallet.isEmpty()) {
-                                localWallet.setCredentials(localWallet.loadWallet(passwordWallet, walletPath));
-                                localWallet.loadContract(web3j);
+                                localWallet.setCredentials(localWallet.loadWallet(walletPath,filenameWallet));
                                 mainTabView.initView();
                                 mainTabView.hideLoading();
 
@@ -193,12 +152,12 @@ public class MainTabPresenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("TAG",e.getMessage());
+                        Log.e("ERROR WEB3 CONNECTION",e.getMessage());
                     }
 
                     @Override
                     public void onNext(Web3ClientVersion web3ClientVersion) {
-                        Log.i("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
+                        Log.i("CONNECTED TO %s", web3ClientVersion.getWeb3ClientVersion());
                     }
                 });
     }
@@ -217,7 +176,7 @@ public class MainTabPresenter {
 
     private void loadData() {
         if(alertContract == null) { //|| !nameContract.isValid()) {
-            alertContract = context.getAlertContract();
+            alertContract = getAlertContract();
         }
         alertContract.getAlertsCount().observable()
                 .subscribeOn(Schedulers.newThread())
@@ -244,7 +203,7 @@ public class MainTabPresenter {
                     (error) -> mainTabView.showErrorTransaction()
                 );
         if(posterContract == null) { //|| !nameContract.isValid()) {
-            posterContract = context.getPosterContract();
+            posterContract = getPosterContract();
         }
         posterContract.getPostersCount().observable()
                 .subscribeOn(Schedulers.newThread())
@@ -310,9 +269,5 @@ public class MainTabPresenter {
             }
 
         }
-    }
-
-    public CustomLocationListener getLocationListener() {
-        return locationListener;
     }
 }
