@@ -100,6 +100,7 @@
     <string name="login_info_second_section_title">¿Cómo consigo tener ether?</string>
     <string name="login_info_second_section_description_1">Si ya tienes una cuenta con ether, haz una transacción a la cuenta creada por la aplicación, puedes enocntrar la dirección en el apartado de Ajustes</string>
     <string name="login_info_second_section_description_2">Si no tienes unan cuenta previa, puedes comprar ether para esta cuenta.</string>
+    <string name="snackbar_information_copy">Cuenta copiada  😊 </string>
 
 
 </resources>

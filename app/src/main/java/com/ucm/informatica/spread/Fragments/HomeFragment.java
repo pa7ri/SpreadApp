@@ -15,6 +15,7 @@ import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.CustomLocationManager;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
@@ -80,17 +81,17 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
 
     @Override
     public void showErrorTransaction() {
-        ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+        new FlashBarBuilder(getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 
     @Override
     public void showErrorGPS() {
-        ((MainTabActivity) getActivity()).getAlertSnackBarGPS().show();
+        new FlashBarBuilder(getActivity()).getAlertSnackBarGPS().show();
     }
 
     @Override
     public void showSendConfirmation() {
-        ((MainTabActivity) getActivity()).getInformationSnackBar().show();
+        new FlashBarBuilder(getActivity(),getString(R.string.snackbar_information_transaction)).getConfirmationSnackBar().show();
     }
 
     @Override

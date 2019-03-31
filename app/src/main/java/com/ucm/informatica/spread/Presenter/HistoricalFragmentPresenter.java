@@ -41,13 +41,13 @@ public class HistoricalFragmentPresenter {
         List<Alert> alertList = new ArrayList<>();
         List<Poster> posterList = new ArrayList<>();
         for (Alert alert : historicalAlertList) {
-            if(alert.getLatitude()<cameraBounds.first.first && alert.getLatitude()>cameraBounds.first.second
+            if(alert.getLatitude()>cameraBounds.first.first && alert.getLatitude()<cameraBounds.first.second
                     && alert.getLongitude()>cameraBounds.second.first && alert.getLongitude()<cameraBounds.second.second) {
                 alertList.add(alert);
             }
         }
         for (Poster poster : historicalPosterList) {
-            if(poster.getLatitude()<cameraBounds.first.first && poster.getLatitude()>cameraBounds.first.second
+            if(poster.getLatitude()>cameraBounds.first.first && poster.getLatitude()<cameraBounds.first.second
                     && poster.getLongitude()>cameraBounds.second.first && poster.getLongitude()<cameraBounds.second.second) {
                 posterList.add(poster);
             }

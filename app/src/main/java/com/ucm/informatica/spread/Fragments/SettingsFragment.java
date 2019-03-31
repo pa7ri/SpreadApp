@@ -1,5 +1,6 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.content.ClipData;
 import android.content.SharedPreferences;
 import android.text.ClipboardManager;
 import android.content.Context;
@@ -12,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RADIUS_PREF;
@@ -88,9 +91,9 @@ public class SettingsFragment extends Fragment {
 
     private void setupListeners(){
         accountText.setOnClickListener(view -> {
-            ClipboardManager cm = (ClipboardManager)getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
-            cm.setText(accountData);
-            Toast.makeText(getApplicationContext(), "Cuenta copiada :)", Toast.LENGTH_SHORT).show();
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(accountData);
+            new FlashBarBuilder(getActivity(),getString(R.string.snackbar_information_copy)).getConfirmationSnackBar().show();
         });
 
         indicatorSeekBar.setOnSeekChangeListener(new OnSeekChangeListener() {

@@ -3,7 +3,6 @@ package com.ucm.informatica.spread.Fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,17 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -41,6 +35,7 @@ import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MapFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.View.MapFragmentView;
 
 import java.util.HashMap;
@@ -51,9 +46,10 @@ import java.util.Objects;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
+import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
+import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
-import static com.ucm.informatica.spread.Model.LocationMode.Manual;
-import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_END;
 import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_START;
@@ -62,11 +58,6 @@ import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGIT
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
-
-
-import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
-import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Utils.Constants.Map.ZOOM_MARKER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
@@ -181,7 +172,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
                     pinMode = PinMode.Poster;
                 }
                 mapFragmentPresenter.popUpDialog(pinMode, title, null
-                        , getLayoutInflater(),new AlertDialog.Builder(getContext()).create());
+                        , getLayoutInflater(),new AlertDialog.Builder(getActivity()).create());
                 return false;
             }
         });
@@ -202,14 +193,15 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapView.getMapAsync(mp -> {
             mapboxMap = mp;
             mapboxMap.setStyle(MAP_STYLE, style -> mapFragmentPresenter.getPolygonLayer(style, regionMap));
+            mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
             mapboxMap.addOnCameraMoveListener(() -> {
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 LatLng startCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
-                        (cameraStartDelimit.getLeft(), cameraStartDelimit.getTop()));
+                        (cameraStartDelimit.getLeft(), cameraStartDelimit.getBottom()));
                 LatLng endCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
-                        (cameraEndDelimit.getRight() , cameraEndDelimit.getBottom()));
+                        (cameraEndDelimit.getRight() , cameraEndDelimit.getTop()));
 
                 editor.putString(CAMERA_BOUND_LATITUDE_START, Double.toString(startCameraBoundLocation.getLatitude()));
                 editor.putString(CAMERA_BOUND_LATITUDE_END,  Double.toString(endCameraBoundLocation.getLatitude()));
@@ -219,6 +211,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
                 editor.apply();
 
             });
+            initRegionMap();
             mapFragmentPresenter.start();
         });
     }
@@ -237,18 +230,11 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     @Override
     public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert){
-        IconFactory iconFactory = IconFactory.getInstance(Objects.requireNonNull(getActivity()));
-        Icon icon;
-        if(isAlert){
-            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_alert));
-        } else{
-            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_poster));
-        }
-
         mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)
-                .icon(icon)
+                .icon(isAlert?IconFactory.getInstance(getActivity()).fromResource(R.drawable.ic_pin_alert):
+                        IconFactory.getInstance(getActivity()).fromResource(R.drawable.ic_pin_poster))
                 .snippet(markerDescription));
         regionMap = mapFragmentPresenter.getUpdatedContainedPointsInRegionMap(Point.fromLngLat(longitude,latitude),regionMap);
     }
@@ -286,12 +272,12 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     @Override
     public void showSendConfirmation(){
-        ((MainTabActivity) Objects.requireNonNull(getActivity())).getInformationSnackBar().show();
+        new FlashBarBuilder(getActivity(), getString(R.string.snackbar_information_transaction)).getConfirmationSnackBar().show();
     }
 
     @Override
     public void showErrorTransaction(int text) {
-        ((MainTabActivity) Objects.requireNonNull(getActivity())).getErrorSnackBar(text).show();
+        new FlashBarBuilder(getActivity()).getErrorSnackBar(text).show();
     }
 
     @Override
@@ -312,9 +298,16 @@ public class MapFragment extends Fragment implements MapFragmentView {
         }
     }
 
+    public void initRegionMap() {
+        regionMap = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonData();
+        for(Map.Entry<Point, Region> entry : ((Map<Point, Region>)regionMap).entrySet()){
+            entry.getValue().initContainedPoints();
+        }
+    }
+
     public void renderContentWithPicture(Bitmap imageBitmap){
         mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster),
-                imageBitmap, getLayoutInflater(),new AlertDialog.Builder(getContext()).create());
+                imageBitmap, getLayoutInflater(), new AlertDialog.Builder(getActivity()).create());
     }
 
     public void showSelectedLocation(Double latitude, Double longitude) {

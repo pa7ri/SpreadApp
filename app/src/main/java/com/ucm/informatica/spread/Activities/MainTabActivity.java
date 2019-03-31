@@ -39,6 +39,7 @@ import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.CustomTabLayoutOnPageChangeListener;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
@@ -142,12 +143,12 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     public void showErrorTransaction() {
-        getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+        new FlashBarBuilder(this).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 
     @Override
     public void showConfirmationTransaction() {
-        getConfirmationSnackBar().show();
+        new FlashBarBuilder(this).getConfirmationSnackBar().show();
     }
 
     @Override
@@ -299,82 +300,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
         dialogBuilder.setContentView(dialogView);
         dialogBuilder.show();
-    }
-
-    public Flashbar getInformationSnackBar(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_information_transaction))
-                .messageColorRes(R.color.snackbarConfirmColor)
-                .build();
-    }
-
-    public Flashbar getAlertSnackBarGPS(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .showIcon()
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_alert_gps))
-                .build();
-    }
-
-    public Flashbar getErrorSnackBar(int text){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(text))
-                .messageColorRes(R.color.snackbarAlertColor)
-                .build();
-    }
-
-    public Flashbar getConfirmationSnackBar(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_confirmation_transaction))
-                .messageColorRes(R.color.snackbarConfirmColor)
-                .build();
     }
 
     public void showSelectedLocation(Double latitude, Double longitude){

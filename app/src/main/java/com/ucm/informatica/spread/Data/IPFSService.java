@@ -2,6 +2,7 @@ package com.ucm.informatica.spread.Data;
 
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Model.Poster;
+import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MainTabView;
 
 import io.ipfs.kotlin.defaults.InfuraIPFS;

@@ -22,6 +22,10 @@ public class Region {
         return polygonCoordinatesList;
     }
 
+    public void initContainedPoints(){
+        countContainedPoints=0;
+    }
+
     public void increaseContainedPoints(){
         countContainedPoints++;
     }
