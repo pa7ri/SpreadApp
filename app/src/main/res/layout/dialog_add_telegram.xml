@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -40,11 +39,24 @@
         android:hint="@string/telegram_chat_hint"
         android:padding="@dimen/smallMargin"
         android:maxLines="1"
+        android:inputType="numberSigned"
         android:textColor="@color/secondaryTextColor"
         android:textColorHint="@color/hintTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chatNameEditText" />
+
+
+    <TextView
+        android:id="@+id/passwordErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:text="@string/error_invalid_chat_id"
+        android:visibility="gone"
+        android:textColor="@color/snackbarAlertColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chatIdEditText" />
 
 
     <View
@@ -55,7 +67,7 @@
         android:layout_marginTop="@dimen/smallMargin"
         android:background="@drawable/dotted_line"
         android:layerType="software"
-        app:layout_constraintTop_toBottomOf="@+id/chatIdEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordErrorText" />
 
     <TextView
         android:id="@+id/telegramTitleTextView"

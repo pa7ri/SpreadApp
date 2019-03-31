@@ -12,7 +12,6 @@
 
     <!-- LOGIN -->
     <string name="prompt_password">Contraseña</string>
-    <string name="error_invalid_password">Debe tener entre 8 y 20 caracteres</string>
 
     <!-- TABS TITLE -->
     <string name="tab_text_home">Home</string>
@@ -102,5 +101,8 @@
     <string name="login_info_second_section_description_2">Si no tienes unan cuenta previa, puedes comprar ether para esta cuenta.</string>
     <string name="snackbar_information_copy">Cuenta copiada  😊 </string>
 
+    <!-- ERROR -->
+    <string name="error_invalid_password">Debe tener entre 8 y 20 caracteres</string>
+    <string name="error_invalid_chat_id">Debe ser un identificador válido</string>
 
 </resources>

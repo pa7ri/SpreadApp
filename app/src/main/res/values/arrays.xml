@@ -2,8 +2,8 @@
 <resources>
     <array name="tick_below_text">
         <item>Nadie</item>
-        <item>100m</item>
-        <item>300m</item>
-        <item>1km</item>
+        <item>Cerca</item>
+        <item>Medio</item>
+        <item>Lejos</item>
     </array>
 </resources>
