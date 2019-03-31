@@ -25,12 +25,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.andrognito.flashbar.Flashbar;
-import com.andrognito.flashbar.anim.FlashAnim;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mapbox.geojson.Point;
-import com.ucm.informatica.spread.Contracts.AlertContract;
+import com.ucm.informatica.spread.Data.LocationService;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
@@ -52,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.LOCATION_SERVICE_STARTED;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
@@ -63,7 +62,6 @@ import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILENAME;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_PASSWORD;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
-
 
     private MainTabPresenter mainPresenter;
 
@@ -78,6 +76,9 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private CustomLocationListener locationListener;
     private SharedPreferences sharedPreferences;
+
+    private Boolean isLocationServiceStarted = false;
+
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -107,6 +108,18 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             mainPresenter = new MainTabPresenter(this);
             mainPresenter.start();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startLocationService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopLocationService();
+        super.onDestroy();
     }
 
     @Override
@@ -178,25 +191,47 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     public void initNotificationService() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new CustomLocationListener(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
-    }
-
-    @Override
-    public void initLocationService() {
         createNotificationChannel();
         FirebaseApp.initializeApp(this);
         FirebaseInstanceId.getInstance()
                 .getInstanceId()
                 .addOnSuccessListener(this, instanceIdResult -> {});
+        }
+
+    public void startLocationService() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+
+        isLocationServiceStarted = sharedPreferences.getBoolean(LOCATION_SERVICE_STARTED, false);
+        //start local location listener
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new CustomLocationListener(this);
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
+
+        if (!isLocationServiceStarted) {
+            //start background Service
+            Intent intent = new Intent(this, LocationService.class);
+            startService(intent);
+            isLocationServiceStarted = true;
+            sharedPreferences.edit().putBoolean(LOCATION_SERVICE_STARTED, isLocationServiceStarted).apply();
+        }
     }
+
+    public void stopLocationService() {
+        isLocationServiceStarted = sharedPreferences.getBoolean(LOCATION_SERVICE_STARTED, false);
+        if (isLocationServiceStarted) {
+            Intent intent = new Intent(this, LocationService.class);
+            stopService(intent);
+            isLocationServiceStarted = false;
+            sharedPreferences.edit().putBoolean(LOCATION_SERVICE_STARTED, isLocationServiceStarted).apply();
+        }
+    }
+
 
     @Override
     public void createNotificationChannel() {
@@ -226,15 +261,18 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         }
     }
 
-    public void saveDataPoster(String posterJson){
-        mainPresenter.onSaveDataPoster(posterJson);
+    public void saveDataPoster(String t, String d, String lat, String longi, byte[] image){
+        String date = String.valueOf(System.currentTimeMillis());
+        Poster poster = new Poster(t,d,lat,longi,date, image);
+        dataPosterSmartContractList.add(poster);
+        mainPresenter.onSaveDataPoster(poster.toJson());
     }
 
     public void saveDataAlert(String t, String d, String lat, String longi){
-        mainPresenter.onSaveDataAlert(t,d,lat,longi);
+        String date = String.valueOf(System.currentTimeMillis());
+        dataAlertSmartContractList.add(new Alert(t,d,lat,longi,date));
+        mainPresenter.onSaveDataAlert(t,d,lat,longi,date);
     }
-
-    public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
 
     public Map getPolygonData() {
         return regionMap;
@@ -312,10 +350,12 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             getSupportFragmentManager().getFragments().clear();
         }
         fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+
         for(int i=0; i< NUMBER_TABS; i++){
             fragmentAdapter.addFragment(mainPresenter.getFragment(i));
         }
         fragmentViewPager.setAdapter(fragmentAdapter);
+        fragmentViewPager.setOffscreenPageLimit(4);
         fragmentAdapter.notifyDataSetChanged();
     }
 
@@ -352,13 +392,13 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 regionMap.put(centroid, new Region(polyCoordList));
             }
         } catch (IOException e) {
-            Log.e("TAG",e.getMessage());
+            Log.e("READ COORDINATES",e.getMessage());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Log.e("TAG",e.getMessage());
+                    Log.e("READ COORDINATES",e.getMessage());
                 }
             }
         }

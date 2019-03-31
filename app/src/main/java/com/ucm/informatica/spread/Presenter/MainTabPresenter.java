@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -84,7 +85,6 @@ public class MainTabPresenter {
 
         mainTabView.initNotificationService();
         initEthConnection();
-        mainTabView.initLocationService();
     }
 
     public Fragment getFragment(int position) {
@@ -143,9 +143,6 @@ public class MainTabPresenter {
                             String filenameWallet = mainTabView.getFilenameWalletLocally();
                             if (filenameWallet != null && !filenameWallet.isEmpty()) {
                                 localWallet.setCredentials(localWallet.loadWallet(walletPath,filenameWallet));
-                                mainTabView.initView();
-                                mainTabView.hideLoading();
-
                                 loadData();
                             }
                     }
@@ -175,7 +172,7 @@ public class MainTabPresenter {
     }
 
     private void loadData() {
-        if(alertContract == null) { //|| !nameContract.isValid()) {
+        if(alertContract == null) {
             alertContract = getAlertContract();
         }
         alertContract.getAlertsCount().observable()
@@ -202,7 +199,7 @@ public class MainTabPresenter {
                     },
                     (error) -> mainTabView.showErrorTransaction()
                 );
-        if(posterContract == null) { //|| !nameContract.isValid()) {
+        if(posterContract == null) {
             posterContract = getPosterContract();
         }
         posterContract.getPostersCount().observable()
@@ -211,11 +208,13 @@ public class MainTabPresenter {
                 .subscribe(
                     (countCoords) -> {
                         for(int i=0; i<countCoords.intValue(); i++){
+                            int finalI = i;
                             posterContract.getPosterByIndex(BigInteger.valueOf(i)).observable()
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
-                                        (resultHash) -> ipfsService.getDataFromHash(resultHash)
+                                        (resultHash) -> ipfsService.getDataFromHash(resultHash,
+                                                    finalI, countCoords.intValue())
                                         ,
                                         (error) -> mainTabView.showErrorTransaction()
                                     );
@@ -225,11 +224,11 @@ public class MainTabPresenter {
                 );
     }
 
-    public void onSaveDataAlert(String title, String description, String latitude, String longitude){
+    public void onSaveDataAlert(String title, String description, String latitude, String longitude, String date){
         if(alertContract == null) {
             alertContract = getAlertContract();
         }
-        alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
+        alertContract.addAlert(title,description,latitude,longitude, date).observable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

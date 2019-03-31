@@ -180,6 +180,7 @@ public class MapFragmentPresenter {
                     saveData(titleText,descriptionText,
                             Double.toString(latestLocation.getLongitude()),
                             Double.toString(latestLocation.getLatitude()));
+
                 } else {
                     mapFragmentView.showErrorTransaction(R.string.location_no_available);
                     onSwitchLocationMode();
@@ -207,9 +208,8 @@ public class MapFragmentPresenter {
                 break;
             }
             case Poster: {
-                Poster samplePoster = new Poster(title, description,  latitude, longitude,
-                        String.valueOf(System.currentTimeMillis()), bitmapToByteArray(posterImage));
-                mapFragmentView.saveDataPoster(samplePoster.toJson());
+                mapFragmentView.saveDataPoster(title, description,  latitude,
+                        longitude, bitmapToByteArray(posterImage));
                 break;
             }
         }

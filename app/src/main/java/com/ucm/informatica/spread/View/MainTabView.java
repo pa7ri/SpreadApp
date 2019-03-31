@@ -20,8 +20,6 @@ public interface MainTabView {
 
     void initNotificationService();
 
-    void initLocationService();
-
     void createNotificationChannel();
 
     String getFilenameWalletLocally();

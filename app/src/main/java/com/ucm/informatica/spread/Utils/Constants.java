@@ -46,6 +46,7 @@ public final class Constants {
 
     public static final class LocalPreferences {
         public static final String ONBOARDING_COMPLETE = "ONBOARDING_COMPLETE";
+        public static final String LOCATION_SERVICE_STARTED = "LOCATION_SERVICE_STARTED";
 
         public static final String NOTIFICATION_TOPIC_PREF = "NOTIFICATION_TOPIC_PREF";
 

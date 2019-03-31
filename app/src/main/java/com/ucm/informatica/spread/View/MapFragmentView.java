@@ -20,7 +20,7 @@ public interface MapFragmentView {
 
     void saveDataAlert(String title, String description, String latitude, String longitude);
 
-    void saveDataPoster(String poster);
+    void saveDataPoster(String title, String description, String latitude, String longitude, byte[] image);
 
     void buildPicturePicker(int requestImagePoster);
 

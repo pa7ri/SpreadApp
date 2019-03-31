@@ -125,7 +125,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private void initProfilePhoto(){
         try {
             Random rand = new Random();
-            int index = rand.nextInt(15);
+            int index = rand.nextInt(24);
             InputStream ims = getActivity().getAssets().open("monster/monster-"+index+".png");
             Drawable d = Drawable.createFromStream(ims, null);
             profileImage.setForeground(d);

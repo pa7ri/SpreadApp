@@ -246,8 +246,9 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     @Override
-    public void saveDataPoster(String poster) {
-        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataPoster(poster);
+    public void saveDataPoster(String title, String description, String latitude, String longitude, byte[] image) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataPoster(title,
+                description,latitude,longitude,image);
     }
 
     @Override

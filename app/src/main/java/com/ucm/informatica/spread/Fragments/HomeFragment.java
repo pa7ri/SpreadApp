@@ -54,18 +54,12 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     }
 
     @Override
-    public CustomLocationListener getCustomLocationListener() {
-        return ((MainTabActivity) getActivity()).getCustomLocationListener();
-    }
-
-    @Override
     public void setupListeners(){
         helpButton.setOnLikeEventListener(new AndroidLikeButton.OnLikeEventListener() {
             @Override
             public void onLikeClicked(AndroidLikeButton androidLikeButton) {
                 androidLikeButton.setCurrentlyLiked(false);
-                Location location = ((MainTabActivity) getActivity()).getCustomLocationListener().getLatestLocation();
-                homeFragmentPresenter.onHelpButtonPressed(location,getResources(),
+                homeFragmentPresenter.onHelpButtonPressed(((MainTabActivity) getActivity()).getCustomLocationListener(),getResources(),
                         getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE));
             }
 

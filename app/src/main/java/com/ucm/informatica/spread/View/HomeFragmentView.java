@@ -1,7 +1,5 @@
 package com.ucm.informatica.spread.View;
 
-import com.ucm.informatica.spread.Utils.CustomLocationListener;
-
 public interface HomeFragmentView {
 
     void initView();
@@ -15,6 +13,4 @@ public interface HomeFragmentView {
     void showSendConfirmation();
 
     void saveData(String title, String description, String latitude, String longitude);
-
-    CustomLocationListener getCustomLocationListener();
 }

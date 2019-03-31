@@ -54,7 +54,7 @@ public class IPFSService {
                 );
     }
 
-    public void getDataFromHash(String hash){
+    public void getDataFromHash(String hash, int index, int total){
         Observable.just(ipfs.getGet())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(
@@ -65,6 +65,10 @@ public class IPFSService {
                                     result -> {
                                         Poster poster = new Poster(result);
                                         mainTabview.loadDataPosterIPFS(poster);
+                                        if(index==total-1) {
+                                            mainTabview.initView();
+                                            mainTabview.hideLoading();
+                                        }
                                     },
                                     error -> mainTabview.showErrorTransaction()
                                 ),

@@ -74,10 +74,11 @@ public class HomeFragmentPresenter {
     }
 
 
-    public void onHelpButtonPressed(Location location, Resources resources, SharedPreferences sharedPreferences) {
+    public void onHelpButtonPressed(CustomLocationListener locationListener, Resources resources, SharedPreferences sharedPreferences) {
+        Location location = locationListener.getLatestLocation();
         if(location != null) {
             sendTelegramNotification(location, sharedPreferences);
-            sendPushNotification(location, sharedPreferences);
+            sendPushNotification(locationListener, sharedPreferences);
             homeFragmentView.showSendConfirmation();
             homeFragmentView.saveData(resources.getString(R.string.button_help),
                     resources.getString(R.string.button_help_description),
@@ -88,15 +89,15 @@ public class HomeFragmentPresenter {
         }
     }
 
-    private void sendPushNotification(Location location, SharedPreferences sharedPreferences) {
+    private void sendPushNotification(CustomLocationListener locationListener, SharedPreferences sharedPreferences) {
         currentTopic=0;
-        sendBroadcastToTopics(location,sharedPreferences);
+        sendBroadcastToTopics(locationListener,sharedPreferences);
     }
 
-    private void sendBroadcastToTopics(Location location,SharedPreferences sharedPreferences) {
+    private void sendBroadcastToTopics(CustomLocationListener locationListener,SharedPreferences sharedPreferences) {
         Map<String, String> data = new ArrayMap<>();
 
-        CustomLocationListener locationListener = homeFragmentView.getCustomLocationListener();
+        Location location = locationListener.getLatestLocation();
         locationListener.unregisterLastNotificationTopic(location);
         data.put(NOTIFICATION_DATA, notificationToJson(location.getLatitude(),
                 location.getLongitude(), sharedPreferences));
@@ -115,7 +116,7 @@ public class HomeFragmentPresenter {
                     @Override
                     public void onCompleted() {
                         if((radius==2 && currentTopic<10) || (radius==3 && currentTopic<100)){
-                            sendBroadcastToTopics(location,sharedPreferences);
+                            sendBroadcastToTopics(locationListener,sharedPreferences);
                         } else {
                             locationListener.registerNewNotificationTopic(location);
                         }
