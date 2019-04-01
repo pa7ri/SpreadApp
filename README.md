@@ -23,9 +23,9 @@
 
 ## Credits 
 
-Megaphone and map marker icons made by [freepik](https://www.freepik.com/) from [flaticon](www.flaticon.com) 
-Monster icons made by [smashicons](https://smashicons.com/) from [flaticon](www.flaticon.com) 
-The rest of resources were taken from Android Material Design.
+- Megaphone and map marker icons made by [freepik](https://www.freepik.com/) from [flaticon](www.flaticon.com) 
+- Monster icons made by [smashicons](https://smashicons.com/) from [flaticon](www.flaticon.com) 
+- The rest of resources were taken from Android Material Design.
 
 ## License
 
