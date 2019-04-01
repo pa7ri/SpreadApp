@@ -5,6 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,19 +23,28 @@ import android.widget.TextView;
 
 import com.ucm.informatica.spread.Presenter.ProfileFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.TelegramRecyclerAdapter;
 import com.ucm.informatica.spread.View.ProfileFragmentView;
 import com.ucm.informatica.spread.Model.Colours;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
+import static android.view.View.VISIBLE;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_END;
+import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_START;
 
 public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
     private Button editProfileButton;
     private Button saveProfileButton;
+    private Button editTelegramGroupButton;
+
     private Button[] shirtButton = new Button[Colours.values().length];
     private Button[] pantsButton = new Button[Colours.values().length];
     private Button editWatchwordButton;
@@ -45,6 +61,10 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private ImageView profileImage;
     private Colours shirtColour = Colours.NA;
     private Colours pantsColour = Colours.NA;
+
+    private RecyclerView telegramRecyclerView;
+    private List<Pair<String, String>> telegramGroupList;
+
 
     private View view;
 
@@ -74,6 +94,9 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     public void initView(){
         editProfileButton = view.findViewById(R.id.editProfileButton);
         saveProfileButton = view.findViewById(R.id.saveProfileButton);
+        editTelegramGroupButton = view.findViewById(R.id.editTelegramGroupButton);
+        telegramRecyclerView = view.findViewById(R.id.telegramGroupRecyclewView);
+
         editWatchwordButton = view.findViewById(R.id.editWatchwordButton);
         saveWatchwordButton = view.findViewById(R.id.saveWatchwordButton);
         profileImage = view.findViewById(R.id.imageProfileView);
@@ -91,16 +114,24 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         editWatchwordResponse = view.findViewById(R.id.editWatchwordResponseDescription);
     }
 
+    private void initTelegramGroups() {
+        telegramRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        TelegramRecyclerAdapter adapter = new TelegramRecyclerAdapter(getContext(), telegramGroupList);
+        telegramRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        telegramRecyclerView.setAdapter(adapter);
+    }
+
+
     private void initProfilePhoto(){
         try {
             Random rand = new Random();
-            int index = rand.nextInt(15);
+            int index = rand.nextInt(24);
             InputStream ims = getActivity().getAssets().open("monster/monster-"+index+".png");
             Drawable d = Drawable.createFromStream(ims, null);
             profileImage.setForeground(d);
         }
         catch(IOException e) {
-            Log.e("Profile picture", e.getMessage());
+            Log.e("PROFILE PICTURE", e.getMessage());
         }
     }
 
@@ -137,28 +168,82 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         for(int i=0; i<Colours.values().length; i++){
             pantsButton[i].setOnClickListener(view -> profileFragmentPresenter.onPantsPressed());
         }
+
+        editTelegramGroupButton.setOnClickListener(view -> {
+            final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext())).create();
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_add_telegram, null);
+
+            EditText chatNameEditText, chatIdEditText;
+            TextView passwordErrorText;
+            Button storeButton, cancelButton;
+            chatNameEditText = dialogView.findViewById(R.id.chatNameEditText);
+            chatIdEditText = dialogView.findViewById(R.id.chatIdEditText);
+            storeButton = dialogView.findViewById(R.id.storeButton);
+            cancelButton = dialogView.findViewById(R.id.cancelButton);
+            passwordErrorText = dialogView.findViewById(R.id.passwordErrorText);
+
+            chatIdEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    passwordErrorText.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) { }
+            });
+            storeButton.setOnClickListener(v -> {
+                if(!chatIdEditText.getText().toString().isEmpty()
+                        && !chatNameEditText.getText().toString().isEmpty()
+                        && !chatNameEditText.getText().toString().matches("-?\\d+(\\.\\d+)?")) {
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt(TELEGRAM_GROUPS_NUMBER_PREF, telegramGroupList.size()+1);
+                    editor.putString(TELEGRAM_GROUP_NAME_PREF + telegramGroupList.size(),
+                            chatNameEditText.getText().toString());
+                    editor.putString(TELEGRAM_GROUP_CHAT_ID_PREF + telegramGroupList.size(),
+                            chatIdEditText.getText().toString());
+                    editor.apply();
+
+                    telegramGroupList.add(new Pair<>(chatNameEditText.getText().toString(),
+                            chatIdEditText.getText().toString()));
+
+                    telegramRecyclerView.getAdapter().notifyDataSetChanged();
+                    dialogBuilder.dismiss();
+                } else {
+                    passwordErrorText.setVisibility(VISIBLE);
+                }
+            });
+            cancelButton.setOnClickListener(v -> dialogBuilder.dismiss());
+
+            dialogBuilder.setView(dialogView);
+            dialogBuilder.show();
+        });
     }
 
     @Override
     public void onRenderView(Boolean edit) {
         if (edit) {
             editProfileButton.setVisibility(View.GONE);
-            saveProfileButton.setVisibility(View.VISIBLE);
+            saveProfileButton.setVisibility(VISIBLE);
             nameText.setVisibility(View.GONE);
             ageText.setVisibility(View.GONE);
             editName.setText(nameText.getText());
             editAge.setText(ageText.getText());
-            editName.setVisibility(View.VISIBLE);
-            editAge.setVisibility(View.VISIBLE);
+            editName.setVisibility(VISIBLE);
+            editAge.setVisibility(VISIBLE);
         } else{
-            editProfileButton.setVisibility(View.VISIBLE);
+            editProfileButton.setVisibility(VISIBLE);
             saveProfileButton.setVisibility(View.GONE);
             if(!editName.getText().toString().isEmpty())
                 nameText.setText(editName.getText());
             if(!editAge.getText().toString().isEmpty())
                 ageText.setText(editAge.getText());
-            nameText.setVisibility(View.VISIBLE);
-            ageText.setVisibility(View.VISIBLE);
+            nameText.setVisibility(VISIBLE);
+            ageText.setVisibility(VISIBLE);
             editName.setVisibility(View.GONE);
             editAge.setVisibility(View.GONE);
         }
@@ -177,22 +262,22 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     public void onRenderWatchwordView(Boolean edit) {
         if (edit) {
             editWatchwordButton.setVisibility(View.GONE);
-            saveWatchwordButton.setVisibility(View.VISIBLE);
+            saveWatchwordButton.setVisibility(VISIBLE);
             watchwordMessageText.setVisibility(View.GONE);
             watchwordResponseText.setVisibility(View.GONE);
             editWatchwordMessage.setText(watchwordMessageText.getText());
             editWatchwordResponse.setText(watchwordResponseText.getText());
-            editWatchwordMessage.setVisibility(View.VISIBLE);
-            editWatchwordResponse.setVisibility(View.VISIBLE);
+            editWatchwordMessage.setVisibility(VISIBLE);
+            editWatchwordResponse.setVisibility(VISIBLE);
         } else{
-            editWatchwordButton.setVisibility(View.VISIBLE);
+            editWatchwordButton.setVisibility(VISIBLE);
             saveWatchwordButton.setVisibility(View.GONE);
             if(!editWatchwordMessage.getText().toString().isEmpty())
                 watchwordMessageText.setText(editWatchwordMessage.getText());
             if(!editWatchwordResponse.getText().toString().isEmpty())
                 watchwordResponseText.setText(editWatchwordResponse.getText());
-            watchwordMessageText.setVisibility(View.VISIBLE);
-            watchwordResponseText.setVisibility(View.VISIBLE);
+            watchwordMessageText.setVisibility(VISIBLE);
+            watchwordResponseText.setVisibility(VISIBLE);
             editWatchwordMessage.setVisibility(View.GONE);
             editWatchwordResponse.setVisibility(View.GONE);
         }
@@ -214,13 +299,22 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         pantsColour = Colours.values()[sharedPreferences.getInt(PANTS_PREF, 0)];
         watchwordMessageText.setText(sharedPreferences.getString(KEY_PREF, ""));
         watchwordResponseText.setText(sharedPreferences.getString(RESPONSE_PREF, ""));
+
+        telegramGroupList = new ArrayList<>();
+        int numTelegramGroups = sharedPreferences.getInt(TELEGRAM_GROUPS_NUMBER_PREF, 0);
+        for(int i=0; i<numTelegramGroups; i++) {
+            telegramGroupList.add(new Pair<>(
+                    sharedPreferences.getString(TELEGRAM_GROUP_NAME_PREF+i, "Grupo "+i),
+                    sharedPreferences.getString(TELEGRAM_GROUP_CHAT_ID_PREF+i, "")));
+        }
+        initTelegramGroups();
     }
 
     public void refreshView(){
         shirtButton[0].setVisibility(View.GONE);
-        shirtButton[shirtColour.ordinal()].setVisibility(View.VISIBLE);
+        shirtButton[shirtColour.ordinal()].setVisibility(VISIBLE);
         pantsButton[0].setVisibility(View.GONE);
-        pantsButton[pantsColour.ordinal()].setVisibility(View.VISIBLE);
+        pantsButton[pantsColour.ordinal()].setVisibility(VISIBLE);
     }
 
     public void changeShirt(Colours colour){
@@ -230,7 +324,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             shirtButton[Colours.values().length-1].setVisibility(View.GONE);
         else
             shirtButton[colour.ordinal()-1].setVisibility(View.GONE);
-        shirtButton[colour.ordinal()].setVisibility(View.VISIBLE);
+        shirtButton[colour.ordinal()].setVisibility(VISIBLE);
 
         editor.putInt(TSHIRT_PREF, colour.ordinal());
         editor.apply();
@@ -243,7 +337,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             pantsButton[Colours.values().length-1].setVisibility(View.GONE);
         else
             pantsButton[colour.ordinal()-1].setVisibility(View.GONE);
-        pantsButton[colour.ordinal()].setVisibility(View.VISIBLE);
+        pantsButton[colour.ordinal()].setVisibility(VISIBLE);
 
         editor.putInt(PANTS_PREF, colour.ordinal());
         editor.apply();

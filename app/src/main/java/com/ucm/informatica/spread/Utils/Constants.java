@@ -10,6 +10,8 @@ public final class Constants {
     public static final int REQUEST_IMAGE_POSTER_GALLERY = 2;
 
     public static final String INFURA_PATH = "https://rinkeby.infura.io/v3/";
+    public static final String API_TELEGRAM_URL = "https://api.telegram.org/bot840390970:AAGDD_DX9E8ucSPB95XZxOtR6T21dHJr9Qc/"; //TODO
+    //https://api.telegram.org/bot840390970:AAGDD_DX9E8ucSPB95XZxOtR6T21dHJr9Qc/sendMessage?chat_id=-342148486&text=hola
     public static final String INFURA_PUBLIC_PROYECT_ADDRESS = "2dde3de7006043b88fb4e35189745853";
 
     public static final class Contract {
@@ -38,10 +40,14 @@ public final class Constants {
     }
 
     public static final class Wallet {
-        public static final String WALLET_FILE = "personalWallet";
+        public static final String WALLET_FILENAME = "WALLET_FILENAME";
+        public static final String WALLET_PASSWORD = "WALLET_PASSWORD";
     }
 
     public static final class LocalPreferences {
+        public static final String ONBOARDING_COMPLETE = "ONBOARDING_COMPLETE";
+        public static final String LOCATION_SERVICE_STARTED = "LOCATION_SERVICE_STARTED";
+
         public static final String NOTIFICATION_TOPIC_PREF = "NOTIFICATION_TOPIC_PREF";
 
         public static final String PROFILE_PREF = "PROFILE_PREF";
@@ -52,6 +58,12 @@ public final class Constants {
         public static final String PANTS_PREF = "PANTS_PREF";
         public static final String KEY_PREF = "KEY_PREF";
         public static final String RESPONSE_PREF = "RESPONSE_PREF";
+
+        public static final String TELEGRAM_GROUPS_NUMBER_PREF = "TELEGRAM_GROUPS_NUMBER_PREF";
+        public static final String TELEGRAM_GROUP_NAME_PREF = "TELEGRAM_GROUP_NAME_PREF";
+        public static final String TELEGRAM_GROUP_CHAT_ID_PREF = "TELEGRAM_GROUP_CHAT_ID_PREF";
+
+        public static final String RADIUS_PREF = "RADIUS_PREF";
     }
 
     public static final class Notifications {

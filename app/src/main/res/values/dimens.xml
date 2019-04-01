@@ -35,5 +35,8 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="largeText">70sp</dimen>
     <dimen name="app_icon_side">55dp</dimen>
+    <dimen name="side_icon_medium">150dp</dimen>
+    <dimen name="side_icon_large">250dp</dimen>
+    <dimen name="side_icon_large_frame">280dp</dimen>
 
 </resources>

@@ -11,10 +11,13 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
@@ -58,7 +61,6 @@ import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GA
 public class MainTabPresenter {
 
     private MainTabView mainTabView;
-    private MainTabActivity context;
     private String walletPath;
 
     private LocalWallet localWallet;
@@ -68,47 +70,21 @@ public class MainTabPresenter {
     private PosterContract posterContract;
     private SmartContract smartContract;
 
-    private CustomLocationListener locationListener;
     private Bitmap imageBitmap;
 
     private IPFSService ipfsService;
 
-
-    public MainTabPresenter(MainTabView mainTabView, MainTabActivity context){
+    public MainTabPresenter(MainTabView mainTabView){
         this.mainTabView = mainTabView;
-        this.context = context;
         this.ipfsService = new IPFSService(mainTabView);
     }
 
-    public void start(String path){
-        walletPath = path;
+    public void start(){
+        walletPath = mainTabView.getWalletFilePath();
         mainTabView.showLoading();
-        initLocationManager();
-        initNotificationService();
+
+        mainTabView.initNotificationService();
         initEthConnection();
-    }
-
-    private void initNotificationService(){
-        createNotificationChannel();
-        FirebaseInstanceId.getInstance()
-            .getInstanceId()
-            .addOnSuccessListener(context, instanceIdResult -> {});
-    }
-
-    public CustomLocationListener getLocationListener() {
-        return locationListener;
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Alertas emergencia";
-            String description = "Notificar a los usuarios si hay alguien en peligro cerca";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     public Fragment getFragment(int position) {
@@ -127,7 +103,7 @@ public class MainTabPresenter {
                 fragment = new HistoricalFragment();
                 break;
             default:
-                fragment = SettingsFragment.newInstance(getAddress(), "password", getBalance());
+                fragment = SettingsFragment.newInstance(getAddress(), mainTabView.getPasswordLocally(), getBalance());
                 break;
         }
         return fragment;
@@ -153,19 +129,8 @@ public class MainTabPresenter {
 
     }
 
-    private void initLocationManager() {
-        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        locationListener = new CustomLocationListener(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( context,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-    }
-
     private void initEthConnection() {
-        localWallet = new LocalWallet(context);
+        localWallet = new LocalWallet(mainTabView.getPasswordLocally());
         if(web3j == null) {
             web3j = Web3jFactory.build(new HttpService(Constants.INFURA_PATH + Constants.INFURA_PUBLIC_PROYECT_ADDRESS));
         }
@@ -175,29 +140,21 @@ public class MainTabPresenter {
                 .subscribe(new Observer<Web3ClientVersion>() {
                     @Override
                     public void onCompleted() {
-                            if (!localWallet.existWallet()) {
-                                localWallet.createWallet(localWallet.getPasswordWallet(), walletPath);
-                            }
-                            String filenameWallet = localWallet.getFilenameWallet();
-                            String passwordWallet = localWallet.getPasswordWallet();
+                            String filenameWallet = mainTabView.getFilenameWalletLocally();
                             if (filenameWallet != null && !filenameWallet.isEmpty()) {
-                                localWallet.setCredentials(localWallet.loadWallet(passwordWallet, walletPath));
-                                localWallet.loadContract(web3j);
-                                mainTabView.initView();
-                                mainTabView.hideLoading();
-
+                                localWallet.setCredentials(localWallet.loadWallet(walletPath,filenameWallet));
                                 loadData();
                             }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("TAG",e.getMessage());
+                        Log.e("ERROR WEB3 CONNECTION",e.getMessage());
                     }
 
                     @Override
                     public void onNext(Web3ClientVersion web3ClientVersion) {
-                        Log.i("Conectado a %s", web3ClientVersion.getWeb3ClientVersion());
+                        Log.i("CONNECTED TO %s", web3ClientVersion.getWeb3ClientVersion());
                     }
                 });
     }
@@ -214,13 +171,9 @@ public class MainTabPresenter {
         return posterContract;
     }
 
-    public Location getLatestLocation() {
-        return locationListener.getLatestLocation();
-    }
-
     private void loadData() {
-        if(alertContract == null) { //|| !nameContract.isValid()) {
-            alertContract = context.getAlertContract();
+        if(alertContract == null) {
+            alertContract = getAlertContract();
         }
         alertContract.getAlertsCount().observable()
                 .subscribeOn(Schedulers.newThread())
@@ -246,8 +199,8 @@ public class MainTabPresenter {
                     },
                     (error) -> mainTabView.showErrorTransaction()
                 );
-        if(posterContract == null) { //|| !nameContract.isValid()) {
-            posterContract = context.getPosterContract();
+        if(posterContract == null) {
+            posterContract = getPosterContract();
         }
         posterContract.getPostersCount().observable()
                 .subscribeOn(Schedulers.newThread())
@@ -255,11 +208,13 @@ public class MainTabPresenter {
                 .subscribe(
                     (countCoords) -> {
                         for(int i=0; i<countCoords.intValue(); i++){
+                            int finalI = i;
                             posterContract.getPosterByIndex(BigInteger.valueOf(i)).observable()
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
-                                        (resultHash) -> ipfsService.getDataFromHash(resultHash)
+                                        (resultHash) -> ipfsService.getDataFromHash(resultHash,
+                                                    finalI, countCoords.intValue())
                                         ,
                                         (error) -> mainTabView.showErrorTransaction()
                                     );
@@ -269,11 +224,11 @@ public class MainTabPresenter {
                 );
     }
 
-    public void onSaveDataAlert(String title, String description, String latitude, String longitude){
+    public void onSaveDataAlert(String title, String description, String latitude, String longitude, String date){
         if(alertContract == null) {
             alertContract = getAlertContract();
         }
-        alertContract.addAlert(title,description,latitude,longitude, String.valueOf(System.currentTimeMillis())).observable()
+        alertContract.addAlert(title,description,latitude,longitude, date).observable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -289,7 +244,6 @@ public class MainTabPresenter {
         }
         ipfsService.addStringGetHash(posterJson, posterContract);
     }
-
 
     public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
                                        ContentResolver contentResolver, Fragment updatedFragment,
@@ -315,7 +269,4 @@ public class MainTabPresenter {
 
         }
     }
-
-
-
 }

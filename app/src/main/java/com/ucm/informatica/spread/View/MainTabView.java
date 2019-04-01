@@ -17,4 +17,14 @@ public interface MainTabView {
     void showLoading();
 
     void hideLoading();
+
+    void initNotificationService();
+
+    void createNotificationChannel();
+
+    String getFilenameWalletLocally();
+
+    String getWalletFilePath();
+
+    String getPasswordLocally();
 }

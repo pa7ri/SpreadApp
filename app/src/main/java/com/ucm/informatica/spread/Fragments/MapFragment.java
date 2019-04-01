@@ -3,12 +3,13 @@ package com.ucm.informatica.spread.Fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,10 +19,8 @@ import android.widget.ImageView;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -29,22 +28,28 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.LocationMode;
 import com.ucm.informatica.spread.Model.PinMode;
+import com.ucm.informatica.spread.Model.Poster;
 import com.ucm.informatica.spread.Model.Region;
 import com.ucm.informatica.spread.Presenter.MapFragmentPresenter;
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.View.MapFragmentView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
+import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
+import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Model.LocationMode.Auto;
-import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_END;
 import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_START;
@@ -53,12 +58,8 @@ import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGIT
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
 import static com.ucm.informatica.spread.Utils.Constants.Map.POLYGON_LAYER;
-
-
-import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
-import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 import static com.ucm.informatica.spread.Utils.Constants.Map.ZOOM_MARKER;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
 public class MapFragment extends Fragment implements MapFragmentView {
 
@@ -76,7 +77,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     private View cameraStartDelimit, cameraEndDelimit;
 
-    private Map<Point, Region> regionMap = new HashMap<>();
+    private Map regionMap = new HashMap<>();
 
 
     public MapFragment() { }
@@ -91,7 +92,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
                              Bundle savedInstanceState) {
         Mapbox.getInstance(Objects.requireNonNull(getContext()), MAP_TOKEN);
         view = inflater.inflate(R.layout.fragment_map, container, false);
-        mapFragmentPresenter = new MapFragmentPresenter(this,this);
+        mapFragmentPresenter = new MapFragmentPresenter(this);
 
         regionMap = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonData();
         
@@ -170,7 +171,8 @@ public class MapFragment extends Fragment implements MapFragmentView {
                     title = getString(R.string.button_add_pin_poster);
                     pinMode = PinMode.Poster;
                 }
-                mapFragmentPresenter.popUpDialog(pinMode, title, null);
+                mapFragmentPresenter.popUpDialog(pinMode, title, null
+                        , getLayoutInflater(),new AlertDialog.Builder(getActivity()).create());
                 return false;
             }
         });
@@ -191,14 +193,15 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapView.getMapAsync(mp -> {
             mapboxMap = mp;
             mapboxMap.setStyle(MAP_STYLE, style -> mapFragmentPresenter.getPolygonLayer(style, regionMap));
+            mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
             mapboxMap.addOnCameraMoveListener(() -> {
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 LatLng startCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
-                        (cameraStartDelimit.getLeft(), cameraStartDelimit.getTop()));
+                        (cameraStartDelimit.getLeft(), cameraStartDelimit.getBottom()));
                 LatLng endCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
-                        (cameraEndDelimit.getRight() , cameraEndDelimit.getBottom()));
+                        (cameraEndDelimit.getRight() , cameraEndDelimit.getTop()));
 
                 editor.putString(CAMERA_BOUND_LATITUDE_START, Double.toString(startCameraBoundLocation.getLatitude()));
                 editor.putString(CAMERA_BOUND_LATITUDE_END,  Double.toString(endCameraBoundLocation.getLatitude()));
@@ -208,6 +211,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
                 editor.apply();
 
             });
+            initRegionMap();
             mapFragmentPresenter.start();
         });
     }
@@ -226,31 +230,55 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     @Override
     public void showNewMarkerIntoMap(double latitude, double longitude, String markerTitle, String markerDescription, boolean isAlert){
-        IconFactory iconFactory = IconFactory.getInstance((MainTabActivity) getActivity());
-        Icon icon;
-        if(isAlert){
-            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_alert));
-        } else{
-            icon = iconFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_pin_poster));
-        }
-
         mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)
-                .icon(icon)
+                .icon(isAlert?IconFactory.getInstance(getActivity()).fromResource(R.drawable.ic_pin_alert):
+                        IconFactory.getInstance(getActivity()).fromResource(R.drawable.ic_pin_poster))
                 .snippet(markerDescription));
         regionMap = mapFragmentPresenter.getUpdatedContainedPointsInRegionMap(Point.fromLngLat(longitude,latitude),regionMap);
     }
 
 
     @Override
+    public void saveDataAlert(String title, String description, String latitude, String longitude) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataAlert(title,description,latitude,longitude);
+    }
+
+    @Override
+    public void saveDataPoster(String title, String description, String latitude, String longitude, byte[] image) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataPoster(title,
+                description,latitude,longitude,image);
+    }
+
+    @Override
+    public void buildPicturePicker(int requestImagePoster) {
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+    }
+
+    @Override
+    public List<Alert> getAlerts() {
+        return ((MainTabActivity) Objects.requireNonNull(getActivity())).getDataAlertSmartContract();
+    }
+
+    @Override
+    public List<Poster> getPosters() {
+        return ((MainTabActivity) Objects.requireNonNull(getActivity())).getDataPosterSmartContract();
+    }
+
+    @Override
+    public Location getLatestLocation() {
+        return ((MainTabActivity) Objects.requireNonNull(getActivity())).getCustomLocationListener().getLatestLocation();
+    }
+
+    @Override
     public void showSendConfirmation(){
-        ((MainTabActivity) getActivity()).getInformationSnackBar().show();
+        new FlashBarBuilder(getActivity(), getString(R.string.snackbar_information_transaction)).getConfirmationSnackBar().show();
     }
 
     @Override
     public void showErrorTransaction(int text) {
-        ((MainTabActivity) getActivity()).getErrorSnackBar(text).show();
+        new FlashBarBuilder(getActivity()).getErrorSnackBar(text).show();
     }
 
     @Override
@@ -271,8 +299,16 @@ public class MapFragment extends Fragment implements MapFragmentView {
         }
     }
 
+    public void initRegionMap() {
+        regionMap = ((MainTabActivity) Objects.requireNonNull(getActivity())).getPolygonData();
+        for(Map.Entry<Point, Region> entry : ((Map<Point, Region>)regionMap).entrySet()){
+            entry.getValue().initContainedPoints();
+        }
+    }
+
     public void renderContentWithPicture(Bitmap imageBitmap){
-        mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster), imageBitmap);
+        mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster),
+                imageBitmap, getLayoutInflater(), new AlertDialog.Builder(getActivity()).create());
     }
 
     public void showSelectedLocation(Double latitude, Double longitude) {

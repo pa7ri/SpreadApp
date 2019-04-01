@@ -1,14 +1,20 @@
 package com.ucm.informatica.spread.Activities;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,11 +25,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.andrognito.flashbar.Flashbar;
-import com.andrognito.flashbar.anim.FlashAnim;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.mapbox.geojson.Point;
-import com.ucm.informatica.spread.Contracts.AlertContract;
-import com.ucm.informatica.spread.Contracts.PosterContract;
+import com.ucm.informatica.spread.Data.LocationService;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
@@ -32,9 +37,10 @@ import com.ucm.informatica.spread.Presenter.MainTabPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
 import com.ucm.informatica.spread.Utils.CustomTabLayoutOnPageChangeListener;
-import com.ucm.informatica.spread.View.MainTabView;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.Utils.ViewPagerAdapter;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
+import com.ucm.informatica.spread.View.MainTabView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,19 +50,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.LOCATION_SERVICE_STARTED;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.NUMBER_TABS;
-import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_MESSAGE;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILENAME;
+import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_PASSWORD;
 
 public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
-
     private MainTabPresenter mainPresenter;
 
-    private RelativeLayout relativeLayout;
+    private RelativeLayout loadingLayout;
     private ViewPagerTab fragmentViewPager;
     private ViewPagerAdapter fragmentAdapter;
 
@@ -64,6 +73,12 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     private List<Alert> dataAlertSmartContractList = new ArrayList<>();
     private List<Poster> dataPosterSmartContractList = new ArrayList<>();
+
+    private CustomLocationListener locationListener;
+    private SharedPreferences sharedPreferences;
+
+    private Boolean isLocationServiceStarted = false;
+
 
     private int[] tabIcons = {
             R.drawable.ic_home,
@@ -86,11 +101,25 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
+        sharedPreferences =  getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         if(!isNotificationIntent()) {
+            loadingLayout=findViewById(R.id.loadingAnimationLayout); //as exception
             readPolygonCoordinates();
-            mainPresenter = new MainTabPresenter(this, this);
-            mainPresenter.start(getFilesDir().getAbsolutePath());
+            mainPresenter = new MainTabPresenter(this);
+            mainPresenter.start();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startLocationService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopLocationService();
+        super.onDestroy();
     }
 
     @Override
@@ -127,28 +156,99 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
     @Override
     public void showErrorTransaction() {
-        getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+        new FlashBarBuilder(this).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 
     @Override
     public void showConfirmationTransaction() {
-        getConfirmationSnackBar().show();
+        new FlashBarBuilder(this).getConfirmationSnackBar().show();
     }
 
     @Override
     public void showLoading() {
-       relativeLayout=findViewById(R.id.loadingAnimationLayout);
-       relativeLayout.setVisibility(View.VISIBLE);
+       loadingLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-       relativeLayout.setVisibility(View.GONE);
+       loadingLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public String getWalletFilePath() {
+        return getFilesDir().getAbsolutePath();
+    }
+
+    @Override
+    public String getPasswordLocally() {
+        return sharedPreferences.getString(WALLET_PASSWORD, "");
+    }
+
+    @Override
+    public String getFilenameWalletLocally() {
+        return sharedPreferences.getString(WALLET_FILENAME, "");
+    }
+
+    @Override
+    public void initNotificationService() {
+        createNotificationChannel();
+        FirebaseApp.initializeApp(this);
+        FirebaseInstanceId.getInstance()
+                .getInstanceId()
+                .addOnSuccessListener(this, instanceIdResult -> {});
+        }
+
+    public void startLocationService() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+
+        isLocationServiceStarted = sharedPreferences.getBoolean(LOCATION_SERVICE_STARTED, false);
+        //start local location listener
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new CustomLocationListener(this);
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
+
+        if (!isLocationServiceStarted) {
+            //start background Service
+            Intent intent = new Intent(this, LocationService.class);
+            startService(intent);
+            isLocationServiceStarted = true;
+            sharedPreferences.edit().putBoolean(LOCATION_SERVICE_STARTED, isLocationServiceStarted).apply();
+        }
+    }
+
+    public void stopLocationService() {
+        isLocationServiceStarted = sharedPreferences.getBoolean(LOCATION_SERVICE_STARTED, false);
+        if (isLocationServiceStarted) {
+            Intent intent = new Intent(this, LocationService.class);
+            stopService(intent);
+            isLocationServiceStarted = false;
+            sharedPreferences.edit().putBoolean(LOCATION_SERVICE_STARTED, isLocationServiceStarted).apply();
+        }
+    }
+
+
+    @Override
+    public void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alertas emergencia";
+            String description = "Notificar a los usuarios si hay alguien en peligro cerca";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private boolean isNotificationIntent() {
         Intent intent = getIntent();
-        if (intent != null && intent.getExtras() != null) {
+        if (intent != null && intent.getExtras() != null && intent.getExtras().get(NOTIFICATION_MESSAGE)!= null) {
             String notificationMessageJsonObject = intent.getExtras().get(NOTIFICATION_MESSAGE).toString();
 
             Intent notificationIntent = new Intent(this, AlertDetailsActivity.class);
@@ -161,17 +261,18 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         }
     }
 
-    public void saveDataPoster(String posterJson){
-        mainPresenter.onSaveDataPoster(posterJson);
+    public void saveDataPoster(String t, String d, String lat, String longi, byte[] image){
+        String date = String.valueOf(System.currentTimeMillis());
+        Poster poster = new Poster(t,d,lat,longi,date, image);
+        dataPosterSmartContractList.add(poster);
+        mainPresenter.onSaveDataPoster(poster.toJson());
     }
 
     public void saveDataAlert(String t, String d, String lat, String longi){
-        mainPresenter.onSaveDataAlert(t,d,lat,longi);
+        String date = String.valueOf(System.currentTimeMillis());
+        dataAlertSmartContractList.add(new Alert(t,d,lat,longi,date));
+        mainPresenter.onSaveDataAlert(t,d,lat,longi,date);
     }
-
-    public AlertContract getAlertContract() { return mainPresenter.getAlertContract(); }
-
-    public PosterContract getPosterContract() { return mainPresenter.getPosterContract(); }
 
     public Map getPolygonData() {
         return regionMap;
@@ -185,8 +286,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         return dataPosterSmartContractList;
     }
 
-    public Location getLocation() {
-        return mainPresenter.getLatestLocation();
+    public CustomLocationListener getCustomLocationListener(){
+        return locationListener;
     }
 
     public void createPictureIntentPicker(int mode){
@@ -239,86 +340,6 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         dialogBuilder.show();
     }
 
-    public Flashbar getInformationSnackBar(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_information_transaction))
-                .messageColorRes(R.color.snackbarConfirmColor)
-                .build();
-    }
-
-    public Flashbar getAlertSnackBarGPS(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .showIcon()
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_alert_gps))
-                .build();
-    }
-
-    public Flashbar getErrorSnackBar(int text){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(text))
-                .messageColorRes(R.color.snackbarAlertColor)
-                .build();
-    }
-
-    public Flashbar getConfirmationSnackBar(){
-        return new Flashbar.Builder(this)
-                .gravity(Flashbar.Gravity.BOTTOM)
-                .duration(2500)
-                .enterAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(750)
-                        .alpha()
-                        .overshoot())
-                .exitAnimation(FlashAnim.with(this)
-                        .animateBar()
-                        .duration(450)
-                        .accelerateDecelerate())
-                .backgroundColorRes(R.color.snackbarBackground)
-                .message(getString(R.string.snackbar_confirmation_transaction))
-                .messageColorRes(R.color.snackbarConfirmColor)
-                .build();
-    }
-
-    public CustomLocationListener getCustomLocationListener(){
-        return mainPresenter.getLocationListener();
-    }
-
     public void showSelectedLocation(Double latitude, Double longitude){
         fragmentViewPager.setCurrentItem(2); //force Map
         ((MapFragment) fragmentAdapter.getItem(2)).showSelectedLocation(latitude, longitude);
@@ -329,10 +350,12 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
             getSupportFragmentManager().getFragments().clear();
         }
         fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+
         for(int i=0; i< NUMBER_TABS; i++){
             fragmentAdapter.addFragment(mainPresenter.getFragment(i));
         }
         fragmentViewPager.setAdapter(fragmentAdapter);
+        fragmentViewPager.setOffscreenPageLimit(4);
         fragmentAdapter.notifyDataSetChanged();
     }
 
@@ -369,16 +392,15 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 regionMap.put(centroid, new Region(polyCoordList));
             }
         } catch (IOException e) {
-            Log.e("TAG",e.getMessage());
+            Log.e("READ COORDINATES",e.getMessage());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Log.e("TAG",e.getMessage());
+                    Log.e("READ COORDINATES",e.getMessage());
                 }
             }
         }
     }
-
 }

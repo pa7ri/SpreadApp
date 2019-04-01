@@ -2,6 +2,7 @@ package com.ucm.informatica.spread.Data;
 
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Model.Poster;
+import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.MainTabView;
 
 import io.ipfs.kotlin.defaults.InfuraIPFS;
@@ -53,7 +54,7 @@ public class IPFSService {
                 );
     }
 
-    public void getDataFromHash(String hash){
+    public void getDataFromHash(String hash, int index, int total){
         Observable.just(ipfs.getGet())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(
@@ -64,6 +65,10 @@ public class IPFSService {
                                     result -> {
                                         Poster poster = new Poster(result);
                                         mainTabview.loadDataPosterIPFS(poster);
+                                        if(index==total-1) {
+                                            mainTabview.initView();
+                                            mainTabview.hideLoading();
+                                        }
                                     },
                                     error -> mainTabview.showErrorTransaction()
                                 ),

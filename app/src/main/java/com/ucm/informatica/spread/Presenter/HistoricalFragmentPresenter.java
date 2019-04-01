@@ -6,14 +6,13 @@ import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Model.Alert;
 import com.ucm.informatica.spread.Model.Poster;
-import com.ucm.informatica.spread.Utils.CustomRecyclerAdapter;
+import com.ucm.informatica.spread.Utils.HistoricalRecyclerAdapter;
 import com.ucm.informatica.spread.View.HistoricalFragmentView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HistoricalFragmentPresenter {
-
 
     private HistoricalFragmentView historicalFragmentView;
     private HistoricalFragment historicalFragment;
@@ -33,22 +32,22 @@ public class HistoricalFragmentPresenter {
 
         filterItemsByCameraBounds(cameraBounds);
 
-        CustomRecyclerAdapter customRecyclerAdapter = new CustomRecyclerAdapter(historicalFragment.getContext(),
+        HistoricalRecyclerAdapter historicalRecyclerAdapter = new HistoricalRecyclerAdapter(historicalFragment.getContext(),
                 (MainTabActivity) historicalFragment.getActivity(), historicalAlertList, historicalPosterList);
-        historicalFragmentView.initView(customRecyclerAdapter);
+        historicalFragmentView.initView(historicalRecyclerAdapter);
     }
 
     private void filterItemsByCameraBounds(Pair<Pair<Double,Double>,Pair<Double,Double>> cameraBounds){
         List<Alert> alertList = new ArrayList<>();
         List<Poster> posterList = new ArrayList<>();
         for (Alert alert : historicalAlertList) {
-            if(alert.getLatitude()<cameraBounds.first.first && alert.getLatitude()>cameraBounds.first.second
+            if(alert.getLatitude()>cameraBounds.first.first && alert.getLatitude()<cameraBounds.first.second
                     && alert.getLongitude()>cameraBounds.second.first && alert.getLongitude()<cameraBounds.second.second) {
                 alertList.add(alert);
             }
         }
         for (Poster poster : historicalPosterList) {
-            if(poster.getLatitude()<cameraBounds.first.first && poster.getLatitude()>cameraBounds.first.second
+            if(poster.getLatitude()>cameraBounds.first.first && poster.getLatitude()<cameraBounds.first.second
                     && poster.getLongitude()>cameraBounds.second.first && poster.getLongitude()<cameraBounds.second.second) {
                 posterList.add(poster);
             }

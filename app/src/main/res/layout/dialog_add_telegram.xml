@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:text="@string/add_telegram_group"
+        android:textColor="@color/backgroundColorDark"
+        android:textSize="@dimen/mediumText"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/chatNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="@dimen/smallMargin"
+        android:hint="@string/telegram_chat_name_hint"
+        android:maxLines="1"
+        android:padding="@dimen/smallMargin"
+        android:textColor="@color/secondaryTextColor"
+        android:textColorHint="@color/hintTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/chatIdEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/smallMargin"
+        android:hint="@string/telegram_chat_hint"
+        android:padding="@dimen/smallMargin"
+        android:maxLines="1"
+        android:inputType="numberSigned"
+        android:textColor="@color/secondaryTextColor"
+        android:textColorHint="@color/hintTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chatNameEditText" />
+
+
+    <TextView
+        android:id="@+id/passwordErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:text="@string/error_invalid_chat_id"
+        android:visibility="gone"
+        android:textColor="@color/snackbarAlertColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chatIdEditText" />
+
+
+    <View
+        android:id="@+id/dottedLine"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginHorizontal="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:background="@drawable/dotted_line"
+        android:layerType="software"
+        app:layout_constraintTop_toBottomOf="@+id/passwordErrorText" />
+
+    <TextView
+        android:id="@+id/telegramTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:text="@string/telegram_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dottedLine" />
+
+    <TextView
+        android:id="@+id/telegramDescriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:layout_marginHorizontal="@dimen/mediumMargin"
+        android:layout_marginBottom="@dimen/mediumMargin"
+        android:text="@string/telegram_description"
+        android:textSize="@dimen/smallText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/telegramTitleTextView" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/smallMargin"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/telegramDescriptionTextView">
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:layout_weight="1"
+            android:background="@color/backgroundColorDark"
+            android:text="@string/button_cancel"
+            android:textColor="@color/mainTextColor" />
+
+        <Button
+            android:id="@+id/storeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:layout_weight="1"
+            android:background="@color/backgroundColor"
+            android:text="@string/button_save"
+            android:textColor="@color/mainTextColor" />
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

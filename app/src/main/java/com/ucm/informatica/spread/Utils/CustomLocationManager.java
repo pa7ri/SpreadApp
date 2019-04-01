@@ -17,7 +17,7 @@ public class CustomLocationManager {
         this.context = context;
     }
 
-    private Address getAddress(Double latitude, Double longitude){
+    public Address getAddress(Double latitude, Double longitude){
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -36,6 +36,10 @@ public class CustomLocationManager {
                 + address.getCountryName();
     }
 
+    public String getLineAddress(Double latitude, Double longitude){
+        Address address = getAddress(latitude, longitude);
+        return address.getAddressLine(0);
+    }
 
     public String getPostalCode(Location location){
         Address address = getAddress(location.getLatitude(), location.getLongitude());

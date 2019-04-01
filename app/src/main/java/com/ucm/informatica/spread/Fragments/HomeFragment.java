@@ -14,6 +14,8 @@ import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HomeFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.CustomLocationListener;
+import com.ucm.informatica.spread.Utils.CustomLocationManager;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
@@ -40,7 +42,7 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
         homeFragmentPresenter = new HomeFragmentPresenter(this,
-                    ((MainTabActivity) getActivity()).getAlertContract());
+                new CustomLocationManager(getContext()));
         homeFragmentPresenter.start();
         return view;
     }
@@ -52,18 +54,12 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
     }
 
     @Override
-    public CustomLocationListener getCustomLocationListener() {
-        return ((MainTabActivity) getActivity()).getCustomLocationListener();
-    }
-
-    @Override
     public void setupListeners(){
         helpButton.setOnLikeEventListener(new AndroidLikeButton.OnLikeEventListener() {
             @Override
             public void onLikeClicked(AndroidLikeButton androidLikeButton) {
                 androidLikeButton.setCurrentlyLiked(false);
-                Location location = ((MainTabActivity) getActivity()).getLocation();
-                homeFragmentPresenter.onHelpButtonPressed(location,getResources(),
+                homeFragmentPresenter.onHelpButtonPressed(((MainTabActivity) getActivity()).getCustomLocationListener(),getResources(),
                         getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE));
             }
 
@@ -72,25 +68,28 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
                 androidLikeButton.setCurrentlyLiked(false);
             }
         });
-    }
-
-    @Override
-    public void showConfirmationTransaction() {
-        ((MainTabActivity) getActivity()).showConfirmationTransaction();
+        cameraButton.setOnClickListener(view -> {
+            ((MainTabActivity) getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+        });
     }
 
     @Override
     public void showErrorTransaction() {
-        ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+        new FlashBarBuilder(getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 
     @Override
     public void showErrorGPS() {
-        ((MainTabActivity) getActivity()).getAlertSnackBarGPS().show();
+        new FlashBarBuilder(getActivity()).getAlertSnackBarGPS().show();
     }
 
     @Override
     public void showSendConfirmation() {
-        ((MainTabActivity) getActivity()).getInformationSnackBar().show();
+        new FlashBarBuilder(getActivity(),getString(R.string.snackbar_information_transaction)).getConfirmationSnackBar().show();
+    }
+
+    @Override
+    public void saveData(String title, String description, String latitude, String logitude) {
+        ((MainTabActivity) getActivity()).saveDataAlert(title, description, latitude, logitude);
     }
 }

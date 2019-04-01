@@ -51,5 +51,4 @@ public class Poster extends Alert {
             return "";
         }
     }
-
 }

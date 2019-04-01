@@ -1,5 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.content.ClipData;
+import android.content.SharedPreferences;
 import android.text.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,8 +13,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ucm.informatica.spread.R;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
+import com.warkiz.widget.IndicatorSeekBar;
+import com.warkiz.widget.OnSeekChangeListener;
+import com.warkiz.widget.SeekParams;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RADIUS_PREF;
 
 
 public class SettingsFragment extends Fragment {
@@ -28,6 +37,9 @@ public class SettingsFragment extends Fragment {
     private TextView passwordText;
     private TextView balanceText;
 
+    private IndicatorSeekBar indicatorSeekBar;
+
+    private SharedPreferences sharedPreferences;
 
     public SettingsFragment() { }
 
@@ -55,6 +67,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         initView(view);
         initContent();
         setupListeners();
@@ -65,19 +78,37 @@ public class SettingsFragment extends Fragment {
         accountText = v.findViewById(R.id.walletAccountDescription);
         passwordText = v.findViewById(R.id.walletPasswordDescription);
         balanceText = v.findViewById(R.id.walletBalanceDescription);
+        indicatorSeekBar = v.findViewById(R.id.radiusSeekBar);
     }
 
     private void initContent(){
         accountText.setText(accountData.length()>22 ? accountData.substring(0,22) + "..." : accountData);
         passwordText.setText(passwordData);
         balanceText.setText(balanceData);
+        indicatorSeekBar.setProgress(sharedPreferences.getInt(RADIUS_PREF, 1));
+        indicatorSeekBar.setIndicatorTextFormat("${TICK_TEXT}");
     }
 
     private void setupListeners(){
         accountText.setOnClickListener(view -> {
-            ClipboardManager cm = (ClipboardManager)getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
-            cm.setText(accountData);
-            Toast.makeText(getApplicationContext(), "Cuenta copiada :)", Toast.LENGTH_SHORT).show();
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(accountData);
+            new FlashBarBuilder(getActivity(),getString(R.string.snackbar_information_copy)).getConfirmationSnackBar().show();
+        });
+
+        indicatorSeekBar.setOnSeekChangeListener(new OnSeekChangeListener() {
+            @Override
+            public void onSeeking(SeekParams seekParams) { }
+
+            @Override
+            public void onStartTrackingTouch(IndicatorSeekBar seekBar) { }
+
+            @Override
+            public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(RADIUS_PREF, seekBar.getProgress());
+                editor.apply();
+            }
         });
     }
 }

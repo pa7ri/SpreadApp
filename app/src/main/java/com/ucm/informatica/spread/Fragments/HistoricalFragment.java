@@ -15,8 +15,11 @@ import android.view.ViewGroup;
 import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HistoricalFragmentPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.Utils.CustomRecyclerAdapter;
+import com.ucm.informatica.spread.Utils.FlashBarBuilder;
+import com.ucm.informatica.spread.Utils.HistoricalRecyclerAdapter;
 import com.ucm.informatica.spread.View.HistoricalFragmentView;
+
+import java.util.Objects;
 
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LATITUDE_END;
@@ -28,7 +31,7 @@ public class HistoricalFragment extends Fragment implements HistoricalFragmentVi
 
     private HistoricalFragmentPresenter historicalFramentPresenter;
     private RecyclerView historicalListView;
-
+    private SharedPreferences sharedPreferences;
     private View view;
 
 
@@ -43,17 +46,19 @@ public class HistoricalFragment extends Fragment implements HistoricalFragmentVi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_historical, container, false);
+        sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         return view;
     }
     @Override
     public void onStart(){
         super.onStart();
+
         historicalFramentPresenter = new HistoricalFragmentPresenter(this,this);
         historicalFramentPresenter.start(getCameraBounds());
     }
 
     @Override
-    public void initView(CustomRecyclerAdapter adapter) {
+    public void initView(HistoricalRecyclerAdapter adapter) {
         historicalListView = view.findViewById(R.id.historicalListView);
 
         historicalListView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -64,15 +69,14 @@ public class HistoricalFragment extends Fragment implements HistoricalFragmentVi
 
     @Override
     public void showErrorTransaction() {
-        ((MainTabActivity) getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
+        new FlashBarBuilder(getActivity()).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }
 
     private Pair<Pair<Double,Double>,Pair<Double,Double>> getCameraBounds(){
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
-        Pair<Double,Double> latitudeBound = new Pair<>(Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LATITUDE_START, "40")),
-                Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LATITUDE_END, "41")));
-        Pair<Double,Double> longitudeBound = new Pair<>(Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LONGITUDE_START, "-3")),
-                Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LONGITUDE_END, "-4")));
+        Pair<Double,Double> latitudeBound = new Pair<>(Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LATITUDE_START, "-90")),
+                Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LATITUDE_END, "90")));
+        Pair<Double,Double> longitudeBound = new Pair<>(Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LONGITUDE_START, "-180")),
+                Double.valueOf(sharedPreferences.getString(CAMERA_BOUND_LONGITUDE_END, "180")));
         return new Pair<>(latitudeBound,longitudeBound);
     }
 }
