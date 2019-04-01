@@ -1,6 +1,6 @@
 # TFG
 
-## Contributing : 
+## Contributing
 - Create new branch for the task:
   - Format := ID-'taskDescription'
     - ID from [pivotalTracker](https://www.pivotaltracker.com/n/projects/2208687)
@@ -20,6 +20,12 @@
     ```  
 - Before creating a new pull request, make sure master content is updated into the branch.
 - Merge to *Master* if the PR got at least one approved response
+
+## Credits 
+
+Megaphone and map marker icons made by [freepik](https://www.freepik.com/) from [flaticon](www.flaticon.com) 
+Monster icons made by [smashicons](https://smashicons.com/) from [flaticon](www.flaticon.com) 
+The rest of resources were taken from Android Material Design.
 
 ## License
 
