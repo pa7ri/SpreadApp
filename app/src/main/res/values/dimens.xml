@@ -10,6 +10,7 @@
 
 
     <!-- Image Dimensions -->
+    <dimen name="smallIcon">15dp</dimen>
     <dimen name="iconSide">32dp</dimen>
     <dimen name="markerSide">48dp</dimen>
 

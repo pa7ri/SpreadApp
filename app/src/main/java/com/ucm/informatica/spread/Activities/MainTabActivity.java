@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -352,7 +353,10 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
         fragmentAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         for(int i=0; i< NUMBER_TABS; i++){
-            fragmentAdapter.addFragment(mainPresenter.getFragment(i));
+            Fragment fragment = mainPresenter.getFragment(i);
+            if(!((Fragment) fragment).isAdded()) {
+                fragmentAdapter.addFragment(mainPresenter.getFragment(i));
+            }
         }
         fragmentViewPager.setAdapter(fragmentAdapter);
         fragmentViewPager.setOffscreenPageLimit(4);

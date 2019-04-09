@@ -12,6 +12,16 @@
 
     <!-- LOGIN -->
     <string name="prompt_password">Contraseña</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="ethereum_info_title">Esta aplicación usa Ethereum</string>
+    <string name="login_info_title">Información sobre la aplicación</string>
+    <string name="login_info_first_section_title">Esta aplicación funciona sobre Ethereum por eso hay ciertas funcionalidades que necesitan el consumo de ether :</string>
+    <string name="login_info_first_section_description_1">Las alertas tanto por la aplicación como por Telegram y la consulta en el mapa NO consumen ether.</string>
+    <string name="login_info_first_section_description_2">Dejar guardardas tus alertas para que el resto pueda consultarlas SÍ consume ether.</string>
+    <string name="login_info_second_section_title">¿Cómo consigo tener ether?</string>
+    <string name="login_info_second_section_description_1">Si ya tienes una cuenta con ether, haz una transacción a la cuenta creada por la aplicación, puedes enocntrar la dirección en el apartado de Ajustes</string>
+    <string name="login_info_second_section_description_2">Si no tienes unan cuenta previa, puedes comprar ether para esta cuenta.</string>
+
 
     <!-- TABS TITLE -->
     <string name="tab_text_home">Home</string>
@@ -34,6 +44,16 @@
     <string name="profile_watchword_first">Mensaje</string>
     <string name="profile_watchword_second">Respuesta</string>
     <string name="profile_contact">Contactos</string>
+
+    <string name="telegram_title">¿Cómo registro mi grupo de Telegram?</string>
+    <string name="telegram_description">Lo primero es saber que será un bot el que notifique en tu nombre, necesita saber a quién, ayúdale : \n
+     1. Añade <b>@spread_notifications_bot</b> a tu grupo como si fuese un contacto más. \n
+     2. Pregúntale cuál el identificador del grupo, escribiendo en el chat <b>/getChat.</b> \n
+     3. Dale el nombre con el que quieras guardarlo. </string>
+    <string name="add_telegram_group">Añade un grupo de Telegram</string>
+    <string name="telegram_chat_hint">ID del grupo</string>
+    <string name="telegram_chat_name_hint">Nombre del grupo</string>
+
 
     <!-- MAP -->
     <string name="action_settings">Settings</string>
@@ -59,8 +79,8 @@
     <string name="settings_wallet_password">Contraseña :</string>
     <string name="settings_wallet_balance">Saldo disponible :</string>
     <string name="radius_title">Radio de alcance :</string>
-    <string name="radius_min">100 m</string>
-    <string name="radius_max">5 km</string>
+
+    <string name="snackbar_information_copy">Cuenta copiada  😊 </string>
 
     <!-- ACTIONS -->
     <string name="button_send">Enviar</string>
@@ -81,28 +101,11 @@
     <string name="snackbar_information_transaction">Tu petición se ha enviado</string>
     <string name="snackbar_confirmation_transaction">Guardado correctamente</string>
     <string name="place_title">Lugar</string>
-    <string name="profile_telegram_group">Grupos de Telegram</string>
-    <string name="telegram_title">¿Cómo registro mi grupo de Telegram?</string>
-    <string name="telegram_description">Lo primero es saber que será un bot el que notifique en tu nombre, necesita saber a quién, ayúdale : \n
-     1. Añade <b>@spread_notifications_bot</b> a tu grupo como si fuese un contacto más. \n
-     2. Pregúntale cuál el identificador del grupo, escribiendo en el chat <b>/getChat.</b> \n
-     3. Dale el nombre con el que quieras guardarlo. </string>
-    <string name="add_telegram_group">Añade un grupo de Telegram</string>
-    <string name="telegram_chat_hint">ID del grupo</string>
-    <string name="telegram_chat_name_hint">Nombre del grupo</string>
-    <string name="title_activity_login">Sign in</string>
-    <string name="ethereum_info_title">Esta aplicación usa Ethereum</string>
-    <string name="login_info_title">Información sobre la aplicación</string>
-    <string name="login_info_first_section_title">Esta aplicación funciona sobre Ethereum por eso hay ciertas funcionalidades que necesitan el consumo de ether :</string>
-    <string name="login_info_first_section_description_1">Las alertas tanto por la aplicación como por Telegram y la consulta en el mapa NO consumen ether.</string>
-    <string name="login_info_first_section_description_2">Dejar guardardas tus alertas para que el resto pueda consultarlas SÍ consume ether.</string>
-    <string name="login_info_second_section_title">¿Cómo consigo tener ether?</string>
-    <string name="login_info_second_section_description_1">Si ya tienes una cuenta con ether, haz una transacción a la cuenta creada por la aplicación, puedes enocntrar la dirección en el apartado de Ajustes</string>
-    <string name="login_info_second_section_description_2">Si no tienes unan cuenta previa, puedes comprar ether para esta cuenta.</string>
-    <string name="snackbar_information_copy">Cuenta copiada  😊 </string>
+
 
     <!-- ERROR -->
     <string name="error_invalid_password">Debe tener entre 8 y 20 caracteres</string>
     <string name="error_invalid_chat_id">Debe ser un identificador válido</string>
+    <string name="settings_radius_info">Ten en cuenta que <b> Nadie </b> no avisa a desconocidos, pero sí a tus contactos predefinidos.</string>
 
 </resources>

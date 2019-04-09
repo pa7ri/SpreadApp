@@ -483,7 +483,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/mediumMargin"
-            android:text="@string/profile_telegram_group"
+            android:text="@string/profile_contact"
             android:textSize="@dimen/msmallText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/view2" />
