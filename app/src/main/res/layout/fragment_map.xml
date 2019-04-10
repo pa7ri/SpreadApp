@@ -9,12 +9,11 @@
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="380dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         mapbox:mapbox_cameraTargetLat="@dimen/madLat"
         mapbox:mapbox_cameraTargetLng="@dimen/madLong"
-        mapbox:mapbox_cameraZoom="11"
-        tools:layout_editor_absoluteX="4dp" />
+        mapbox:mapbox_cameraZoom="11" />
 
     <ImageView
         android:id="@+id/markerImage"

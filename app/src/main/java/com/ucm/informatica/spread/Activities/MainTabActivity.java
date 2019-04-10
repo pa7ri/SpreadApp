@@ -354,8 +354,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
 
         for(int i=0; i< NUMBER_TABS; i++){
             Fragment fragment = mainPresenter.getFragment(i);
-            if(!((Fragment) fragment).isAdded()) {
-                fragmentAdapter.addFragment(mainPresenter.getFragment(i));
+            if(!fragment.isAdded()) {
+                fragmentAdapter.addFragment(fragment);
             }
         }
         fragmentViewPager.setAdapter(fragmentAdapter);

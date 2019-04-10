@@ -27,8 +27,8 @@ public class CustomLocationListener implements LocationListener {
         //Colegio : 40.449010, -3.720407
         // FDI : 40.452687, -3.733738
         latestLocation = new Location("");
-        latestLocation.setLatitude(40.449010);
-        latestLocation.setLongitude(-3.720407);
+        latestLocation.setLatitude(40.452687);
+        latestLocation.setLongitude(-3.733738);
     }
 
     @Override

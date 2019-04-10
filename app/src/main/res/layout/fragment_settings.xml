@@ -23,7 +23,6 @@
         android:layout_width="@dimen/smallIcon"
         android:layout_height="@dimen/smallIcon"
         android:layout_marginStart="@dimen/smallMargin"
-        android:layout_marginTop="@dimen/smallMargin"
         android:background="@drawable/ic_info"
         android:backgroundTint="@color/hintTextColor"
         app:layout_constraintStart_toEndOf="@+id/walletTitle"
@@ -146,15 +145,12 @@
 
     <TextView
         android:id="@+id/radiusInfo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/mediumMargin"
         android:layout_marginHorizontal="@dimen/mediumMargin"
         android:text="@string/settings_radius_info"
-        android:textSize="@dimen/smallText"
-        android:textColor="@color/snackbarAlertColor"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/hintTextColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
 

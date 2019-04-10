@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,10 +30,12 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
 
     private EditText passwordEditText;
     private TextView passwordErrorText;
+    private Button continueButton;
     private Button signInButton;
     private RelativeLayout loadingLayout;
     private RelativeLayout ethereumInfoLayout;
 
+    private TextInputLayout passwordLayout;
     private SharedPreferences sharedPreferences;
 
     private SignInPresenter signInPresenter;
@@ -50,9 +53,11 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
 
     @Override
     public void initView(){
+        passwordLayout = findViewById(R.id.textInputLayout);
         passwordEditText = findViewById(R.id.password);
         passwordErrorText = findViewById(R.id.passwordErrorText);
-        signInButton = findViewById(R.id.email_sign_in_button);
+        continueButton = findViewById(R.id.continueButton);
+        signInButton = findViewById(R.id.signInbutton);
         loadingLayout = findViewById(R.id.loadingAnimationLayout);
         ethereumInfoLayout = findViewById(R.id.ethereumInfoLayout);
     }
@@ -73,12 +78,17 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
         });
         passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                signInPresenter.onSignInPressed(passwordEditText.getText().toString());
+                signInPresenter.onContinuePressed(passwordEditText.getText().toString());
                 return true;
             }
             return false;
         });
-        signInButton.setOnClickListener(view -> signInPresenter.onSignInPressed(passwordEditText.getText().toString()));
+        signInButton.setOnClickListener(v -> {
+            signInButton.setVisibility(View.GONE);
+            continueButton.setVisibility(View.VISIBLE);
+            passwordLayout.setVisibility(View.VISIBLE);
+        });
+        continueButton.setOnClickListener(view -> signInPresenter.onContinuePressed(passwordEditText.getText().toString()));
         ethereumInfoLayout.setOnClickListener(v -> {
             BottomSheetDialog dialogBuilder = new BottomSheetDialog(this);
             LayoutInflater inflater = getLayoutInflater();
@@ -97,6 +107,7 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
 
     @Override
     public void showLoading() {
+        continueButton.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.VISIBLE);
     }
 

@@ -148,6 +148,7 @@ public class HomeFragmentPresenter {
                     .subscribe(new Subscriber<JSONObject>() {
                         @Override
                         public void onCompleted() {
+                            Log.e("SEND TELEGRAM MESSAGE", "SUCCESS");
                         }
 
                         @Override
