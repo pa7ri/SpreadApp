@@ -107,5 +107,7 @@
     <string name="error_invalid_password">Debe tener entre 8 y 20 caracteres</string>
     <string name="error_invalid_chat_id">Debe ser un identificador válido</string>
     <string name="settings_radius_info">Ten en cuenta que <b> Nadie </b> no avisa a desconocidos, pero sí a tus contactos predefinidos.</string>
+    <string name="profile_info_title">¿Qué es el santo y seña?</string>
+    <string name="profile_info_description">Santo y seña es una forma de identificar a la persona que ha solicitado tu ayuda y aparecerá en las notificaciones, de modo que si sospechas que es una persona, te acercas y le dices el  santo y si te responde con la seña, MATCH!</string>
 
 </resources>

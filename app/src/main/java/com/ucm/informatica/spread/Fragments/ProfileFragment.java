@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -53,6 +54,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private TextView ageText;
     private EditText editName;
     private EditText editAge;
+    private TextView watchwordTitleText;
     private TextView watchwordMessageText;
     private TextView watchwordResponseText;
     private EditText editWatchwordMessage;
@@ -108,6 +110,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         ageText = view.findViewById(R.id.dataAgeDescription);
         editName = view.findViewById(R.id.editName);
         editAge = view.findViewById(R.id.editAge);
+        watchwordTitleText = view.findViewById(R.id.watchwordTitle);
         watchwordMessageText = view.findViewById(R.id.watchwordMessageDescription);
         watchwordResponseText = view.findViewById(R.id.watchwordResponseDescription);
         editWatchwordMessage = view.findViewById(R.id.editWatchwordMessageDescription);
@@ -168,6 +171,14 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         for(int i=0; i<Colours.values().length; i++){
             pantsButton[i].setOnClickListener(view -> profileFragmentPresenter.onPantsPressed());
         }
+
+        watchwordTitleText.setOnClickListener(v -> {
+            BottomSheetDialog dialogBuilder = new BottomSheetDialog(getContext());
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_watchword_info, null);
+            dialogBuilder.setContentView(dialogView);
+            dialogBuilder.show();
+        });
 
         editTelegramGroupButton.setOnClickListener(view -> {
             final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext())).create();

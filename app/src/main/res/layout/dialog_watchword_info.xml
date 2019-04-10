@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/mediumMargin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/first_section_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/smallMargin"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:text="@string/profile_info_title"
+        android:textSize="@dimen/msmallText"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/first_section_sub_1"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginTop="@dimen/smallMargin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/first_section_title">
+
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/first_section_subimage_1"
+            android:layout_width="@dimen/iconSide"
+            android:layout_height="@dimen/iconSide"
+            android:layout_marginStart="@dimen/mediumMargin"
+            android:layout_centerVertical="true"
+            android:backgroundTint="@color/hintTextColor"
+            android:background="@drawable/ic_conversation" />
+
+        <TextView
+            android:id="@+id/first_section_subdescription_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/smallMargin"
+            android:layout_marginTop="@dimen/smallMargin"
+            android:layout_marginBottom="@dimen/mediumMargin"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/first_section_subimage_1"
+            android:text="@string/profile_info_description"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
