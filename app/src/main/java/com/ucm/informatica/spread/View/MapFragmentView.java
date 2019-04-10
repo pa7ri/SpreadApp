@@ -22,7 +22,7 @@ public interface MapFragmentView {
 
     void saveDataPoster(String title, String description, String latitude, String longitude, byte[] image);
 
-    void buildPicturePicker(int requestImagePoster);
+    void buildPicturePicker();
 
     List<Alert> getAlerts();
 

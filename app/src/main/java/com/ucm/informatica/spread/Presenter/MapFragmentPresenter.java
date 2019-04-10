@@ -196,7 +196,7 @@ public class MapFragmentPresenter {
             dialogBuilder.dismiss();
         });
         cameraFloatingButton.setOnClickListener(view -> {
-            mapFragmentView.buildPicturePicker(REQUEST_IMAGE_POSTER);
+            mapFragmentView.buildPicturePicker();
             dialogBuilder.dismiss();
         });
         cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());

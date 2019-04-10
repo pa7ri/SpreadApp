@@ -52,10 +52,11 @@
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:mapbox_cameraTargetLat="@dimen/madLat"
                 app:mapbox_cameraTargetLng="@dimen/madLong"
-                app:mapbox_cameraZoom="11"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:mapbox_cameraZoom="11" />
 
 
             <View
@@ -68,26 +69,40 @@
                 android:layerType="software"
                 app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageProfileView"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_margin="@dimen/mediumMargin"
+                android:layout_marginStart="@dimen/smallMargin"
+                android:src="@drawable/ic_profile"
+                android:tint="@color/warm_grey"
+                app:civ_border_color="@color/warm_grey"
+                app:civ_border_width="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dottedLine" />
+
             <TextView
                 android:id="@+id/personalDataTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/mediumMargin"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="@dimen/mediumMargin"
                 android:text="@string/profile_personal_data"
                 android:textSize="@dimen/msmallText"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageProfileView"
                 app:layout_constraintTop_toTopOf="@+id/dottedLine" />
 
-                <TextView
-                    android:id="@+id/dataNameTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/xmediumMargin"
-                    android:layout_marginTop="@dimen/smallMargin"
-                    android:text="@string/profile_name"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/personalDataTitle" />
+            <TextView
+                android:id="@+id/dataNameTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/xmediumMargin"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:text="@string/profile_name"
+                app:layout_constraintStart_toEndOf="@+id/imageProfileView"
+                app:layout_constraintTop_toBottomOf="@+id/personalDataTitle" />
 
                 <TextView
                     android:id="@+id/dataNameDescription"
@@ -106,7 +121,7 @@
                     android:layout_marginStart="@dimen/xmediumMargin"
                     android:layout_marginTop="@dimen/smallMargin"
                     android:text="@string/profile_age"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageProfileView"
                     app:layout_constraintTop_toBottomOf="@+id/dataNameTitle" />
 
                 <TextView
@@ -120,16 +135,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/dataAgeTitle" />
 
-                <TextView
-                    android:id="@+id/dresscodeTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/mediumMargin"
-                    android:layout_marginTop="@dimen/smallMargin"
-                    android:textSize="@dimen/msmallText"
-                    android:text="@string/profile_dresscode"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dataAgeTitle" />
+            <TextView
+                android:id="@+id/dresscodeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mediumMargin"
+                android:layout_marginTop="@dimen/mediumMargin"
+                android:text="@string/profile_dresscode"
+                android:textSize="@dimen/msmallText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageProfileView" />
 
                 <TextView
                     android:id="@+id/tshirtTitle"

@@ -1,8 +1,11 @@
 package com.ucm.informatica.spread.Activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,7 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_STYLE;
 import static com.ucm.informatica.spread.Utils.Constants.Map.MAP_TOKEN;
@@ -37,6 +41,7 @@ public class AlertDetailsActivity extends AppCompatActivity {
     private TextView pantsText;
     private TextView watchwordKeyText;
     private TextView watchwordResponseText;
+    private CircleImageView profileImage;
 
     private CustomLocationManager locationManager;
 
@@ -101,6 +106,7 @@ public class AlertDetailsActivity extends AppCompatActivity {
     public void initView(){
         mapView =findViewById(R.id.mapView);
 
+        profileImage = findViewById(R.id.imageProfileView);
         nameText = findViewById(R.id.dataNameDescription);
         ageText = findViewById(R.id.dataAgeDescription);
         tshirtText = findViewById(R.id.tshirtDescription);
@@ -133,6 +139,10 @@ public class AlertDetailsActivity extends AppCompatActivity {
             String latitude = notificationJsonObject.getString(NOTIFICATION_DATA_LATITUDE);
             String longitude = notificationJsonObject.getString(NOTIFICATION_DATA_LONGITUDE);
             initMap(Double.valueOf(latitude), Double.valueOf(longitude));
+            //String image = notificationJsonObject.getString(NOTIFICATION_DATA_PICTURE);
+            //if(!image.isEmpty()) {
+            //    profileImage.setImageBitmap(stringToBitmap(image));
+            //}
             nameText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_NAME));
             ageText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_AGE));
             tshirtText.setText(notificationJsonObject.getString(NOTIFICATION_DATA_TSHIRT_COLOR));
@@ -148,4 +158,14 @@ public class AlertDetailsActivity extends AppCompatActivity {
     public void setUpListeners(){
         cancelButton.setOnClickListener(v->onBackPressed());
        }
+
+    private Bitmap stringToBitmap(String encodedImage){
+        try {
+            byte [] encodeByte= Base64.decode(encodedImage,Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        } catch(Exception e) {
+            Log.e("IMAGE FORMAT", e.getMessage());
+            return null;
+        }
+    }
 }

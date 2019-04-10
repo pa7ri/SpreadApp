@@ -110,5 +110,7 @@
     <string name="profile_info_title">¿Qué es el santo y seña?</string>
     <string name="profile_info_description">Santo y seña es una forma de identificar a la persona que ha solicitado tu ayuda y aparecerá en las notificaciones, de modo que si sospechas que es una persona, te acercas, le dices el  santo y si te responde con la seña, MATCH!</string>
     <string name="button_continue">Continuar</string>
+    <string name="snackbar_information_profile">La imagen que añadas va a compartirse al enviar una petición</string>
+    <string name="snackbar_title_profile"><b>¡Atención!</b></string>
 
 </resources>

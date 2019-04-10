@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
@@ -57,6 +58,8 @@ import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRE
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_PROFILE_CAMERA;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_PROFILE_GALLERY;
 
 public class MainTabPresenter {
 
@@ -246,21 +249,38 @@ public class MainTabPresenter {
     }
 
     public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
-                                       ContentResolver contentResolver, Fragment updatedFragment,
+                                       ContentResolver contentResolver,
+                                       FragmentPagerAdapter fragmentPagerAdapter,
                                        ViewPagerTab fragmentViewPager) {
+        Bundle extras;
         if(resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_POSTER_CAMERA:
-                    Bundle extras = data.getExtras();
+                    extras = data.getExtras();
                     imageBitmap = (Bitmap) extras.get("data");
                     fragmentViewPager.setCurrentItem(2);
-                    ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
+                    ((MapFragment)fragmentPagerAdapter.getItem(2)).renderContentWithPicture(imageBitmap);
                     break;
                 case REQUEST_IMAGE_POSTER_GALLERY:
                     try {
                         imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
                         fragmentViewPager.setCurrentItem(2);
-                        ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
+                        ((MapFragment)fragmentPagerAdapter.getItem(2)).renderContentWithPicture(imageBitmap);
+                    } catch (IOException e) {
+                        Log.e("PICTURE", e.getMessage());
+                    }
+                    break;
+                case REQUEST_IMAGE_PROFILE_CAMERA:
+                    extras = data.getExtras();
+                    imageBitmap = (Bitmap) extras.get("data");
+                    fragmentViewPager.setCurrentItem(1);
+                    ((ProfileFragment)fragmentPagerAdapter.getItem(1)).renderContentWithPicture(imageBitmap);
+                    break;
+                case REQUEST_IMAGE_PROFILE_GALLERY:
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
+                        fragmentViewPager.setCurrentItem(1);
+                        ((ProfileFragment)fragmentPagerAdapter.getItem(1)).renderContentWithPicture(imageBitmap);
                     } catch (IOException e) {
                         Log.e("PICTURE", e.getMessage());
                     }

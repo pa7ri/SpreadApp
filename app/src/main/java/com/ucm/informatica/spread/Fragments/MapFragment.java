@@ -252,7 +252,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
     }
 
     @Override
-    public void buildPicturePicker(int requestImagePoster) {
+    public void buildPicturePicker() {
         ((MainTabActivity) Objects.requireNonNull(getActivity())).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
     }
 

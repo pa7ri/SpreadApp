@@ -14,16 +14,29 @@
         android:layout_height="match_parent"
         tools:context=".Fragments.ProfileFragment">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageProfileView"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_margin="@dimen/mediumMargin"
-            android:background="@drawable/circle_shape"
-            android:foreground="@drawable/ic_profile"
+            app:civ_border_color="@color/warm_grey"
+            app:civ_border_width="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addProfileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/mediumMargin"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_photo"
+            app:layout_constraintBottom_toTopOf="@+id/view"
+            app:layout_constraintStart_toEndOf="@+id/imageProfileView" />
 
         <View
             android:id="@+id/view"

@@ -43,7 +43,7 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sig_in);
+        setContentView(R.layout.activity_sign_in);
         sharedPreferences  = getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         boolean isOnBoardingComplete = sharedPreferences.getBoolean(ONBOARDING_COMPLETE, false);
         signInPresenter = new SignInPresenter(this, isOnBoardingComplete);

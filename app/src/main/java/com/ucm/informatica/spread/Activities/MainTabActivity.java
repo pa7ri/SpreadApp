@@ -59,6 +59,8 @@ import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICAT
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_PROFILE_CAMERA;
+import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_PROFILE_GALLERY;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILENAME;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_PASSWORD;
 
@@ -126,7 +128,7 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mainPresenter.manageOnActivityResult(requestCode, resultCode, data, getContentResolver(),
-                fragmentAdapter.getItem(2), fragmentViewPager);
+                fragmentAdapter, fragmentViewPager);
     }
 
     @Override
@@ -322,6 +324,8 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 if(mode == REQUEST_IMAGE_POSTER) {
                     startActivityForResult(Intent.createChooser(intent, ""), REQUEST_IMAGE_POSTER_GALLERY);
+                } else {
+                    startActivityForResult(Intent.createChooser(intent, ""), REQUEST_IMAGE_PROFILE_GALLERY);
                 }
             dialogBuilder.dismiss();
             });
@@ -330,6 +334,9 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                     if(mode == REQUEST_IMAGE_POSTER) {
                         startActivityForResult(cameraIntent, REQUEST_IMAGE_POSTER_CAMERA);
+                    }
+                    else {
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_PROFILE_CAMERA);
                     }
                 }
             dialogBuilder.dismiss();

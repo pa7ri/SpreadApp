@@ -8,6 +8,9 @@ public final class Constants {
     public static final int REQUEST_IMAGE_POSTER = 0;
     public static final int REQUEST_IMAGE_POSTER_CAMERA = 1;
     public static final int REQUEST_IMAGE_POSTER_GALLERY = 2;
+    public static final int REQUEST_IMAGE_PROFILE = 3;
+    public static final int REQUEST_IMAGE_PROFILE_CAMERA = 4;
+    public static final int REQUEST_IMAGE_PROFILE_GALLERY = 5;
 
     public static final String INFURA_PATH = "https://rinkeby.infura.io/v3/";
     public static final String API_TELEGRAM_URL = "https://api.telegram.org/bot840390970:AAGDD_DX9E8ucSPB95XZxOtR6T21dHJr9Qc/"; //TODO
@@ -52,6 +55,7 @@ public final class Constants {
 
         public static final String PROFILE_PREF = "PROFILE_PREF";
 
+        public static final String PICTURE_PREF = "PICTURE_PREF";
         public static final String NAME_PREF = "NAME_PREF";
         public static final String AGE_PREF = "AGE_PREF";
         public static final String TSHIRT_PREF = "TSHIRT_PREF";
@@ -76,6 +80,7 @@ public final class Constants {
 
         public static final String NOTIFICATION_DATA_UNKNOWN = "Desconocido";
 
+        public static final String NOTIFICATION_DATA_PICTURE =  "NOTIFICATION_DATA_PICTURE";
         public static final String NOTIFICATION_DATA_TITLE = "NOTIFICATION_DATA_TITLE";
         public static final String NOTIFICATION_DATA_TITLE_CONTENT = "Petición de ayuda";
         public static final String NOTIFICATION_DATA_SUBTITLE = "NOTIFICATION_DATA_SUBTITLE";
