@@ -10,7 +10,6 @@
     <FrameLayout
         android:layout_width="@dimen/side_icon_large_frame"
         android:layout_height="@dimen/side_icon_large_frame"
-        android:textSize="@dimen/largeText"
         android:background="@drawable/circle_shape_double"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

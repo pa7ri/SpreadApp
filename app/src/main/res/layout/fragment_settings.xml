@@ -149,9 +149,44 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/mediumMargin"
         android:layout_marginHorizontal="@dimen/mediumMargin"
+        android:visibility="gone"
         android:text="@string/settings_radius_info"
         android:textColor="@color/hintTextColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
+
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/mediumMargin"
+        android:background="@color/dividerColor"
+        app:layout_constraintTop_toBottomOf="@+id/radiusInfo">
+
+    </View>
+
+
+    <TextView
+        android:id="@+id/tutorialTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:textSize="@dimen/msmallText"
+        android:text="@string/settings_tutorial_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
+
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/mediumMargin"
+        android:background="@color/dividerColor"
+        app:layout_constraintTop_toBottomOf="@+id/tutorialTitle">
+
+    </View>
 
 </android.support.constraint.ConstraintLayout>

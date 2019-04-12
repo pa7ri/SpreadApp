@@ -2,12 +2,9 @@ package com.ucm.informatica.spread.Fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -16,24 +13,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ucm.informatica.spread.Activities.MainTabActivity;
+import com.ucm.informatica.spread.Model.Colours;
 import com.ucm.informatica.spread.Presenter.ProfileFragmentPresenter;
 import com.ucm.informatica.spread.R;
-import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.Utils.TelegramRecyclerAdapter;
 import com.ucm.informatica.spread.View.ProfileFragmentView;
-import com.ucm.informatica.spread.Model.Colours;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -41,14 +35,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 import static android.view.View.VISIBLE;
-import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
-import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_END;
-import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_START;
-import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
-import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_PROFILE;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.AGE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.KEY_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.OTHER_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PANTS_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RESPONSE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUPS_NUMBER_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUP_CHAT_ID_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUP_NAME_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TSHIRT_PREF;
 
 public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
@@ -69,10 +67,9 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private TextView watchwordResponseText;
     private EditText editWatchwordMessage;
     private EditText editWatchwordResponse;
+    private EditText editOtherInfo;
 
-    private FloatingActionButton addProfileButton;
-
-    private CircleImageView profileImage;
+    private ImageView profileImage;
     private Colours shirtColour = Colours.NA;
     private Colours pantsColour = Colours.NA;
 
@@ -106,7 +103,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     }
 
     public void initView(){
-        addProfileButton = view.findViewById(R.id.addProfileButton);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         saveProfileButton = view.findViewById(R.id.saveProfileButton);
         editTelegramGroupButton = view.findViewById(R.id.editTelegramGroupButton);
@@ -118,6 +114,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
         initShirtButtons();
         initPantsButtons();
+        initProfilePhoto();
 
         nameText = view.findViewById(R.id.dataNameDescription);
         ageText = view.findViewById(R.id.dataAgeDescription);
@@ -128,6 +125,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         watchwordResponseText = view.findViewById(R.id.watchwordResponseDescription);
         editWatchwordMessage = view.findViewById(R.id.editWatchwordMessageDescription);
         editWatchwordResponse = view.findViewById(R.id.editWatchwordResponseDescription);
+        editOtherInfo = view.findViewById(R.id.otherInfoContent);
     }
 
     private void initTelegramGroups() {
@@ -178,6 +176,18 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         saveProfileButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
         editWatchwordButton.setOnClickListener(view -> profileFragmentPresenter.onEditWatchwordPressed());
         saveWatchwordButton.setOnClickListener(view -> profileFragmentPresenter.onSaveWatchwordPressed());
+        editOtherInfo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                sharedPreferences.edit().putString(OTHER_PREF, s.toString()).apply();
+            }
+        });
         for(int i=0; i<Colours.values().length; i++){
             shirtButton[i].setOnClickListener(view -> profileFragmentPresenter.onShirtPressed());
         }
@@ -191,11 +201,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
             View dialogView = inflater.inflate(R.layout.dialog_watchword_info, null);
             dialogBuilder.setContentView(dialogView);
             dialogBuilder.show();
-        });
-
-        addProfileButton.setOnClickListener(v -> {
-            new FlashBarBuilder(getActivity()).getProfileInfoSnackBar().show();
-            ((MainTabActivity) Objects.requireNonNull(getActivity())).createPictureIntentPicker(REQUEST_IMAGE_PROFILE);
         });
 
         editTelegramGroupButton.setOnClickListener(view -> {
@@ -322,13 +327,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     }
 
     public void loadData(){
-        String image = sharedPreferences.getString(PICTURE_PREF, "");
-        if(!image.isEmpty()) {
-            profileImage.setForeground(null);
-            profileImage.setImageBitmap(stringToBitmap(image));
-        } else {
-            initProfilePhoto();
-        }
         nameText.setText(sharedPreferences.getString(NAME_PREF, ""));
         ageText.setText(sharedPreferences.getString(AGE_PREF, ""));
         shirtColour = Colours.values()[sharedPreferences.getInt(TSHIRT_PREF, 0)];
@@ -377,31 +375,5 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
         editor.putInt(PANTS_PREF, colour.ordinal());
         editor.apply();
-    }
-
-    public void renderContentWithPicture(Bitmap imageBitmap) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(PICTURE_PREF, bitmapToString(imageBitmap));
-        editor.apply();
-        profileImage.setForeground(null);
-        profileImage.setImageBitmap(imageBitmap);
-    }
-
-    private String bitmapToString(Bitmap encodedImage){
-        ByteArrayOutputStream byteArrayOutputStream=new  ByteArrayOutputStream();
-        encodedImage.compress(Bitmap.CompressFormat.PNG,100, byteArrayOutputStream);
-        byte [] byteArray=byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
-    }
-
-
-    private Bitmap stringToBitmap(String encodedImage){
-        try {
-            byte [] encodeByte=Base64.decode(encodedImage,Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-        } catch(Exception e) {
-            Log.e("IMAGE FORMAT", e.getMessage());
-            return null;
-        }
     }
 }

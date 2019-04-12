@@ -7,6 +7,7 @@
     <dimen name="xmediumMargin">24dp</dimen>
     <dimen name="largeMargin">32dp</dimen>
     <dimen name="xlargeMargin">42dp</dimen>
+    <dimen name="extraLargeMargin">60dp</dimen>
 
 
     <!-- Image Dimensions -->
@@ -18,6 +19,7 @@
     <dimen name="smallText">10sp</dimen>
     <dimen name="msmallText">18sp</dimen>
     <dimen name="mediumText">24sp</dimen>
+    <dimen name="largeText">32sp</dimen>
 
     <!-- Madrid Coordinates -->
     <dimen name="madLat">40.41650</dimen>
@@ -34,7 +36,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
-    <dimen name="largeText">70sp</dimen>
     <dimen name="app_icon_side">55dp</dimen>
     <dimen name="side_icon_medium">150dp</dimen>
     <dimen name="side_icon_large">250dp</dimen>

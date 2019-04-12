@@ -91,6 +91,7 @@
     <string name="button_read_wallet">Mostrar Wallet</string>
     <string name="button_cancel">Cancelar</string>
     <string name="button_active">ACTIVAR</string>
+    <string name="button_finish">Terminar</string>
 
     <string name="button_sign_in">Registrarse</string>
 
@@ -112,5 +113,11 @@
     <string name="button_continue">Continuar</string>
     <string name="snackbar_information_profile">La imagen que añadas va a compartirse al enviar una petición</string>
     <string name="snackbar_title_profile"><b>¡Atención!</b></string>
+    <string name="profile_other_content">Añade otra información para identificarte : color de pelo, raza...</string>
+    <string name="profile_other_title">Otra información</string>
+    <string name="login_title">Bienvenida a Spread</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="settings_tutorial_title">Tutorial</string>
 
 </resources>

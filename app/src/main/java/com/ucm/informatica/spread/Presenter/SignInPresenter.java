@@ -57,7 +57,7 @@ public class SignInPresenter {
                         signInView.hideLoading();
                         signInView.storeWalletFileLocally(walletFile);
                         signInView.storeOnBoardingFinishedLocally();
-                        signInView.initMainActivity();
+                        signInView.initTutorialActivity();
                     }
 
                     @Override

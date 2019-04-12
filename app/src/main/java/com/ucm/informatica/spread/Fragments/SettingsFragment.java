@@ -1,6 +1,7 @@
 package com.ucm.informatica.spread.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ucm.informatica.spread.Activities.TutorialActivity;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.warkiz.widget.IndicatorSeekBar;
@@ -34,6 +36,7 @@ public class SettingsFragment extends Fragment {
     private TextView passwordText;
     private TextView balanceText;
     private TextView radiusText;
+    private TextView tutorialText;
 
     private IndicatorSeekBar indicatorSeekBar;
 
@@ -79,14 +82,17 @@ public class SettingsFragment extends Fragment {
         balanceText = v.findViewById(R.id.walletBalanceDescription);
         indicatorSeekBar = v.findViewById(R.id.radiusSeekBar);
         radiusText = v.findViewById(R.id.radiusInfo);
+        tutorialText = v.findViewById(R.id.tutorialTitle);
     }
 
     private void initContent(){
         accountText.setText(accountData.length()>22 ? accountData.substring(0,22) + "..." : accountData);
         passwordText.setText(passwordData);
         balanceText.setText(balanceData);
-        indicatorSeekBar.setProgress(sharedPreferences.getInt(RADIUS_PREF, 1));
+        int progress =sharedPreferences.getInt(RADIUS_PREF, 1);
+        indicatorSeekBar.setProgress(progress);
         indicatorSeekBar.setIndicatorTextFormat("${TICK_TEXT}");
+        radiusText.setVisibility(progress==0?View.VISIBLE:View.GONE);
     }
 
     private void setupListeners(){
@@ -120,6 +126,11 @@ public class SettingsFragment extends Fragment {
 
                 radiusText.setVisibility(seekBar.getProgress()==0?View.VISIBLE:View.GONE);
             }
+        });
+
+        tutorialText.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), TutorialActivity.class);
+            startActivity(intent);
         });
     }
 }
