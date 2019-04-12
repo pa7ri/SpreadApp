@@ -43,31 +43,31 @@ public class PlaceholderFragment extends Fragment {
     }
 
     private void initContent(){
-        imageTutorial.setColorFilter(ContextCompat.getColor(getContext(),R.color.hintTextColor));
         switch (getArguments().getInt(TUTORIAL_ARGS)) {
             case 0 :
+                imageTutorial.setColorFilter(ContextCompat.getColor(getContext(),R.color.hintTextColor));
                 titleTutorial.setText("Bienvenido a Spread");
                 imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.ic_areas));
                 subtitleTutorial.setText("Veamos que puedes hacer");
                 break;
             case 1 :
                 titleTutorial.setText("Avisa");
-                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.ic_alert));
+                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.tutorial_alert));
                 subtitleTutorial.setText("Informa con un solo click cuando lo necesites a quienes estén cerca de ti y también a conocidos.");
                 break;
             case 2 :
                 titleTutorial.setText("Actívate");
-                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.ic_pic));
+                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.tutorial_share));
                 subtitleTutorial.setText("Si ves que hay publicidad que consideres ofensiva, compartela y para crear una denuncia colectiva.");
                 break;
             case 3 :
                 titleTutorial.setText("Investiga");
-                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.ic_map));
+                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.tutorial_map));
                 subtitleTutorial.setText("Curiosea que ha ocurrido recientemente en tu zona o en cualquier otra.");
                 break;
             case 4 :
                 titleTutorial.setText("Ayuda");
-                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.ic_add));
+                imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.tutorial_save));
                 subtitleTutorial.setText("Acude a ayudar cuando te lleguen notificaciones.");
                 break;
         }
