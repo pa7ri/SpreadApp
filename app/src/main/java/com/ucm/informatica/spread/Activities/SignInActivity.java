@@ -99,6 +99,7 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
             dialogBuilder.setContentView(dialogView);
             dialogBuilder.show();
         });
+
     }
 
     @Override
@@ -159,7 +160,9 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
 
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow( getCurrentFocus().getWindowToken(), 0);
+        View v = getCurrentFocus();
+        if(v == null) { v = new View(this); }
+        imm.hideSoftInputFromWindow( v.getWindowToken(), 0);
     }
 }
 

@@ -24,17 +24,17 @@ public class CustomLocationListener implements LocationListener {
         locationManager = new CustomLocationManager(context);
         sharedPreferences = context.getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
 
+        latestLocation = new Location("");
         //Colegio : 40.449010, -3.720407
         // FDI : 40.452687, -3.733738
-        latestLocation = new Location("");
-        latestLocation.setLatitude(40.452687);
-        latestLocation.setLongitude(-3.733738);
+        //latestLocation.setLatitude(40.452687);
+        //latestLocation.setLongitude(-3.733738);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         unregisterLastNotificationTopic(latestLocation);
-        //latestLocation = location;
+        latestLocation = location;
         registerNewNotificationTopic(latestLocation);
         storeNotificationTopicLocally(latestLocation);
     }

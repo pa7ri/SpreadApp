@@ -369,12 +369,12 @@
             android:id="@+id/watchwordTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/mediumMargin"
-            android:layout_marginTop="@dimen/mediumMargin"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="90dp"
             android:text="@string/profile_watchword"
             android:textSize="@dimen/msmallText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upperImageNA"  />
+            app:layout_constraintTop_toBottomOf="@+id/dresscodeTitle" />
 
 
         <ImageView

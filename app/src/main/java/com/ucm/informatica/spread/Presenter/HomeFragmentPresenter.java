@@ -100,7 +100,7 @@ public class HomeFragmentPresenter {
         Map<String, String> data = new ArrayMap<>();
 
         Location location = locationListener.getLatestLocation();
-        //locationListener.unregisterLastNotificationTopic(location);
+        locationListener.unregisterLastNotificationTopic(location);
         data.put(NOTIFICATION_DATA, notificationToJson(location.getLatitude(),
                 location.getLongitude(), sharedPreferences));
         data.put(NOTIFICATION_DATA_TITLE, NOTIFICATION_DATA_TITLE_CONTENT);

@@ -11,6 +11,7 @@
     <string name="description_hint">Descripción</string>
 
     <!-- LOGIN -->
+    <string name="login_title">SpreadApp</string>
     <string name="prompt_password">Contraseña</string>
     <string name="title_activity_login">Sign in</string>
     <string name="ethereum_info_title">Esta aplicación usa Ethereum</string>
@@ -44,6 +45,12 @@
     <string name="profile_watchword_first">Mensaje</string>
     <string name="profile_watchword_second">Respuesta</string>
     <string name="profile_contact">Contactos</string>
+    <string name="profile_info_title">¿Qué es el santo y seña?</string>
+    <string name="profile_info_description">Santo y seña es una forma de identificar a la persona que ha solicitado tu ayuda y aparecerá en las notificaciones, de modo que si sospechas que es una persona, te acercas, le dices el  santo y si te responde con la seña, MATCH!</string>
+
+
+    <string name="profile_other_content">Añade otra información para identificarte : color de pelo, raza...</string>
+    <string name="profile_other_title">Otra información</string>
 
     <string name="telegram_title">¿Cómo registro mi grupo de Telegram?</string>
     <string name="telegram_description">Lo primero es saber que será un bot el que notifique en tu nombre, necesita saber a quién, ayúdale : \n
@@ -72,14 +79,19 @@
 
     <!-- HISTORICAL -->
     <string name="historical_title">Recientes</string>
+    <string name="place_title">Lugar</string>
+
 
     <!-- SETTINGS -->
     <string name="settings_wallet_title">Configuración de la Wallet</string>
     <string name="settings_wallet_account">Dirección cuenta :</string>
     <string name="settings_wallet_password">Contraseña :</string>
     <string name="settings_wallet_balance">Saldo disponible :</string>
+    <string name="settings_radius_info"> <b> Nadie </b> no avisa a desconocidos, pero sí a tus contactos.</string>
     <string name="radius_title">Radio de alcance :</string>
 
+    <string name="title_activity_tutorial">TutorialActivity</string>
+    <string name="settings_tutorial_title">Tutorial</string>
     <string name="snackbar_information_copy">Cuenta copiada  😊 </string>
 
     <!-- ACTIONS -->
@@ -92,6 +104,7 @@
     <string name="button_cancel">Cancelar</string>
     <string name="button_active">ACTIVAR</string>
     <string name="button_finish">Terminar</string>
+    <string name="button_continue">Continuar</string>
 
     <string name="button_sign_in">Registrarse</string>
 
@@ -101,23 +114,12 @@
     <string name="snackbar_alert_image">"No se ha guardado correctamente la imagen"</string>
     <string name="snackbar_information_transaction">Tu petición se ha enviado</string>
     <string name="snackbar_confirmation_transaction">Guardado correctamente</string>
-    <string name="place_title">Lugar</string>
+    <string name="snackbar_information_profile">La imagen que añadas va a compartirse al enviar una petición</string>
+    <string name="snackbar_title_profile"><b>¡Atención!</b></string>
 
 
     <!-- ERROR -->
     <string name="error_invalid_password">Debe tener entre 8 y 20 caracteres</string>
     <string name="error_invalid_chat_id">Debe ser un identificador válido</string>
-    <string name="settings_radius_info"> <b> Nadie </b> no avisa a desconocidos, pero sí a tus contactos.</string>
-    <string name="profile_info_title">¿Qué es el santo y seña?</string>
-    <string name="profile_info_description">Santo y seña es una forma de identificar a la persona que ha solicitado tu ayuda y aparecerá en las notificaciones, de modo que si sospechas que es una persona, te acercas, le dices el  santo y si te responde con la seña, MATCH!</string>
-    <string name="button_continue">Continuar</string>
-    <string name="snackbar_information_profile">La imagen que añadas va a compartirse al enviar una petición</string>
-    <string name="snackbar_title_profile"><b>¡Atención!</b></string>
-    <string name="profile_other_content">Añade otra información para identificarte : color de pelo, raza...</string>
-    <string name="profile_other_title">Otra información</string>
-    <string name="login_title">Bienvenida a Spread</string>
-    <string name="title_activity_tutorial">TutorialActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-    <string name="settings_tutorial_title">Tutorial</string>
 
 </resources>

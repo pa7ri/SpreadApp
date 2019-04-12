@@ -333,6 +333,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         pantsColour = Colours.values()[sharedPreferences.getInt(PANTS_PREF, 0)];
         watchwordMessageText.setText(sharedPreferences.getString(KEY_PREF, ""));
         watchwordResponseText.setText(sharedPreferences.getString(RESPONSE_PREF, ""));
+        editOtherInfo.setText(sharedPreferences.getString(OTHER_PREF, ""));
 
         telegramGroupList = new ArrayList<>();
         int numTelegramGroups = sharedPreferences.getInt(TELEGRAM_GROUPS_NUMBER_PREF, 0);
