@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -21,11 +22,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ucm.informatica.spread.Model.Colours;
 import com.ucm.informatica.spread.Presenter.ProfileFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.TelegramRecyclerAdapter;
 import com.ucm.informatica.spread.View.ProfileFragmentView;
-import com.ucm.informatica.spread.Model.Colours;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,9 +36,17 @@ import java.util.Objects;
 import java.util.Random;
 
 import static android.view.View.VISIBLE;
-import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.*;
-import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_END;
-import static com.ucm.informatica.spread.Utils.Constants.Map.CAMERA_BOUND_LONGITUDE_START;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.AGE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.KEY_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.OTHER_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PANTS_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RESPONSE_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUPS_NUMBER_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUP_CHAT_ID_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TELEGRAM_GROUP_NAME_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.TSHIRT_PREF;
 
 public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
@@ -53,10 +62,12 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private TextView ageText;
     private EditText editName;
     private EditText editAge;
+    private TextView watchwordTitleText;
     private TextView watchwordMessageText;
     private TextView watchwordResponseText;
     private EditText editWatchwordMessage;
     private EditText editWatchwordResponse;
+    private EditText editOtherInfo;
 
     private ImageView profileImage;
     private Colours shirtColour = Colours.NA;
@@ -104,14 +115,17 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         initShirtButtons();
         initPantsButtons();
         initProfilePhoto();
+
         nameText = view.findViewById(R.id.dataNameDescription);
         ageText = view.findViewById(R.id.dataAgeDescription);
         editName = view.findViewById(R.id.editName);
         editAge = view.findViewById(R.id.editAge);
+        watchwordTitleText = view.findViewById(R.id.watchwordTitle);
         watchwordMessageText = view.findViewById(R.id.watchwordMessageDescription);
         watchwordResponseText = view.findViewById(R.id.watchwordResponseDescription);
         editWatchwordMessage = view.findViewById(R.id.editWatchwordMessageDescription);
         editWatchwordResponse = view.findViewById(R.id.editWatchwordResponseDescription);
+        editOtherInfo = view.findViewById(R.id.otherInfoContent);
     }
 
     private void initTelegramGroups() {
@@ -162,12 +176,32 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         saveProfileButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
         editWatchwordButton.setOnClickListener(view -> profileFragmentPresenter.onEditWatchwordPressed());
         saveWatchwordButton.setOnClickListener(view -> profileFragmentPresenter.onSaveWatchwordPressed());
+        editOtherInfo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                sharedPreferences.edit().putString(OTHER_PREF, s.toString()).apply();
+            }
+        });
         for(int i=0; i<Colours.values().length; i++){
             shirtButton[i].setOnClickListener(view -> profileFragmentPresenter.onShirtPressed());
         }
         for(int i=0; i<Colours.values().length; i++){
             pantsButton[i].setOnClickListener(view -> profileFragmentPresenter.onPantsPressed());
         }
+
+        watchwordTitleText.setOnClickListener(v -> {
+            BottomSheetDialog dialogBuilder = new BottomSheetDialog(getContext());
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_watchword_info, null);
+            dialogBuilder.setContentView(dialogView);
+            dialogBuilder.show();
+        });
 
         editTelegramGroupButton.setOnClickListener(view -> {
             final AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext())).create();
@@ -299,6 +333,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         pantsColour = Colours.values()[sharedPreferences.getInt(PANTS_PREF, 0)];
         watchwordMessageText.setText(sharedPreferences.getString(KEY_PREF, ""));
         watchwordResponseText.setText(sharedPreferences.getString(RESPONSE_PREF, ""));
+        editOtherInfo.setText(sharedPreferences.getString(OTHER_PREF, ""));
 
         telegramGroupList = new ArrayList<>();
         int numTelegramGroups = sharedPreferences.getInt(TELEGRAM_GROUPS_NUMBER_PREF, 0);

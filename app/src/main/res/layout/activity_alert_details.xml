@@ -52,10 +52,11 @@
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:mapbox_cameraTargetLat="@dimen/madLat"
                 app:mapbox_cameraTargetLng="@dimen/madLong"
-                app:mapbox_cameraZoom="11"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:mapbox_cameraZoom="11" />
 
 
             <View
@@ -68,30 +69,32 @@
                 android:layerType="software"
                 app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
+
             <TextView
                 android:id="@+id/personalDataTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/mediumMargin"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="@dimen/mediumMargin"
                 android:text="@string/profile_personal_data"
                 android:textSize="@dimen/msmallText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/dottedLine" />
 
-                <TextView
-                    android:id="@+id/dataNameTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/xmediumMargin"
-                    android:layout_marginTop="@dimen/smallMargin"
-                    android:text="@string/profile_name"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/personalDataTitle" />
+            <TextView
+                android:id="@+id/dataNameTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/xmediumMargin"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:text="@string/profile_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/personalDataTitle" />
 
                 <TextView
                     android:id="@+id/dataNameDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="180dp"
+                    android:gravity="end"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/mediumMargin"
                     android:text="María"
@@ -107,11 +110,12 @@
                     android:layout_marginTop="@dimen/smallMargin"
                     android:text="@string/profile_age"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dataNameTitle" />
+                    app:layout_constraintTop_toBottomOf="@+id/dataNameDescription" />
 
                 <TextView
                     android:id="@+id/dataAgeDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="180dp"
+                    android:gravity="end"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/smallMargin"
                     android:layout_marginEnd="@dimen/mediumMargin"
@@ -120,16 +124,39 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/dataAgeTitle" />
 
-                <TextView
-                    android:id="@+id/dresscodeTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/mediumMargin"
-                    android:layout_marginTop="@dimen/smallMargin"
-                    android:textSize="@dimen/msmallText"
-                    android:text="@string/profile_dresscode"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dataAgeTitle" />
+            <TextView
+                android:id="@+id/otherInfoTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/xmediumMargin"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:text="@string/profile_other_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dataAgeDescription" />
+
+
+            <TextView
+                android:id="@+id/otherInfoDescription"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginBottom="@dimen/smallMargin"
+                android:layout_marginEnd="@dimen/mediumMargin"
+                android:text="@string/profile_other_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dataAgeTitle" />
+
+
+            <TextView
+                android:id="@+id/dresscodeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mediumMargin"
+                android:layout_marginTop="@dimen/mediumMargin"
+                android:text="@string/profile_dresscode"
+                android:textSize="@dimen/msmallText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/otherInfoDescription" />
 
                 <TextView
                     android:id="@+id/tshirtTitle"
@@ -205,7 +232,8 @@
 
                 <TextView
                     android:id="@+id/watchwordKeyDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="180dp"
+                    android:gravity="end"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/mediumMargin"
                     android:text="Hola caracola"
@@ -221,11 +249,12 @@
                     android:layout_marginTop="@dimen/smallMargin"
                     android:text="@string/profile_watchword_second"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/watchwordKeyTitle" />
+                    app:layout_constraintTop_toBottomOf="@+id/watchwordKeyDescription" />
 
                 <TextView
                     android:id="@+id/watchwordResponseDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="180dp"
+                    android:gravity="end"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/mediumMargin"
                     android:text="Me mola tu gramola"

@@ -39,11 +39,15 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+    implementation 'com.hanks:htextview-base:0.1.6'
+    implementation 'com.hanks:htextview-fade:0.1.6'
     implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
     implementation 'com.jackandphantom.android:androidlikebutton:1.2.0'
     implementation 'com.andrognito.flashbar:flashbar:1.0.3'
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
     implementation 'com.ramotion.foldingcell:folding-cell:1.2.2'
+    implementation 'me.relex:circleindicator:1.2.2'
+    implementation 'com.tuyenmonkey:mkloader:1.4.0'
 
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-messaging:17.4.0'
@@ -54,7 +58,6 @@ dependencies {
 
     implementation 'com.github.ligi:ipfs-api-kotlin:0.14'
 
-    implementation 'com.tuyenmonkey:mkloader:1.4.0'
     implementation 'org.web3j:core:3.3.1-android'
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.1.2'

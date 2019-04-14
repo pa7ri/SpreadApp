@@ -60,18 +60,22 @@ public class MapFragmentPresenter {
         List<Poster> historicalPosterList = mapFragmentView.getPosters();
 
         for (Alert alert:historicalAlertList) {
-            mapFragmentView.showNewMarkerIntoMap(
-                    alert.getLatitude(),
-                    alert.getLongitude(),
-                    alert.getTitle(),
-                    alert.getDescription(), true);
+            if(alert.getLatitude()!=null && alert.getLongitude()!=null) {
+                mapFragmentView.showNewMarkerIntoMap(
+                        alert.getLatitude(),
+                        alert.getLongitude(),
+                        alert.getTitle(),
+                        alert.getDescription(), true);
+            }
         }
         for (Poster poster:historicalPosterList) {
-            mapFragmentView.showNewMarkerIntoMap(
-                    poster.getLatitude(),
-                    poster.getLongitude(),
-                    poster.getTitle(),
-                    poster.getDescription(), false);
+            if(poster.getLatitude()!=null && poster.getLongitude()!=null) {
+                mapFragmentView.showNewMarkerIntoMap(
+                        poster.getLatitude(),
+                        poster.getLongitude(),
+                        poster.getTitle(),
+                        poster.getDescription(), false);
+            }
         }
     }
 
@@ -192,7 +196,7 @@ public class MapFragmentPresenter {
             dialogBuilder.dismiss();
         });
         cameraFloatingButton.setOnClickListener(view -> {
-            mapFragmentView.buildPicturePicker(REQUEST_IMAGE_POSTER);
+            mapFragmentView.buildPicturePicker();
             dialogBuilder.dismiss();
         });
         cancelButton.setOnClickListener(view -> dialogBuilder.dismiss());

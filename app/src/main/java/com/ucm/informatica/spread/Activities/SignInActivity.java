@@ -1,21 +1,25 @@
 package com.ucm.informatica.spread.Activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hanks.htextview.fade.FadeTextView;
 import com.ucm.informatica.spread.Presenter.SignInPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.View.SignInView;
@@ -27,12 +31,14 @@ import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_PASSWORD;
 
 public class SignInActivity extends AppCompatActivity implements SignInView {
 
+    private FadeTextView fadeTextView;
     private EditText passwordEditText;
     private TextView passwordErrorText;
     private Button signInButton;
     private RelativeLayout loadingLayout;
     private RelativeLayout ethereumInfoLayout;
 
+    private TextInputLayout passwordLayout;
     private SharedPreferences sharedPreferences;
 
     private SignInPresenter signInPresenter;
@@ -40,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sig_in);
+        setContentView(R.layout.activity_sign_in);
         sharedPreferences  = getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         boolean isOnBoardingComplete = sharedPreferences.getBoolean(ONBOARDING_COMPLETE, false);
         signInPresenter = new SignInPresenter(this, isOnBoardingComplete);
@@ -50,15 +56,18 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
 
     @Override
     public void initView(){
+        fadeTextView = findViewById(R.id.titleTextView);
+        passwordLayout = findViewById(R.id.textInputLayout);
         passwordEditText = findViewById(R.id.password);
         passwordErrorText = findViewById(R.id.passwordErrorText);
-        signInButton = findViewById(R.id.email_sign_in_button);
+        signInButton = findViewById(R.id.signInbutton);
         loadingLayout = findViewById(R.id.loadingAnimationLayout);
         ethereumInfoLayout = findViewById(R.id.ethereumInfoLayout);
     }
 
     @Override
     public void setUpListeners(){
+        fadeTextView.animateText(getResources().getString(R.string.login_title));
         passwordEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
@@ -73,12 +82,16 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
         });
         passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                signInPresenter.onSignInPressed(passwordEditText.getText().toString());
+                signInPresenter.onContinuePressed(passwordEditText.getText().toString());
+                hideKeyboard();
                 return true;
             }
             return false;
         });
-        signInButton.setOnClickListener(view -> signInPresenter.onSignInPressed(passwordEditText.getText().toString()));
+        signInButton.setOnClickListener(view -> {
+            signInPresenter.onContinuePressed(passwordEditText.getText().toString());
+            hideKeyboard();
+        });
         ethereumInfoLayout.setOnClickListener(v -> {
             BottomSheetDialog dialogBuilder = new BottomSheetDialog(this);
             LayoutInflater inflater = getLayoutInflater();
@@ -86,6 +99,7 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
             dialogBuilder.setContentView(dialogView);
             dialogBuilder.show();
         });
+
     }
 
     @Override
@@ -97,12 +111,19 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
 
     @Override
     public void showLoading() {
+        signInButton.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
         loadingLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void initTutorialActivity() {
+        Intent intent = new Intent(this, TutorialActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -135,6 +156,13 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
     @Override
     public String getWalletFilePath() {
         return getFilesDir().getAbsolutePath();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if(v == null) { v = new View(this); }
+        imm.hideSoftInputFromWindow( v.getWindowToken(), 0);
     }
 }
 

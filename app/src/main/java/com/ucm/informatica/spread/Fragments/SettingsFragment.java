@@ -1,25 +1,23 @@
 package com.ucm.informatica.spread.Fragments;
 
-import android.content.ClipData;
-import android.content.SharedPreferences;
-import android.text.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.ucm.informatica.spread.Activities.TutorialActivity;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 
-import static android.content.Context.CLIPBOARD_SERVICE;
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RADIUS_PREF;
 
@@ -33,9 +31,12 @@ public class SettingsFragment extends Fragment {
     private String passwordData;
     private String balanceData;
 
+    private TextView walletText;
     private TextView accountText;
     private TextView passwordText;
     private TextView balanceText;
+    private TextView radiusText;
+    private TextView tutorialText;
 
     private IndicatorSeekBar indicatorSeekBar;
 
@@ -75,21 +76,35 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initView(View v) {
+        walletText = v.findViewById(R.id.walletTitle);
         accountText = v.findViewById(R.id.walletAccountDescription);
         passwordText = v.findViewById(R.id.walletPasswordDescription);
         balanceText = v.findViewById(R.id.walletBalanceDescription);
         indicatorSeekBar = v.findViewById(R.id.radiusSeekBar);
+        radiusText = v.findViewById(R.id.radiusInfo);
+        tutorialText = v.findViewById(R.id.tutorialTitle);
     }
 
     private void initContent(){
         accountText.setText(accountData.length()>22 ? accountData.substring(0,22) + "..." : accountData);
         passwordText.setText(passwordData);
         balanceText.setText(balanceData);
-        indicatorSeekBar.setProgress(sharedPreferences.getInt(RADIUS_PREF, 1));
+        int progress =sharedPreferences.getInt(RADIUS_PREF, 1);
+        indicatorSeekBar.setProgress(progress);
         indicatorSeekBar.setIndicatorTextFormat("${TICK_TEXT}");
+        radiusText.setVisibility(progress==0?View.VISIBLE:View.GONE);
     }
 
     private void setupListeners(){
+        walletText.setOnClickListener(view -> {
+            BottomSheetDialog dialogBuilder = new BottomSheetDialog(getContext());
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_ethereum_info, null);
+            dialogBuilder.setContentView(dialogView);
+            dialogBuilder.show();
+        });
+
+
         accountText.setOnClickListener(view -> {
             android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setText(accountData);
@@ -108,7 +123,14 @@ public class SettingsFragment extends Fragment {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt(RADIUS_PREF, seekBar.getProgress());
                 editor.apply();
+
+                radiusText.setVisibility(seekBar.getProgress()==0?View.VISIBLE:View.GONE);
             }
+        });
+
+        tutorialText.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), TutorialActivity.class);
+            startActivity(intent);
         });
     }
 }

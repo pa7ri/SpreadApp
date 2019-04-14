@@ -14,6 +14,8 @@ public interface SignInView {
 
     void initMainActivity();
 
+    void initTutorialActivity();
+
     void storeWalletFileLocally(String walletFilename);
 
     void storePasswordLocally(String password);

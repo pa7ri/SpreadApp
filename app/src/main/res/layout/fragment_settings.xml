@@ -19,6 +19,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:layout_width="@dimen/smallIcon"
+        android:layout_height="@dimen/smallIcon"
+        android:layout_marginStart="@dimen/smallMargin"
+        android:background="@drawable/ic_info"
+        android:backgroundTint="@color/hintTextColor"
+        app:layout_constraintStart_toEndOf="@+id/walletTitle"
+        app:layout_constraintTop_toTopOf="@+id/walletTitle" />
+
     <TextView
         android:id="@+id/walletAccountTitle"
         android:layout_width="wrap_content"
@@ -114,6 +123,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/iconSide"
         android:layout_marginTop="@dimen/mediumMargin"
+        android:layout_marginHorizontal="@dimen/smallMargin"
         app:isb_indicator_text_color="@color/white"
         app:isb_indicator_text_size="18sp"
         app:isb_max="3"
@@ -132,5 +142,51 @@
         app:isb_track_background_size="2dp"
         app:isb_track_progress_size="4dp"
         app:layout_constraintTop_toBottomOf="@+id/radiusTitle" />
+
+    <TextView
+        android:id="@+id/radiusInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:layout_marginHorizontal="@dimen/mediumMargin"
+        android:visibility="gone"
+        android:text="@string/settings_radius_info"
+        android:textColor="@color/hintTextColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radiusSeekBar" />
+
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/mediumMargin"
+        android:background="@color/dividerColor"
+        app:layout_constraintTop_toBottomOf="@+id/radiusInfo">
+
+    </View>
+
+
+    <TextView
+        android:id="@+id/tutorialTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mediumMargin"
+        android:layout_marginTop="@dimen/mediumMargin"
+        android:textSize="@dimen/msmallText"
+        android:text="@string/settings_tutorial_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
+
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/mediumMargin"
+        android:background="@color/dividerColor"
+        app:layout_constraintTop_toBottomOf="@+id/tutorialTitle">
+
+    </View>
 
 </android.support.constraint.ConstraintLayout>

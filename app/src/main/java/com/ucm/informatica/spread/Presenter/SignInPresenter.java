@@ -34,7 +34,7 @@ public class SignInPresenter {
         }
     }
 
-    public void onSignInPressed(String password) {
+    public void onContinuePressed(String password) {
         if (password.isEmpty() || password.length() < 8 || password.length() > 20) {
             signInView.showPasswordError();
         } else {
@@ -57,7 +57,7 @@ public class SignInPresenter {
                         signInView.hideLoading();
                         signInView.storeWalletFileLocally(walletFile);
                         signInView.storeOnBoardingFinishedLocally();
-                        signInView.initMainActivity();
+                        signInView.initTutorialActivity();
                     }
 
                     @Override

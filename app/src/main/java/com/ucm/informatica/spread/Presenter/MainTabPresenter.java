@@ -1,37 +1,25 @@
 package com.ucm.informatica.spread.Presenter;
 
-import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Contracts.AlertContract;
 import com.ucm.informatica.spread.Contracts.PosterContract;
 import com.ucm.informatica.spread.Data.IPFSService;
-import com.ucm.informatica.spread.Utils.Constants;
+import com.ucm.informatica.spread.Data.LocalWallet;
+import com.ucm.informatica.spread.Data.SmartContract;
 import com.ucm.informatica.spread.Fragments.HistoricalFragment;
 import com.ucm.informatica.spread.Fragments.HomeFragment;
 import com.ucm.informatica.spread.Fragments.MapFragment;
 import com.ucm.informatica.spread.Fragments.ProfileFragment;
 import com.ucm.informatica.spread.Fragments.SettingsFragment;
-import com.ucm.informatica.spread.Data.LocalWallet;
-import com.ucm.informatica.spread.Data.SmartContract;
-import com.ucm.informatica.spread.Utils.CustomLocationListener;
+import com.ucm.informatica.spread.Utils.Constants;
 import com.ucm.informatica.spread.Utils.ViewPagerTab;
 import com.ucm.informatica.spread.View.MainTabView;
 
@@ -51,10 +39,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.LOCATION_SERVICE;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_ALERT;
 import static com.ucm.informatica.spread.Utils.Constants.Contract.CONTRACT_ADDRESS_POSTER;
-import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_CHANNEL_ID;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_CAMERA;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER_GALLERY;
 
@@ -69,8 +55,6 @@ public class MainTabPresenter {
     private AlertContract alertContract;
     private PosterContract posterContract;
     private SmartContract smartContract;
-
-    private Bitmap imageBitmap;
 
     private IPFSService ipfsService;
 
@@ -246,21 +230,24 @@ public class MainTabPresenter {
     }
 
     public void manageOnActivityResult(int requestCode, int resultCode, Intent data,
-                                       ContentResolver contentResolver, Fragment updatedFragment,
+                                       ContentResolver contentResolver,
+                                       FragmentPagerAdapter fragmentPagerAdapter,
                                        ViewPagerTab fragmentViewPager) {
+        Bundle extras;
+        Bitmap imageBitmap;
         if(resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_POSTER_CAMERA:
-                    Bundle extras = data.getExtras();
+                    extras = data.getExtras();
                     imageBitmap = (Bitmap) extras.get("data");
                     fragmentViewPager.setCurrentItem(2);
-                    ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
+                    ((MapFragment)fragmentPagerAdapter.getItem(2)).renderContentWithPicture(imageBitmap);
                     break;
                 case REQUEST_IMAGE_POSTER_GALLERY:
                     try {
                         imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.getData());
                         fragmentViewPager.setCurrentItem(2);
-                        ((MapFragment) updatedFragment).renderContentWithPicture(imageBitmap);
+                        ((MapFragment)fragmentPagerAdapter.getItem(2)).renderContentWithPicture(imageBitmap);
                     } catch (IOException e) {
                         Log.e("PICTURE", e.getMessage());
                     }

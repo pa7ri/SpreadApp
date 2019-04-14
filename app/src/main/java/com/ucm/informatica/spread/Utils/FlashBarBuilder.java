@@ -77,4 +77,25 @@ public class FlashBarBuilder {
                 .messageColorRes(R.color.snackbarConfirmColor)
                 .build();
     }
+
+
+    public Flashbar getProfileInfoSnackBar(){
+        return new Flashbar.Builder(activity)
+                .gravity(Flashbar.Gravity.TOP)
+                .duration(2500)
+                .enterAnimation(FlashAnim.with(activity)
+                        .animateBar()
+                        .duration(750)
+                        .alpha()
+                        .overshoot())
+                .exitAnimation(FlashAnim.with(activity)
+                        .animateBar()
+                        .duration(450)
+                        .accelerateDecelerate())
+                .backgroundColorRes(R.color.snackbarBackground)
+                .title(activity.getString(R.string.snackbar_title_profile))
+                .message(text!=null?text:activity.getString(R.string.snackbar_information_profile))
+                .messageColorRes(R.color.hintTextColor)
+                .build();
+    }
 }

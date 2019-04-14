@@ -29,6 +29,7 @@ import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.AGE_PR
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.KEY_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NAME_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.NOTIFICATION_TOPIC_PREF;
+import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.OTHER_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PANTS_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RADIUS_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RESPONSE_PREF;
@@ -40,6 +41,7 @@ import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICAT
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_LATITUDE;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_LONGITUDE;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_NAME;
+import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_OTHER;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_PANTS_COLOR;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_SUBTITLE;
 import static com.ucm.informatica.spread.Utils.Constants.Notifications.NOTIFICATION_DATA_SUBTITLE_CONTENT;
@@ -148,6 +150,7 @@ public class HomeFragmentPresenter {
                     .subscribe(new Subscriber<JSONObject>() {
                         @Override
                         public void onCompleted() {
+                            Log.e("SEND TELEGRAM MESSAGE", "SUCCESS");
                         }
 
                         @Override
@@ -166,6 +169,7 @@ public class HomeFragmentPresenter {
     private String notificationToJson(Double latitude, Double longitude, SharedPreferences sharedPreferences) {
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put(NOTIFICATION_DATA_OTHER, sharedPreferences.getString(OTHER_PREF, ""));
             jsonObject.put(NOTIFICATION_DATA_NAME, sharedPreferences.getString(NAME_PREF,NOTIFICATION_DATA_UNKNOWN));
             jsonObject.put(NOTIFICATION_DATA_AGE, sharedPreferences.getString(AGE_PREF,NOTIFICATION_DATA_UNKNOWN));
             jsonObject.put(NOTIFICATION_DATA_LATITUDE, latitude);
