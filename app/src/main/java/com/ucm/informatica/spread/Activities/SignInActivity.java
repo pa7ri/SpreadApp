@@ -51,7 +51,6 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
         boolean isOnBoardingComplete = sharedPreferences.getBoolean(ONBOARDING_COMPLETE, false);
         signInPresenter = new SignInPresenter(this, isOnBoardingComplete);
         signInPresenter.start();
-
     }
 
     @Override

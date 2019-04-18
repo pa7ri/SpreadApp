@@ -10,6 +10,8 @@ public interface MainTabView {
 
     void loadDataPosterIPFS(Poster poster);
 
+    int getDataPosterIPFSCount();
+
     void showErrorTransaction();
 
     void showConfirmationTransaction();

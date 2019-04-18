@@ -156,6 +156,11 @@ public class MainTabActivity extends AppCompatActivity implements MainTabView{
     }
 
     @Override
+    public int getDataPosterIPFSCount() {
+        return dataPosterSmartContractList.size();
+    }
+
+    @Override
     public void showErrorTransaction() {
         new FlashBarBuilder(this).getErrorSnackBar(R.string.snackbar_alert_transaction).show();
     }

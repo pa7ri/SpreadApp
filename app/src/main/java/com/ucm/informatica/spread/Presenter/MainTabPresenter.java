@@ -143,21 +143,19 @@ public class MainTabPresenter {
                 });
     }
 
-    public AlertContract getAlertContract(){
+    private void getAlertContract(){
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
         alertContract = smartContract.loadAlertSmartContract(CONTRACT_ADDRESS_ALERT);
-        return alertContract;
     }
 
-    public PosterContract getPosterContract(){
+    private void getPosterContract(){
         smartContract = new SmartContract(web3j, localWallet.getCredentials());
         posterContract = smartContract.loadPosterSmartContract(CONTRACT_ADDRESS_POSTER);
-        return posterContract;
     }
 
     private void loadData() {
         if(alertContract == null) {
-            alertContract = getAlertContract();
+            getAlertContract();
         }
         alertContract.getAlertsCount().observable()
                 .subscribeOn(Schedulers.newThread())
@@ -184,7 +182,7 @@ public class MainTabPresenter {
                     (error) -> mainTabView.showErrorTransaction()
                 );
         if(posterContract == null) {
-            posterContract = getPosterContract();
+            getPosterContract();
         }
         posterContract.getPostersCount().observable()
                 .subscribeOn(Schedulers.newThread())
@@ -192,13 +190,12 @@ public class MainTabPresenter {
                 .subscribe(
                     (countCoords) -> {
                         for(int i=0; i<countCoords.intValue(); i++){
-                            int finalI = i;
                             posterContract.getPosterByIndex(BigInteger.valueOf(i)).observable()
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
                                         (resultHash) -> ipfsService.getDataFromHash(resultHash,
-                                                    finalI, countCoords.intValue())
+                                                countCoords.intValue())
                                         ,
                                         (error) -> mainTabView.showErrorTransaction()
                                     );
@@ -210,7 +207,7 @@ public class MainTabPresenter {
 
     public void onSaveDataAlert(String title, String description, String latitude, String longitude, String date){
         if(alertContract == null) {
-            alertContract = getAlertContract();
+            getAlertContract();
         }
         alertContract.addAlert(title,description,latitude,longitude, date).observable()
                 .subscribeOn(Schedulers.newThread())
@@ -224,7 +221,7 @@ public class MainTabPresenter {
 
     public void onSaveDataPoster(String posterJson){
         if(posterContract == null) {
-            posterContract = getPosterContract();
+            getPosterContract();
         }
         ipfsService.addStringGetHash(posterJson, posterContract);
     }
