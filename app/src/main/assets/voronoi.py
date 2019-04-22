@@ -15,7 +15,7 @@ points = []
 for line in fileInput :
     if count != 0 :
         words = line.split()
-        points.append([float(words[4]), float(words[3])])
+        points.append([float(words[5]), float(words[4])])
     count = count + 1
 fileInput.close
 
