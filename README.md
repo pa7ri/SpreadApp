@@ -1,4 +1,4 @@
-# TFG
+# SpreadApp (TFG)
 
 ## Contributing
 - Create new branch for the task:
