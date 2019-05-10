@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ucm.informatica.spread.Activities.MainTabActivity;
 import com.ucm.informatica.spread.Presenter.HistoricalFragmentPresenter;
 import com.ucm.informatica.spread.R;
 import com.ucm.informatica.spread.Utils.FlashBarBuilder;
@@ -62,7 +61,7 @@ public class HistoricalFragment extends Fragment implements HistoricalFragmentVi
         historicalListView = view.findViewById(R.id.historicalListView);
 
         historicalListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        historicalListView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        historicalListView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
 
         historicalListView.setAdapter(adapter);
     }

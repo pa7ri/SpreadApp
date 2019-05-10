@@ -17,7 +17,7 @@ public class CustomLocationManager {
         this.context = context;
     }
 
-    public Address getAddress(Double latitude, Double longitude){
+    private Address getAddress(Double latitude, Double longitude){
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -25,13 +25,19 @@ public class CustomLocationManager {
         } catch (IOException e) {
             Log.e("ADDRESS", e.getMessage());
         }
+        assert addresses != null;
         return addresses.get(0);
     }
 
     public String getFormatAddress(Double latitude, Double longitude){
         Address address = getAddress(latitude, longitude);
-        return address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n"
-                + address.getLocality() + "\n"
+        String addressString;
+        if(address.getThoroughfare() != null && address.getSubThoroughfare() != null) {
+            addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare() + "\n";
+        } else {
+            addressString = getLineAddress(latitude,longitude).split(",")[0] + "\n";
+        }
+        return addressString + address.getLocality() + "\n"
                 + address.getPostalCode() + " - " + address.getSubAdminArea() + "\n"
                 + address.getCountryName();
     }

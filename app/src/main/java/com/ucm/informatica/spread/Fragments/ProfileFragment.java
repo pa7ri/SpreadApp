@@ -1,7 +1,10 @@
 package com.ucm.informatica.spread.Fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
@@ -17,6 +20,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -73,6 +78,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private Colours shirtColour = Colours.NA;
     private Colours pantsColour = Colours.NA;
 
+    private int infoClickCounter=0;
+
     private RecyclerView telegramRecyclerView;
     private List<Pair<String, String>> telegramGroupList;
 
@@ -90,7 +97,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
 
         super.onCreate(savedInstanceState);
         profileFragmentPresenter = new ProfileFragmentPresenter(this);
-        sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
+        sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -131,7 +138,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     private void initTelegramGroups() {
         telegramRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         TelegramRecyclerAdapter adapter = new TelegramRecyclerAdapter(getContext(), telegramGroupList);
-        telegramRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        telegramRecyclerView.addItemDecoration(new DividerItemDecoration(
+                Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         telegramRecyclerView.setAdapter(adapter);
     }
 
@@ -140,7 +148,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         try {
             Random rand = new Random();
             int index = rand.nextInt(24);
-            InputStream ims = getActivity().getAssets().open("monster/monster-"+index+".png");
+            InputStream ims = Objects.requireNonNull(getActivity()).getAssets().open("monster/monster-"+index+".png");
             Drawable d = Drawable.createFromStream(ims, null);
             profileImage.setForeground(d);
         }
@@ -172,6 +180,24 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
     }
 
     public void setupListeners(){
+        profileImage.setOnClickListener(view-> {
+
+            if(infoClickCounter==10) {
+                AlertDialog dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getActivity())).create();
+                View dialogView = getLayoutInflater().inflate(R.layout.dialog_extra_info, null);
+
+                Objects.requireNonNull(dialogBuilder.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+                Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shakeanimation);
+                dialogView.findViewById(R.id.image1).setAnimation(shake);
+                dialogView.findViewById(R.id.image2).setAnimation(shake);
+
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.show();
+
+                infoClickCounter=0;
+            }
+            infoClickCounter++;
+        });
         editProfileButton.setOnClickListener(view -> profileFragmentPresenter.onEditPressed());
         saveProfileButton.setOnClickListener(view -> profileFragmentPresenter.onSavePressed());
         editWatchwordButton.setOnClickListener(view -> profileFragmentPresenter.onEditWatchwordPressed());
@@ -196,7 +222,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentView {
         }
 
         watchwordTitleText.setOnClickListener(v -> {
-            BottomSheetDialog dialogBuilder = new BottomSheetDialog(getContext());
+            BottomSheetDialog dialogBuilder = new BottomSheetDialog(Objects.requireNonNull(getContext()));
             LayoutInflater inflater = getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.dialog_watchword_info, null);
             dialogBuilder.setContentView(dialogView);

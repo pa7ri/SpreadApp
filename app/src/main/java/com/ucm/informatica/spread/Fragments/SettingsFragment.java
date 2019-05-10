@@ -18,6 +18,8 @@ import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 
+import java.util.Objects;
+
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.RADIUS_PREF;
 
@@ -97,7 +99,7 @@ public class SettingsFragment extends Fragment {
 
     private void setupListeners(){
         walletText.setOnClickListener(view -> {
-            BottomSheetDialog dialogBuilder = new BottomSheetDialog(getContext());
+            BottomSheetDialog dialogBuilder = new BottomSheetDialog(Objects.requireNonNull(getContext()));
             LayoutInflater inflater = getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.dialog_ethereum_info, null);
             dialogBuilder.setContentView(dialogView);
@@ -105,7 +107,7 @@ public class SettingsFragment extends Fragment {
         });
 
 
-        accountText.setOnClickListener(view -> {
+        accountText.setOnClickListener((View view) -> {
             android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setText(accountData);
             new FlashBarBuilder(getActivity(),getString(R.string.snackbar_information_copy)).getConfirmationSnackBar().show();
