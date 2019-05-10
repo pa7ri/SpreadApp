@@ -46,7 +46,7 @@ public class PlaceholderTutorialFragment extends Fragment {
                 imageTutorial.setColorFilter(ContextCompat.getColor(getContext(),R.color.hintTextColor));
                 titleTutorial.setText("Bienvenido a Spread");
                 imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.ic_areas));
-                subtitleTutorial.setText("Veamos que puedes hacer");
+                subtitleTutorial.setText("Veamos qué puedes hacer");
                 break;
             case 1 :
                 titleTutorial.setText("Avisa");
@@ -56,12 +56,12 @@ public class PlaceholderTutorialFragment extends Fragment {
             case 2 :
                 titleTutorial.setText("Actívate");
                 imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.tutorial_share));
-                subtitleTutorial.setText("Si ves que hay publicidad que consideres ofensiva, compartela y para crear una denuncia colectiva.");
+                subtitleTutorial.setText("Si ves que hay publicidad que consideres ofensiva, compártela y para crear una denuncia colectiva.");
                 break;
             case 3 :
                 titleTutorial.setText("Investiga");
                 imageTutorial.setImageDrawable(getResources().getDrawable(R.drawable.tutorial_map));
-                subtitleTutorial.setText("Curiosea que ha ocurrido recientemente en tu zona o en cualquier otra.");
+                subtitleTutorial.setText("Curiosea qué ha ocurrido recientemente en tu zona o en cualquier otra.");
                 break;
             case 4 :
                 titleTutorial.setText("Ayuda");
