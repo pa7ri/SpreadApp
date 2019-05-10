@@ -172,7 +172,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
                     pinMode = PinMode.Poster;
                 }
                 mapFragmentPresenter.popUpDialog(pinMode, title, null
-                        , getLayoutInflater(),new AlertDialog.Builder(getActivity()).create());
+                        , getLayoutInflater(),new AlertDialog.Builder(Objects.requireNonNull(getActivity())).create());
                 return false;
             }
         });
@@ -195,7 +195,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
             mapboxMap.setStyle(MAP_STYLE, style -> mapFragmentPresenter.getPolygonLayer(style, regionMap));
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
             mapboxMap.addOnCameraMoveListener(() -> {
-                SharedPreferences sharedPreferences = getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
+                SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 LatLng startCameraBoundLocation = mapboxMap.getProjection().fromScreenLocation(new PointF
@@ -233,10 +233,12 @@ public class MapFragment extends Fragment implements MapFragmentView {
         mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .title(markerTitle)
-                .icon(isAlert?IconFactory.getInstance(getActivity()).fromResource(R.drawable.ic_pin_alert):
-                        IconFactory.getInstance(getActivity()).fromResource(R.drawable.ic_pin_poster))
+                .icon(isAlert?IconFactory.getInstance(Objects.requireNonNull(getActivity())).fromResource(R.drawable.ic_pin_alert):
+                        IconFactory.getInstance(Objects.requireNonNull(getActivity())).fromResource(R.drawable.ic_pin_poster))
                 .snippet(markerDescription));
-        regionMap = mapFragmentPresenter.getUpdatedContainedPointsInRegionMap(Point.fromLngLat(longitude,latitude),regionMap);
+        if(isAlert) {
+            regionMap = mapFragmentPresenter.getUpdatedContainedPointsInRegionMap(Point.fromLngLat(longitude, latitude), regionMap);
+        }
     }
 
 
@@ -308,7 +310,7 @@ public class MapFragment extends Fragment implements MapFragmentView {
 
     public void renderContentWithPicture(Bitmap imageBitmap){
         mapFragmentPresenter.popUpDialog(PinMode.Poster, getString(R.string.button_add_pin_poster),
-                imageBitmap, getLayoutInflater(), new AlertDialog.Builder(getActivity()).create());
+                imageBitmap, getLayoutInflater(), new AlertDialog.Builder(Objects.requireNonNull(getActivity())).create());
     }
 
     public void showSelectedLocation(Double latitude, Double longitude) {

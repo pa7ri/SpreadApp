@@ -18,6 +18,8 @@ import com.ucm.informatica.spread.Utils.CustomLocationManager;
 import com.ucm.informatica.spread.Utils.FlashBarBuilder;
 import com.ucm.informatica.spread.View.HomeFragmentView;
 
+import java.util.Objects;
+
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.REQUEST_IMAGE_POSTER;
 
@@ -59,8 +61,9 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
             @Override
             public void onLikeClicked(AndroidLikeButton androidLikeButton) {
                 androidLikeButton.setCurrentlyLiked(false);
-                homeFragmentPresenter.onHelpButtonPressed(((MainTabActivity) getActivity()).getCustomLocationListener(),getResources(),
-                        getContext().getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE));
+                homeFragmentPresenter.onHelpButtonPressed(
+                        ((MainTabActivity) Objects.requireNonNull(getActivity())).getCustomLocationListener(),getResources(),
+                        Objects.requireNonNull(getContext()).getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE));
             }
 
             @Override
@@ -69,7 +72,7 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
             }
         });
         cameraButton.setOnClickListener(view -> {
-            ((MainTabActivity) getActivity()).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
+            ((MainTabActivity) Objects.requireNonNull(getActivity())).createPictureIntentPicker(REQUEST_IMAGE_POSTER);
         });
     }
 
@@ -90,6 +93,6 @@ public class HomeFragment extends Fragment implements HomeFragmentView{
 
     @Override
     public void saveData(String title, String description, String latitude, String logitude) {
-        ((MainTabActivity) getActivity()).saveDataAlert(title, description, latitude, logitude);
+        ((MainTabActivity) Objects.requireNonNull(getActivity())).saveDataAlert(title, description, latitude, logitude);
     }
 }

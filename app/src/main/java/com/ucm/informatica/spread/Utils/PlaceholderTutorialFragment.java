@@ -15,15 +15,15 @@ import com.ucm.informatica.spread.R;
 
 import static com.ucm.informatica.spread.Utils.Constants.TUTORIAL_ARGS;
 
-public class PlaceholderFragment extends Fragment {
+public class PlaceholderTutorialFragment extends Fragment {
     private TextView titleTutorial;
     private TextView subtitleTutorial;
     private ImageView imageTutorial;
 
-    public PlaceholderFragment() {
+    public PlaceholderTutorialFragment() {
     }
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-        PlaceholderFragment fragment = new PlaceholderFragment();
+    public static PlaceholderTutorialFragment newInstance(int sectionNumber) {
+        PlaceholderTutorialFragment fragment = new PlaceholderTutorialFragment();
         Bundle args = new Bundle();
         args.putInt(TUTORIAL_ARGS, sectionNumber);
         fragment.setArguments(args);
