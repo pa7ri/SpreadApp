@@ -1,4 +1,10 @@
-# SpreadApp (TFG)
+# SpreadApp
+
+**SpreadApp** is an Android application created as a response to harassment in public spaces, which allows users to send emergency alerts as well as storing and searching them and posting advertisements with misogynous content as social protest. In particular, every piece of information generated or shared by users will be stored into *Ethereum*, founded on blockchain, in order to ensure pseudo-anonymity, have an updated consistent version of the data and guarantee its security.
+
+<p align="center">
+ <img align="center" src="https://user-images.githubusercontent.com/32872814/59913764-19d51900-9419-11e9-9c31-6bc20af53c95.png" weight="150" height="150" alt="spreadapp-logo">
+</p>
 
 ## Contributing
 - Create new branch for the task:
