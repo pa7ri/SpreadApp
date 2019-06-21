@@ -28,6 +28,8 @@ import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.ONBOAR
 import static com.ucm.informatica.spread.Utils.Constants.LocalPreferences.PROFILE_PREF;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_FILENAME;
 import static com.ucm.informatica.spread.Utils.Constants.Wallet.WALLET_PASSWORD;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class SignInActivity extends AppCompatActivity implements SignInView {
 
@@ -38,7 +40,6 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
     private RelativeLayout loadingLayout;
     private RelativeLayout ethereumInfoLayout;
 
-    private TextInputLayout passwordLayout;
     private SharedPreferences sharedPreferences;
 
     private SignInPresenter signInPresenter;
@@ -47,6 +48,7 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        Fabric.with(this, new Crashlytics());
         sharedPreferences  = getSharedPreferences(PROFILE_PREF, Context.MODE_PRIVATE);
         boolean isOnBoardingComplete = sharedPreferences.getBoolean(ONBOARDING_COMPLETE, false);
         signInPresenter = new SignInPresenter(this, isOnBoardingComplete);
@@ -56,7 +58,6 @@ public class SignInActivity extends AppCompatActivity implements SignInView {
     @Override
     public void initView(){
         fadeTextView = findViewById(R.id.titleTextView);
-        passwordLayout = findViewById(R.id.textInputLayout);
         passwordEditText = findViewById(R.id.password);
         passwordErrorText = findViewById(R.id.passwordErrorText);
         signInButton = findViewById(R.id.signInbutton);

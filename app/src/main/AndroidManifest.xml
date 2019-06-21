@@ -60,6 +60,10 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/snackbarAlertColor" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="826e41c1a78f38c8e99bd4c287046cfcf4219347"
+            />
     </application>
 
 </manifest>
